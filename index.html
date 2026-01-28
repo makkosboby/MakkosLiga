@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Makkos Liga – Tabella</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 980px; margin: 20px auto; padding: 0 12px; }
+    h1 { margin-bottom: 8px; }
+    .small { color:#444; font-size: 0.9em; margin-top: 0; }
+    .bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    select { padding: 6px 8px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background: #f3f3f3; position: sticky; top: 0; z-index: 1; }
+    td.name { text-align: left; }
+    a.player { color: inherit; text-decoration: underline; cursor: pointer; }
+    .error { color: #b00020; }
+  </style>
+</head>
+<body>
+
+<h1>⚽ Makkos Liga – Tabella</h1>
+<p class="small">Nyilvános nézet (szezonválasztó + realtime frissítés).</p>
+
+<div class="bar">
+  <label for="seasonSelect"><b>Szezon:</b></label>
+  <select id="seasonSelect"></select>
+  <span id="status">Betöltés…</span>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Név</th>
+      <th>M</th>
+      <th>Gy</th>
+      <th>D</th>
+      <th>V</th>
+      <th>LG</th>
+      <th>KG</th>
+      <th>GK</th>
+      <th>P</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<script>
+  const supabaseUrl = "https://kqtzyhmksnjowielrwii.supabase.co";
+  const supabaseKey = "sb_publishable_vgSmqItheOG3aeOdoNionA_rd-4MTL2";
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  const seasonSelect = document.getElementById("seasonSelect");
+  const statusEl = document.getElementById("status");
+  const tbody = document.getElementById("tbody");
+
+  let seasons = [];               // [{id, year, is_current}]
+  let selectedSeasonId = null;    // uuid
+  let selectedSeasonYear = null;  // int
+
+  // debouncer realtime-hez (egy meccs sok update)
+  let reloadTimer = null;
+  function scheduleReload(delayMs = 200) {
+    if (reloadTimer) clearTimeout(reloadTimer);
+    reloadTimer = setTimeout(() => {
+      loadTable();
+    }, delayMs);
+  }
+
+  async function loadSeasons() {
+    statusEl.textContent = "Szezonok betöltése…";
+
+    const { data, error } = await supabaseClient
+      .from("seasons")
+      .select("id, year, is_current")
+      .order("year", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      statusEl.innerHTML = `<span class="error">❌ Szezon hiba: ${error.message}</span>`;
+      return;
+    }
+
+    seasons = data || [];
+    seasonSelect.innerHTML = "";
+
+    seasons.forEach(s => {
+      const opt = document.createElement("option");
+      opt.value = s.id;
+      opt.textContent = String(s.year) + (s.is_current ? " (aktuális)" : "");
+      seasonSelect.appendChild(opt);
+    });
+
+    // alapértelmezett: aktuális szezon, különben a legfrissebb év
+    const current = seasons.find(s => s.is_current) || seasons[0];
+    if (current) {
+      selectedSeasonId = current.id;
+      selectedSeasonYear = current.year;
+      seasonSelect.value = current.id;
+    }
+
+    statusEl.textContent = "✅ Szezonok betöltve";
+  }
+
+  async function loadTable() {
+    if (!selectedSeasonId) {
+      tbody.innerHTML = "";
+      statusEl.textContent = "Nincs kiválasztott szezon.";
+      return;
+    }
+
+    statusEl.textContent = `Tabella betöltése (${selectedSeasonYear})…`;
+
+    const { data, error } = await supabaseClient
+      .from("season_stats")
+      .select(`
+        season_id,
+        player_id,
+        matches,
+        wins,
+        draws,
+        losses,
+        goals_for,
+        goals_against,
+        goal_diff,
+        points,
+        tabella ( name )
+      `)
+      .eq("season_id", selectedSeasonId)
+      .order("points", { ascending: false })
+      .order("goal_diff", { ascending: false })
+      .order("matches", { ascending: false })
+      .order("goals_for", { ascending: false })
+      .order("goals_against", { ascending: true });
+
+    if (error) {
+      console.error(error);
+      statusEl.innerHTML = `<span class="error">❌ Tabella hiba: ${error.message}</span>`;
+      return;
+    }
+
+    tbody.innerHTML = "";
+
+    (data || []).forEach((r, idx) => {
+      const name = r.tabella?.name ?? "ismeretlen";
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${idx + 1}</td>
+        <td class="name">
+          <a class="player" href="player.html?player_id=${encodeURIComponent(r.player_id)}&season_year=${encodeURIComponent(selectedSeasonYear)}">
+            ${name}
+          </a>
+        </td>
+        <td>${r.matches}</td>
+        <td>${r.wins}</td>
+        <td>${r.draws}</td>
+        <td>${r.losses}</td>
+        <td>${r.goals_for}</td>
+        <td>${r.goals_against}</td>
+        <td>${r.goal_diff}</td>
+        <td><b>${r.points}</b></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    statusEl.textContent = `✅ ${selectedSeasonYear} – ${data.length} játékos`;
+  }
+
+  seasonSelect.addEventListener("change", async () => {
+    const id = seasonSelect.value;
+    const s = seasons.find(x => x.id === id);
+    selectedSeasonId = id;
+    selectedSeasonYear = s ? s.year : null;
+    await loadTable();
+  });
+
+  // Realtime: ha szezonok vagy statok változnak, frissítünk
+  supabaseClient
+    .channel("public:seasons-live")
+    .on("postgres_changes", { event: "*", schema: "public", table: "seasons" }, () => {
+      // szezon vége esetén új szezon jön -> reload seasons + table
+      loadSeasons().then(loadTable);
+    })
+    .subscribe();
+
+  supabaseClient
+    .channel("public:season-stats-live")
+    .on("postgres_changes", { event: "*", schema: "public", table: "season_stats" }, (payload) => {
+      // csak akkor töltünk újra, ha a jelenlegi szezon statja változott
+      const seasonId = payload?.new?.season_id || payload?.old?.season_id;
+      if (seasonId && seasonId === selectedSeasonId) {
+        scheduleReload(200);
+      }
+    })
+    .subscribe();
+
+  // Indítás
+  (async () => {
+    await loadSeasons();
+    await loadTable();
+  })();
+</script>
+
+</body>
+</html>

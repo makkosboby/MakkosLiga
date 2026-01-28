@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Makkos Liga – Admin login</title>
+</head>
+<body>
+
+<h2>MFL Admin bejelentkezés</h2>
+
+<input id="email" type="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Jelszó"><br><br>
+<button id="loginBtn">Bejelentkezés</button>
+
+<p id="msg"></p>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseUrl = "https://kqtzyhmksnjowielrwii.supabase.co";
+  const supabaseKey = "sb_publishable_vgSmqItheOG3aeOdoNionA_rd-4MTL2";
+
+  const supabaseClient = supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+  );
+
+  document.getElementById("loginBtn").addEventListener("click", login);
+
+  async function login() {
+    document.getElementById("msg").innerText = "Belépés folyamatban...";
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      document.getElementById("msg").innerText = error.message;
+      console.error(error);
+    } else {
+      document.getElementById("msg").innerText = "✅ Sikeres belépés!";
+      window.location.href = "admin.html";
+    }
+  }
+</script>
+
+</body>
+</html>

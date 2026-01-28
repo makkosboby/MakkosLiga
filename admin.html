@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Makkos Liga – Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 12px;
+    }
+    input, select, button {
+      margin: 4px 0;
+      padding: 6px 8px;
+    }
+    hr { margin: 20px 0; }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0;
+    }
+    .row span { flex: 1; }
+    .small { font-size: 0.9em; color: #444; }
+    .card {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+    .danger { background: #ffecec; }
+  </style>
+</head>
+<body>
+
+<h1>⚽ Makkos Liga – Admin</h1>
+
+<p id="status">Ellenőrzés…</p>
+
+<hr>
+
+<h3>🏁 Szezon</h3>
+<button onclick="endSeason()">🏁 Szezon vége</button>
+<p id="seasonMsg"></p>
+
+<hr>
+
+<h3>Játékos hozzáadása</h3>
+<input type="text" id="playerName" placeholder="Játékos neve">
+<button onclick="addPlayer()">Hozzáadás</button>
+<p id="addMsg"></p>
+
+<hr>
+
+<h3>Meccs rögzítése (⚫ Fekete vs ⚪ Fehér)</h3>
+
+<div id="teamSelector"></div>
+
+<div class="row">
+  <span>⚫ Fekete gól:</span>
+  <input type="number" id="blackScore" min="0" value="0">
+</div>
+
+<div class="row">
+  <span>⚪ Fehér gól:</span>
+  <input type="number" id="whiteScore" min="0" value="0">
+</div>
+
+<button onclick="saveMatch()">💾 Meccs mentése</button>
+<p id="matchMsg"></p>
+
+<hr>
+
+<h3>Utolsó meccsek</h3>
+<div id="matchesList"></div>
+
+<hr>
+
+<button onclick="logout()">Kijelentkezés</button>
+
+<script>
+  const supabaseUrl = "https://kqtzyhmksnjowielrwii.supabase.co";
+  const supabaseKey = "sb_publishable_vgSmqItheOG3aeOdoNionA_rd-4MTL2";
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  async function checkLogin() {
+    const { data } = await supabaseClient.auth.getSession();
+    if (!data.session) window.location.href = "login.html";
+    document.getElementById("status").innerText = "✅ Bejelentkezve (admin)";
+  }
+
+  async function logout() {
+    await supabaseClient.auth.signOut();
+    window.location.href = "login.html";
+  }
+
+  async function addPlayer() {
+    const name = document.getElementById("playerName").value.trim();
+    if (!name) return;
+
+    const { error } = await supabaseClient.from("tabella").insert([{ name }]);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    document.getElementById("playerName").value = "";
+    loadPlayersForMatch();
+  }
+
+  async function loadPlayersForMatch() {
+    const { data } = await supabaseClient
+      .from("tabella")
+      .select("id, name")
+      .order("name");
+
+    const container = document.getElementById("teamSelector");
+    container.innerHTML = "";
+
+    data.forEach(p => {
+      const row = document.createElement("div");
+      row.className = "row";
+      row.innerHTML = `
+        <span>${p.name}</span>
+        <select data-player-id="${p.id}">
+          <option value="">–</option>
+          <option value="black">⚫ Fekete</option>
+          <option value="white">⚪ Fehér</option>
+        </select>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  async function saveMatch() {
+    const blackScore = Number(document.getElementById("blackScore").value);
+    const whiteScore = Number(document.getElementById("whiteScore").value);
+
+    const blackPlayers = [];
+    const whitePlayers = [];
+
+    document.querySelectorAll("#teamSelector select").forEach(sel => {
+      if (sel.value === "black") blackPlayers.push(sel.dataset.playerId);
+      if (sel.value === "white") whitePlayers.push(sel.dataset.playerId);
+    });
+
+    if (!blackPlayers.length || !whitePlayers.length) {
+      document.getElementById("matchMsg").innerText = "❌ Mindkét csapat kötelező";
+      return;
+    }
+
+    const { error } = await supabaseClient.rpc("apply_match_result", {
+      black_players: blackPlayers,
+      white_players: whitePlayers,
+      black_goals: blackScore,
+      white_goals: whiteScore
+    });
+
+    if (error) {
+      console.error(error);
+      document.getElementById("matchMsg").innerText = "❌ Hiba mentéskor";
+      return;
+    }
+
+    document.getElementById("matchMsg").innerText = "✅ Meccs mentve";
+    loadMatches();
+  }
+
+  async function deleteMatch(matchId) {
+    if (!confirm("Biztos törlöd ezt a meccset?")) return;
+
+    const { error } = await supabaseClient.rpc(
+      "delete_match_and_rollback",
+      { match_to_delete: matchId }
+    );
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    const card = document.querySelector(`.card[data-match-id="${matchId}"]`);
+    if (card) card.remove();
+  }
+
+  async function loadMatches() {
+    const { data: matches } = await supabaseClient
+      .from("matches")
+      .select("id, round, black_score, white_score, created_at")
+      .order("created_at", { ascending: false });
+
+    const { data: mp } = await supabaseClient
+      .from("match_players")
+      .select("match_id, team, tabella(name)");
+
+    const list = document.getElementById("matchesList");
+    list.innerHTML = "";
+
+    matches.forEach(m => {
+      const black = mp.filter(x => x.match_id === m.id && x.team === "black").map(x => x.tabella?.name);
+      const white = mp.filter(x => x.match_id === m.id && x.team === "white").map(x => x.tabella?.name);
+
+      const card = document.createElement("div");
+      card.className = "card danger";
+      card.dataset.matchId = m.id;
+      card.innerHTML = `
+        <div><b>${m.round}. forduló</b> – <span class="small">${new Date(m.created_at).toLocaleString("hu-HU")}</span></div>
+        <div><b>Eredmény:</b> ⚫ ${m.black_score} – ${m.white_score} ⚪</div>
+        <div><b>⚫ Fekete:</b> ${black.join(", ")}</div>
+        <div><b>⚪ Fehér:</b> ${white.join(", ")}</div>
+        <button onclick="deleteMatch('${m.id}')">🗑️ Meccs törlése</button>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  async function endSeason() {
+    if (!confirm("Biztos lezárod a szezont és új évet indítasz?")) return;
+
+    const { data, error } = await supabaseClient.rpc("end_season");
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    document.getElementById("seasonMsg").innerText =
+      `✅ Új szezon elindítva: ${data}`;
+  }
+
+  checkLogin();
+  loadPlayersForMatch();
+  loadMatches();
+</script>
+
+</body>
+</html>
