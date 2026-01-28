@@ -3,320 +3,365 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Makkos Liga – Tabella</title>
+  <title>Makkos Liga</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    body { font-family: Arial, sans-serif; max-width: 1200px; margin: 20px auto; padding: 0 12px; }
-    h1 { margin-bottom: 8px; }
-    .small { color:#444; font-size: 0.9em; margin-top: 0; }
-    .bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
-    select { padding: 6px 8px; }
-
-    .layout { display: grid; grid-template-columns: 1fr 320px; gap: 14px; align-items: start; }
-    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
-
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-    th { background: #f3f3f3; position: sticky; top: 0; z-index: 1; }
-    td.name { text-align: left; }
-
-    button.link {
-      background: none;
-      border: none;
-      padding: 0;
-      margin: 0;
-      font: inherit;
-      color: inherit;
-      text-decoration: underline;
-      cursor: pointer;
+    :root{
+      --bg:#0b0b0d;
+      --panel:#111114;
+      --panel2:#15151a;
+      --text:#ffffff;
+      --muted:#b3b3b3;
+      --line: rgba(255,255,255,0.08);
+      --line2: rgba(255,255,255,0.14);
+      --red:#c4161c;
+      --red-soft: rgba(196,22,28,.15);
+      --shadow: 0 12px 30px rgba(0,0,0,.55);
+      --radius: 14px;
     }
 
-    .card {
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 12px;
-      background: #fff;
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:
+        radial-gradient(900px 500px at 15% -10%, rgba(196,22,28,.25), transparent 60%),
+        var(--bg);
+      color:var(--text);
     }
-    .card h3 { margin: 0 0 8px 0; }
-    .kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; }
-    .muted { color:#666; font-size: 0.9em; }
-    .error { color: #b00020; }
+
+    .container{ max-width:1240px; margin:24px auto; padding:0 14px 24px; }
+    h1{ margin:0; font-size:26px; letter-spacing:.3px; }
+    .subtitle{ margin-top:6px; font-size:13px; color:var(--muted); }
+
+    .top{
+      display:flex; justify-content:space-between; align-items:flex-end;
+      gap:12px; flex-wrap:wrap; margin-bottom:16px;
+    }
+
+    .controls{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 14px;
+      background:linear-gradient(180deg, var(--panel2), var(--panel));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    label{ font-size:13px; color:var(--muted); }
+    select{
+      background:#000; color:#fff;
+      border:1px solid var(--line2);
+      border-radius:10px; padding:8px 10px;
+    }
+
+    .pill{
+      font-size:12px; padding:6px 10px;
+      border-radius:999px;
+      background:var(--red-soft);
+      border:1px solid rgba(196,22,28,.4);
+    }
+
+    .layout{
+      display:grid; grid-template-columns:1fr 380px;
+      gap:14px; align-items:start;
+    }
+    @media(max-width:980px){ .layout{ grid-template-columns:1fr; } }
+
+    .card{
+      background:linear-gradient(180deg, var(--panel2), var(--panel));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .card-header{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      display:flex; justify-content:space-between; align-items:center;
+    }
+
+    .card-title{
+      font-size:14px; font-weight:700;
+      letter-spacing:.3px; text-transform:uppercase;
+    }
+
+    .card-body{ padding:12px 14px; }
+    .table-wrap{ overflow:auto; }
+
+    table{ width:100%; border-collapse:collapse; min-width:760px; }
+    thead th{
+      position:sticky; top:0; background:#000;
+      color:var(--muted); font-size:12px;
+      padding:10px; border-bottom:1px solid var(--line);
+      text-align:center;
+    }
+
+    tbody td{
+      padding:10px; border-bottom:1px solid rgba(255,255,255,.06);
+      text-align:center; font-size:13px;
+    }
+
+    tbody tr:hover{ background:rgba(196,22,28,.08); }
+    td.name{ text-align:left; min-width:180px; }
+
+    button.link{
+      background:none; border:none; color:#fff;
+      cursor:pointer; font:inherit;
+    }
+    button.link:hover{ color:var(--red); text-decoration:underline; }
+
+    .rank{
+      display:inline-flex; width:26px; height:26px;
+      align-items:center; justify-content:center;
+      border-radius:8px; background:#000;
+      border:1px solid var(--line);
+      font-weight:700; font-size:12px;
+    }
+    .rank.top1{ border-color:var(--red); background:var(--red-soft); }
+    .rank.top2{ border-color:#aaa; }
+    .rank.top3{ border-color:#777; }
+
+    .muted{ color:var(--muted); font-size:12px; }
+    .kv{
+      display:grid; grid-template-columns:1fr auto;
+      gap:8px 10px; margin-top:10px; font-size:13px;
+    }
+
+    .roundbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .btn{
+      background:#000; border:1px solid var(--line2);
+      color:#fff; border-radius:10px;
+      padding:8px 10px; cursor:pointer;
+    }
+    .btn:hover{ border-color:var(--red); background:var(--red-soft); }
+    .btn:disabled{ opacity:.4; }
+
+    .match{
+      background:#000; border:1px solid var(--line);
+      border-radius:12px; padding:12px; margin:10px 0;
+    }
+    .match-top{
+      display:flex; justify-content:space-between;
+      align-items:center; gap:10px; margin-bottom:6px;
+    }
+    .score{ font-weight:800; letter-spacing:.5px; }
+    .teams{ font-size:13px; margin-top:6px; }
+    .teams span{ color:var(--muted); }
   </style>
 </head>
+
 <body>
+<div class="container">
 
-<h1>⚽ Makkos Liga – Tabella</h1>
-<p class="small">Nyilvános nézet (szezonválasztó + realtime + játékos összesített kártya).</p>
-
-<div class="bar">
-  <label for="seasonSelect"><b>Szezon:</b></label>
-  <select id="seasonSelect"></select>
-  <span id="status">Betöltés…</span>
-</div>
-
-<div class="layout">
-  <!-- BAL: TABELLÁZAT -->
-  <div>
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Név</th>
-          <th>M</th>
-          <th>Gy</th>
-          <th>D</th>
-          <th>V</th>
-          <th>LG</th>
-          <th>KG</th>
-          <th>GK</th>
-          <th>P</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
+  <div class="top">
+  <div style="display:flex; align-items:center; gap:12px;">
+    <img src="assets/logo.png" alt="Makkos Liga logo" style="height:42px;">
+    <h1> Makkos Liga </h1>
   </div>
 
-  <!-- JOBB: JÁTÉKOS KÁRTYA -->
-  <div class="card" id="playerCard">
-    <h3>Játékos</h3>
-    <p class="muted">Kattints egy névre a tabellában.</p>
+    <div class="controls">
+      <label>Szezon</label>
+      <select id="seasonSelect"></select>
+      <span id="status" class="pill">—</span>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- TABLA -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Tabella</div>
+        <span id="tableMeta" class="pill">—</span>
+      </div>
+      <div class="card-body table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th style="text-align:left">Név</th>
+              <th>M</th><th>Gy</th><th>D</th><th>V</th>
+              <th>LG</th><th>KG</th><th>GK</th><th>P</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+
+      <div class="card" id="playerCard">
+        <div class="card-header">
+          <div class="card-title">Játékos</div>
+          <span class="pill">Összesített</span>
+        </div>
+        <div class="card-body">
+          <div class="muted">Kattints egy névre a tabellában.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="card-header">
+          <div class="card-title">Meccsek</div>
+          <span id="matchesMeta" class="pill">—</span>
+        </div>
+        <div class="card-body">
+          <div class="roundbar">
+            <label>Forduló</label>
+            <select id="roundSelect"></select>
+            <button class="btn" id="prevRoundBtn">◀</button>
+            <button class="btn" id="nextRoundBtn">▶</button>
+            <span id="matchesStatus" class="pill">—</span>
+          </div>
+          <div id="matchesList" style="margin-top:10px;"></div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
 <script>
-  const supabaseUrl = "https://kqtzyhmksnjowielrwii.supabase.co";
-  const supabaseKey = "sb_publishable_vgSmqItheOG3aeOdoNionA_rd-4MTL2";
-  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+/* ==== SUPABASE CLIENT ==== */
+const supabaseUrl = "https://kqtzyhmksnjowielrwii.supabase.co";
+const supabaseKey = "sb_publishable_vgSmqItheOG3aeOdoNionA_rd-4MTL2";
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-  const seasonSelect = document.getElementById("seasonSelect");
-  const statusEl = document.getElementById("status");
-  const tbody = document.getElementById("tbody");
-  const playerCard = document.getElementById("playerCard");
+/* ==== DOM ==== */
+const seasonSelect = document.getElementById("seasonSelect");
+const statusEl = document.getElementById("status");
+const tableMeta = document.getElementById("tableMeta");
+const tbody = document.getElementById("tbody");
+const playerCard = document.getElementById("playerCard");
 
-  let seasons = [];
-  let selectedSeasonId = null;
-  let selectedSeasonYear = null;
+const roundSelect = document.getElementById("roundSelect");
+const prevRoundBtn = document.getElementById("prevRoundBtn");
+const nextRoundBtn = document.getElementById("nextRoundBtn");
+const matchesStatus = document.getElementById("matchesStatus");
+const matchesMeta = document.getElementById("matchesMeta");
+const matchesList = document.getElementById("matchesList");
 
-  let selectedPlayerId = null; // a kártyához
+/* ==== STATE ==== */
+let seasons=[], selectedSeasonId=null, selectedSeasonYear=null;
+let selectedPlayerId=null;
+let allSeasonMatches=[], allSeasonMP=[], availableRounds=[], selectedRound=null;
 
-  // debounce realtime-hez (egy meccs sok update)
-  let reloadTimer = null;
-  function scheduleReload(delayMs = 200) {
-    if (reloadTimer) clearTimeout(reloadTimer);
-    reloadTimer = setTimeout(() => {
-      loadTable();
-      if (selectedPlayerId) loadOverallPlayerCard(selectedPlayerId);
-    }, delayMs);
-  }
-
-  async function loadSeasons() {
-    statusEl.textContent = "Szezonok betöltése…";
-
-    const { data, error } = await supabaseClient
-      .from("seasons")
-      .select("id, year, is_current")
-      .order("year", { ascending: false });
-
-    if (error) {
-      console.error(error);
-      statusEl.innerHTML = `<span class="error">❌ Szezon hiba: ${error.message}</span>`;
-      return;
-    }
-
-    seasons = data || [];
-    seasonSelect.innerHTML = "";
-
-    seasons.forEach(s => {
-      const opt = document.createElement("option");
-      opt.value = s.id;
-      opt.textContent = String(s.year) + (s.is_current ? " (aktuális)" : "");
-      seasonSelect.appendChild(opt);
-    });
-
-    // Ha már választottál szezont, tartsuk meg
-    const stillExists = seasons.find(s => s.id === selectedSeasonId);
-
-    if (stillExists) {
-      selectedSeasonYear = stillExists.year;
-      seasonSelect.value = selectedSeasonId;
-    } else {
-      const current = seasons.find(s => s.is_current) || seasons[0];
-      if (current) {
-        selectedSeasonId = current.id;
-        selectedSeasonYear = current.year;
-        seasonSelect.value = current.id;
-      }
-    }
-
-    statusEl.textContent = "✅ Szezonok betöltve";
-  }
-
-  async function loadTable() {
-    if (!selectedSeasonId) {
-      tbody.innerHTML = "";
-      statusEl.textContent = "Nincs kiválasztott szezon.";
-      return;
-    }
-
-    statusEl.textContent = `Tabella betöltése (${selectedSeasonYear})…`;
-
-    const { data, error } = await supabaseClient
-      .from("season_stats")
-      .select(`
-        season_id,
-        player_id,
-        matches,
-        wins,
-        draws,
-        losses,
-        goals_for,
-        goals_against,
-        goal_diff,
-        points,
-        tabella ( name )
-      `)
-      .eq("season_id", selectedSeasonId)
-      .order("points", { ascending: false })
-      .order("goal_diff", { ascending: false })
-      .order("matches", { ascending: false })
-      .order("goals_for", { ascending: false })
-      .order("goals_against", { ascending: true });
-
-    if (error) {
-      console.error(error);
-      statusEl.innerHTML = `<span class="error">❌ Tabella hiba: ${error.message}</span>`;
-      return;
-    }
-
-    tbody.innerHTML = "";
-
-    (data || []).forEach((r, idx) => {
-      const name = r.tabella?.name ?? "ismeretlen";
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${idx + 1}</td>
-        <td class="name">
-          <button class="link" data-player-id="${r.player_id}">
-            ${name}
-          </button>
-        </td>
-        <td>${r.matches}</td>
-        <td>${r.wins}</td>
-        <td>${r.draws}</td>
-        <td>${r.losses}</td>
-        <td>${r.goals_for}</td>
-        <td>${r.goals_against}</td>
-        <td>${r.goal_diff}</td>
-        <td><b>${r.points}</b></td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    // kattintás kezelése (delegálva)
-    tbody.querySelectorAll("button[data-player-id]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const pid = btn.getAttribute("data-player-id");
-        selectedPlayerId = pid;
-        loadOverallPlayerCard(pid);
-      });
-    });
-
-    statusEl.textContent = `✅ ${selectedSeasonYear} – ${data.length} játékos`;
-  }
-
-  async function loadOverallPlayerCard(playerId) {
-    playerCard.innerHTML = `<h3>Játékos</h3><p class="muted">Betöltés…</p>`;
-
-    const { data, error } = await supabaseClient
-      .from("player_overall_stats")
-      .select(`
-        player_id,
-        name,
-        matches_total,
-        black_count,
-        white_count,
-        goals_for_total,
-        goals_against_total,
-        wins_total,
-        draws_total,
-        losses_total
-      `)
-      .eq("player_id", playerId)
-      .single();
-
-    if (error) {
-      console.error(error);
-      playerCard.innerHTML = `<h3>Játékos</h3><p class="error">❌ Hiba: ${error.message}</p>`;
-      return;
-    }
-
-    playerCard.innerHTML = `
-      <h3>${data.name}</h3>
-      <p class="muted">Összesített (minden szezon)</p>
-      <div class="kv">
-        <div>Meccsek összesen</div><div><b>${data.matches_total}</b></div>
-        <div>⚫ Fekete</div><div><b>${data.black_count}</b></div>
-        <div>⚪ Fehér</div><div><b>${data.white_count}</b></div>
-
-        <div>Lőtt gól</div><div><b>${data.goals_for_total}</b></div>
-        <div>Kapott gól</div><div><b>${data.goals_against_total}</b></div>
-
-        <div>Győzelem</div><div><b>${data.wins_total}</b></div>
-        <div>Döntetlen</div><div><b>${data.draws_total}</b></div>
-        <div>Vereség</div><div><b>${data.losses_total}</b></div>
-      </div>
-    `;
-  }
-
-  seasonSelect.addEventListener("change", async () => {
-    const id = seasonSelect.value;
-    const s = seasons.find(x => x.id === id);
-    selectedSeasonId = id;
-    selectedSeasonYear = s ? s.year : null;
-    await loadTable();
+/* ==== LOADERS ==== */
+async function loadSeasons(){
+  const {data}=await supabaseClient.from("seasons")
+    .select("id,year,is_current").order("year",{ascending:false});
+  seasons=data||[];
+  seasonSelect.innerHTML="";
+  seasons.forEach(s=>{
+    const o=document.createElement("option");
+    o.value=s.id; o.textContent=s.year+(s.is_current?" (aktuális)":"");
+    seasonSelect.appendChild(o);
   });
+  const cur=seasons.find(s=>s.is_current)||seasons[0];
+  if(cur){
+    selectedSeasonId=cur.id;
+    selectedSeasonYear=cur.year;
+    seasonSelect.value=cur.id;
+    statusEl.textContent=cur.year;
+  }
+}
 
-  // Realtime: szezonok és szezon statok
-  supabaseClient
-    .channel("public:seasons-live")
-    .on("postgres_changes", { event: "*", schema: "public", table: "seasons" }, () => {
-      loadSeasons().then(loadTable);
-    })
-    .subscribe();
+async function loadTable(){
+  const {data}=await supabaseClient.from("season_stats")
+    .select("player_id,matches,wins,draws,losses,goals_for,goals_against,goal_diff,points,tabella(name)")
+    .eq("season_id",selectedSeasonId)
+    .order("points",{ascending:false})
+    .order("goal_diff",{ascending:false});
+  tbody.innerHTML="";
+  (data||[]).forEach((r,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td><span class="rank ${i<3?`top${i+1}`:""}">${i<3?["🥇","🥈","🥉"][i]:i+1}</span></td>
+      <td class="name"><button class="link" data-id="${r.player_id}">${r.tabella?.name}</button></td>
+      <td>${r.matches}</td><td>${r.wins}</td><td>${r.draws}</td><td>${r.losses}</td>
+      <td>${r.goals_for}</td><td>${r.goals_against}</td><td>${r.goal_diff}</td>
+      <td><b>${r.points}</b></td>`;
+    tbody.appendChild(tr);
+  });
+  tableMeta.textContent=(data?.length||0)+" játékos";
+  tbody.querySelectorAll("button").forEach(b=>{
+    b.onclick=()=>loadPlayerCard(b.dataset.id);
+  });
+}
 
-  supabaseClient
-    .channel("public:season-stats-live")
-    .on("postgres_changes", { event: "*", schema: "public", table: "season_stats" }, (payload) => {
-      const seasonId = payload?.new?.season_id || payload?.old?.season_id;
-      if (seasonId && seasonId === selectedSeasonId) {
-        scheduleReload(200);
-      }
-    })
-    .subscribe();
+async function loadPlayerCard(pid){
+  selectedPlayerId=pid;
+  const body=playerCard.querySelector(".card-body");
+  body.innerHTML="<div class='muted'>Betöltés…</div>";
+  const {data}=await supabaseClient.from("player_overall_stats")
+    .select("*").eq("player_id",pid).single();
+  body.innerHTML=`
+    <b>${data.name}</b>
+    <div class="kv">
+      <div>Meccsek</div><div>${data.matches_total}</div>
+      <div>⚫ Fekete</div><div>${data.black_count}</div>
+      <div>⚪ Fehér</div><div>${data.white_count}</div>
+      <div>Gy</div><div>${data.wins_total}</div>
+      <div>D</div><div>${data.draws_total}</div>
+      <div>V</div><div>${data.losses_total}</div>
+    </div>`;
+}
 
-  // PLUSZ: ha a match/match_players is realtime-ben van, akkor az összesített kártya is frissülhet.
-  // (Ha nem akarod, ezt a két csatornát nyugodtan kihagyhatod.)
-  supabaseClient
-    .channel("public:matches-live")
-    .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, () => {
-      if (selectedPlayerId) scheduleReload(200);
-    })
-    .subscribe();
+async function loadMatches(){
+  const {data:matches}=await supabaseClient.from("matches")
+    .select("id,round,black_score,white_score,created_at")
+    .eq("season_id",selectedSeasonId).order("round",{ascending:false});
+  allSeasonMatches=matches||[];
+  availableRounds=[...new Set(allSeasonMatches.map(m=>m.round))];
+  roundSelect.innerHTML="";
+  availableRounds.forEach(r=>{
+    const o=document.createElement("option");
+    o.value=r; o.textContent=r+". forduló";
+    roundSelect.appendChild(o);
+  });
+  selectedRound=availableRounds[0];
+  roundSelect.value=selectedRound;
+  const ids=allSeasonMatches.map(m=>m.id);
+  const {data:mp}=await supabaseClient.from("match_players")
+    .select("match_id,team,tabella(name)").in("match_id",ids);
+  allSeasonMP=mp||[];
+  renderRound();
+}
 
-  supabaseClient
-    .channel("public:match-players-live")
-    .on("postgres_changes", { event: "*", schema: "public", table: "match_players" }, () => {
-      if (selectedPlayerId) scheduleReload(200);
-    })
-    .subscribe();
+function renderRound(){
+  matchesList.innerHTML="";
+  const ms=allSeasonMatches.filter(m=>m.round==selectedRound);
+  matchesStatus.textContent=ms.length+" meccs";
+  matchesMeta.textContent=allSeasonMatches.length+" összesen";
+  ms.forEach(m=>{
+    const b=allSeasonMP.filter(x=>x.match_id==m.id&&x.team=="black").map(x=>x.tabella.name).join(", ");
+    const w=allSeasonMP.filter(x=>x.match_id==m.id&&x.team=="white").map(x=>x.tabella.name).join(", ");
+    const div=document.createElement("div");
+    div.className="match";
+    div.innerHTML=`
+      <div class="match-top"><div class="score">⚫ ${m.black_score} – ${m.white_score} ⚪</div></div>
+      <div class="teams"><span>⚫</span> ${b}</div>
+      <div class="teams"><span>⚪</span> ${w}</div>`;
+    matchesList.appendChild(div);
+  });
+}
 
-  (async () => {
-    await loadSeasons();
-    await loadTable();
-  })();
+/* ==== EVENTS ==== */
+roundSelect.onchange=()=>{selectedRound=roundSelect.value;renderRound();};
+prevRoundBtn.onclick=()=>{const i=availableRounds.indexOf(+selectedRound);if(i<availableRounds.length-1){selectedRound=availableRounds[i+1];roundSelect.value=selectedRound;renderRound();}};
+nextRoundBtn.onclick=()=>{const i=availableRounds.indexOf(+selectedRound);if(i>0){selectedRound=availableRounds[i-1];roundSelect.value=selectedRound;renderRound();}};
+seasonSelect.onchange=async()=>{selectedSeasonId=seasonSelect.value;await loadTable();await loadMatches();};
+
+/* ==== INIT ==== */
+(async()=>{
+  await loadSeasons();
+  await loadTable();
+  await loadMatches();
+})();
 </script>
 
 </body>
