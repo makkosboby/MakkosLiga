@@ -8,23 +8,47 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    body { font-family: Arial, sans-serif; max-width: 980px; margin: 20px auto; padding: 0 12px; }
+    body { font-family: Arial, sans-serif; max-width: 1200px; margin: 20px auto; padding: 0 12px; }
     h1 { margin-bottom: 8px; }
     .small { color:#444; font-size: 0.9em; margin-top: 0; }
-    .bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
     select { padding: 6px 8px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+
+    .layout { display: grid; grid-template-columns: 1fr 320px; gap: 14px; align-items: start; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+    table { border-collapse: collapse; width: 100%; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
     th { background: #f3f3f3; position: sticky; top: 0; z-index: 1; }
     td.name { text-align: left; }
-    a.player { color: inherit; text-decoration: underline; cursor: pointer; }
+
+    button.link {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 12px;
+      background: #fff;
+    }
+    .card h3 { margin: 0 0 8px 0; }
+    .kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; }
+    .muted { color:#666; font-size: 0.9em; }
     .error { color: #b00020; }
   </style>
 </head>
 <body>
 
 <h1>⚽ Makkos Liga – Tabella</h1>
-<p class="small">Nyilvános nézet (szezonválasztó + realtime frissítés).</p>
+<p class="small">Nyilvános nézet (szezonválasztó + realtime + játékos összesített kártya).</p>
 
 <div class="bar">
   <label for="seasonSelect"><b>Szezon:</b></label>
@@ -32,23 +56,34 @@
   <span id="status">Betöltés…</span>
 </div>
 
-<table>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Név</th>
-      <th>M</th>
-      <th>Gy</th>
-      <th>D</th>
-      <th>V</th>
-      <th>LG</th>
-      <th>KG</th>
-      <th>GK</th>
-      <th>P</th>
-    </tr>
-  </thead>
-  <tbody id="tbody"></tbody>
-</table>
+<div class="layout">
+  <!-- BAL: TABELLÁZAT -->
+  <div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Név</th>
+          <th>M</th>
+          <th>Gy</th>
+          <th>D</th>
+          <th>V</th>
+          <th>LG</th>
+          <th>KG</th>
+          <th>GK</th>
+          <th>P</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- JOBB: JÁTÉKOS KÁRTYA -->
+  <div class="card" id="playerCard">
+    <h3>Játékos</h3>
+    <p class="muted">Kattints egy névre a tabellában.</p>
+  </div>
+</div>
 
 <script>
   const supabaseUrl = "https://kqtzyhmksnjowielrwii.supabase.co";
@@ -58,17 +93,21 @@
   const seasonSelect = document.getElementById("seasonSelect");
   const statusEl = document.getElementById("status");
   const tbody = document.getElementById("tbody");
+  const playerCard = document.getElementById("playerCard");
 
-  let seasons = [];               // [{id, year, is_current}]
-  let selectedSeasonId = null;    // uuid
-  let selectedSeasonYear = null;  // int
+  let seasons = [];
+  let selectedSeasonId = null;
+  let selectedSeasonYear = null;
 
-  // debouncer realtime-hez (egy meccs sok update)
+  let selectedPlayerId = null; // a kártyához
+
+  // debounce realtime-hez (egy meccs sok update)
   let reloadTimer = null;
   function scheduleReload(delayMs = 200) {
     if (reloadTimer) clearTimeout(reloadTimer);
     reloadTimer = setTimeout(() => {
       loadTable();
+      if (selectedPlayerId) loadOverallPlayerCard(selectedPlayerId);
     }, delayMs);
   }
 
@@ -96,12 +135,19 @@
       seasonSelect.appendChild(opt);
     });
 
-    // alapértelmezett: aktuális szezon, különben a legfrissebb év
-    const current = seasons.find(s => s.is_current) || seasons[0];
-    if (current) {
-      selectedSeasonId = current.id;
-      selectedSeasonYear = current.year;
-      seasonSelect.value = current.id;
+    // Ha már választottál szezont, tartsuk meg
+    const stillExists = seasons.find(s => s.id === selectedSeasonId);
+
+    if (stillExists) {
+      selectedSeasonYear = stillExists.year;
+      seasonSelect.value = selectedSeasonId;
+    } else {
+      const current = seasons.find(s => s.is_current) || seasons[0];
+      if (current) {
+        selectedSeasonId = current.id;
+        selectedSeasonYear = current.year;
+        seasonSelect.value = current.id;
+      }
     }
 
     statusEl.textContent = "✅ Szezonok betöltve";
@@ -153,9 +199,9 @@
       tr.innerHTML = `
         <td>${idx + 1}</td>
         <td class="name">
-          <a class="player" href="player.html?player_id=${encodeURIComponent(r.player_id)}&season_year=${encodeURIComponent(selectedSeasonYear)}">
+          <button class="link" data-player-id="${r.player_id}">
             ${name}
-          </a>
+          </button>
         </td>
         <td>${r.matches}</td>
         <td>${r.wins}</td>
@@ -169,7 +215,60 @@
       tbody.appendChild(tr);
     });
 
+    // kattintás kezelése (delegálva)
+    tbody.querySelectorAll("button[data-player-id]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const pid = btn.getAttribute("data-player-id");
+        selectedPlayerId = pid;
+        loadOverallPlayerCard(pid);
+      });
+    });
+
     statusEl.textContent = `✅ ${selectedSeasonYear} – ${data.length} játékos`;
+  }
+
+  async function loadOverallPlayerCard(playerId) {
+    playerCard.innerHTML = `<h3>Játékos</h3><p class="muted">Betöltés…</p>`;
+
+    const { data, error } = await supabaseClient
+      .from("player_overall_stats")
+      .select(`
+        player_id,
+        name,
+        matches_total,
+        black_count,
+        white_count,
+        goals_for_total,
+        goals_against_total,
+        wins_total,
+        draws_total,
+        losses_total
+      `)
+      .eq("player_id", playerId)
+      .single();
+
+    if (error) {
+      console.error(error);
+      playerCard.innerHTML = `<h3>Játékos</h3><p class="error">❌ Hiba: ${error.message}</p>`;
+      return;
+    }
+
+    playerCard.innerHTML = `
+      <h3>${data.name}</h3>
+      <p class="muted">Összesített (minden szezon)</p>
+      <div class="kv">
+        <div>Meccsek összesen</div><div><b>${data.matches_total}</b></div>
+        <div>⚫ Fekete</div><div><b>${data.black_count}</b></div>
+        <div>⚪ Fehér</div><div><b>${data.white_count}</b></div>
+
+        <div>Lőtt gól</div><div><b>${data.goals_for_total}</b></div>
+        <div>Kapott gól</div><div><b>${data.goals_against_total}</b></div>
+
+        <div>Győzelem</div><div><b>${data.wins_total}</b></div>
+        <div>Döntetlen</div><div><b>${data.draws_total}</b></div>
+        <div>Vereség</div><div><b>${data.losses_total}</b></div>
+      </div>
+    `;
   }
 
   seasonSelect.addEventListener("change", async () => {
@@ -180,11 +279,10 @@
     await loadTable();
   });
 
-  // Realtime: ha szezonok vagy statok változnak, frissítünk
+  // Realtime: szezonok és szezon statok
   supabaseClient
     .channel("public:seasons-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "seasons" }, () => {
-      // szezon vége esetén új szezon jön -> reload seasons + table
       loadSeasons().then(loadTable);
     })
     .subscribe();
@@ -192,7 +290,6 @@
   supabaseClient
     .channel("public:season-stats-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "season_stats" }, (payload) => {
-      // csak akkor töltünk újra, ha a jelenlegi szezon statja változott
       const seasonId = payload?.new?.season_id || payload?.old?.season_id;
       if (seasonId && seasonId === selectedSeasonId) {
         scheduleReload(200);
@@ -200,7 +297,22 @@
     })
     .subscribe();
 
-  // Indítás
+  // PLUSZ: ha a match/match_players is realtime-ben van, akkor az összesített kártya is frissülhet.
+  // (Ha nem akarod, ezt a két csatornát nyugodtan kihagyhatod.)
+  supabaseClient
+    .channel("public:matches-live")
+    .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, () => {
+      if (selectedPlayerId) scheduleReload(200);
+    })
+    .subscribe();
+
+  supabaseClient
+    .channel("public:match-players-live")
+    .on("postgres_changes", { event: "*", schema: "public", table: "match_players" }, () => {
+      if (selectedPlayerId) scheduleReload(200);
+    })
+    .subscribe();
+
   (async () => {
     await loadSeasons();
     await loadTable();
