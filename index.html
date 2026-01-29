@@ -14,29 +14,26 @@
   <!-- FEHÉR HEADER -->
   <header class="site-header">
     <div class="header-inner">
-      <!-- BAL: LOGÓ -->
+
+      <!-- BAL: LOGÓ + KUPA -->
       <div class="header-left">
         <img src="assets/logo4.png" alt="Makkos Liga logo" class="logo-main">
+        <img src="assets/kupa.png" alt="Kupa" class="logo-cup">
       </div>
 
-      <!-- KÖZÉP: JÁTÉKOSOK -->
-      <div class="header-center">
-        <img src="assets/jatekosok.png" alt="Játékosok" class="logo-center">
-      </div>
-
-      <!-- JOBB: KUPA -->
+      <!-- JOBB: ADMIN -->
       <div class="header-right">
-        <img src="assets/kupa.png" alt="Kupa" class="logo-right">
+        <a class="admin-link" href="login.html">Admin</a>
       </div>
+
     </div>
   </header>
 
-  <!-- PIROS SÁV -->
+  <!-- PIROS ACCENT SÁV -->
   <div class="accent-bar"></div>
 
   <!-- TARTALOM -->
-  <div class="container">
-
+  <main class="container">
     <div class="layout">
 
       <!-- TABLA -->
@@ -94,7 +91,15 @@
 
       </div>
     </div>
-  </div>
+  </main>
+
+  <!-- FOOTER: TÜKRÖZVE -->
+  <div class="footer-accent-bar"></div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <img src="assets/jatekosok.png" alt="Játékosok" class="footer-players">
+    </div>
+  </footer>
 
 <script>
 /* ==== SUPABASE CLIENT ==== */
@@ -116,8 +121,6 @@ const matchesList = document.getElementById("matchesList");
 /* ==== STATE ==== */
 let seasons = [];
 let selectedSeasonId = null;
-let selectedSeasonYear = null;
-
 let selectedPlayerId = null;
 
 let allSeasonMatches = [];
@@ -132,10 +135,7 @@ async function loadSeasons() {
     .select("id,year,is_current")
     .order("year", { ascending: false });
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+  if (error) { console.error(error); return; }
 
   seasons = data || [];
   seasonSelect.innerHTML = "";
@@ -150,7 +150,6 @@ async function loadSeasons() {
   const cur = seasons.find(s => s.is_current) || seasons[0];
   if (cur) {
     selectedSeasonId = cur.id;
-    selectedSeasonYear = cur.year;
     seasonSelect.value = cur.id;
   }
 }
@@ -163,10 +162,7 @@ async function loadTable() {
     .order("points", { ascending: false })
     .order("goal_diff", { ascending: false });
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+  if (error) { console.error(error); return; }
 
   tbody.innerHTML = "";
 
@@ -174,17 +170,14 @@ async function loadTable() {
     const rankClass =
       i === 0 ? "top1" :
       i === 1 ? "top2" :
-      i === 2 ? "top3" :
-      "";
+      i === 2 ? "top3" : "";
 
     const rankLabel =
       i === 0 ? "🥇" :
       i === 1 ? "🥈" :
-      i === 2 ? "🥉" :
-      i + 1;
+      i === 2 ? "🥉" : i + 1;
 
     const tr = document.createElement("tr");
-
     tr.innerHTML = `
       <td><span class="rank ${rankClass}">${rankLabel}</span></td>
       <td class="name">
@@ -199,7 +192,6 @@ async function loadTable() {
       <td>${r.goal_diff}</td>
       <td><b>${r.points}</b></td>
     `;
-
     tbody.appendChild(tr);
   });
 
@@ -303,10 +295,7 @@ async function loadMatches() {
     .eq("season_id", selectedSeasonId)
     .order("round", { ascending: false });
 
-  if (mErr) {
-    console.error(mErr);
-    return;
-  }
+  if (mErr) { console.error(mErr); return; }
 
   allSeasonMatches = matches || [];
   matchesMeta.textContent = allSeasonMatches.length + " összesen";
@@ -335,10 +324,7 @@ async function loadMatches() {
     .select("match_id,team,tabella(name)")
     .in("match_id", ids);
 
-  if (mpErr) {
-    console.error(mpErr);
-    return;
-  }
+  if (mpErr) { console.error(mpErr); return; }
 
   allSeasonMP = mp || [];
   renderRound();
@@ -381,10 +367,7 @@ function renderRound() {
 }
 
 /* ==== EVENTS ==== */
-roundSelect.onchange = () => {
-  selectedRound = Number(roundSelect.value);
-  renderRound();
-};
+roundSelect.onchange = () => { selectedRound = Number(roundSelect.value); renderRound(); };
 
 prevRoundBtn.onclick = () => {
   const idx = availableRounds.indexOf(Number(selectedRound));
