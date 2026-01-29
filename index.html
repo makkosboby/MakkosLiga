@@ -7,6 +7,28 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="assets/style.css">
+
+  <!-- Small page-specific fix: Tabella header layout -->
+  <style>
+    .tabella-header{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .tabella-header-right{
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    @media (max-width: 640px){
+      .tabella-header-right{ width:100%; }
+      .tabella-header-right select{ width:100%; }
+    }
+  </style>
 </head>
 
 <body>
@@ -17,22 +39,23 @@
       <img src="assets/logo2.png" alt="Makkos Liga logo" style="height:42px; object-fit:contain;">
       <h1>Makkos Liga</h1>
     </div>
-
-    <div class="controls">
-      <label>Szezon</label>
-      <select id="seasonSelect"></select>
-      <span id="status" class="pill">—</span>
-    </div>
+    <!-- ✅ A szezon választó kikerült innen -->
   </div>
 
   <div class="layout">
 
     <!-- TABLA -->
     <div class="card">
-      <div class="card-header">
+      <div class="card-header tabella-header">
         <div class="card-title">Tabella</div>
-        <span id="tableMeta" class="pill">—</span>
+
+        <div class="tabella-header-right">
+          <select id="seasonSelect"></select>
+          <span id="status" class="pill">—</span>
+          <span id="tableMeta" class="pill">—</span>
+        </div>
       </div>
+
       <div class="card-body table-wrap">
         <table>
           <thead>
@@ -234,7 +257,7 @@ async function loadPlayerCard(playerId) {
     return;
   }
 
-  // 2) Forma (utolsó 5 meccs) – match_players + matches join
+  // 2) Forma (utolsó 5 meccs)
   const { data: lastRows, error: formErr } = await supabaseClient
     .from("match_players")
     .select(`
@@ -268,7 +291,6 @@ async function loadPlayerCard(playerId) {
     ? `<div class="form">${form.map(x => `<span class="form-badge ${x.cls}" title="${x.title}">${x.code}</span>`).join("")}</div>`
     : `<div class="form-empty">Még nincs elég meccs a formához.</div>`;
 
-  // 3) Render
   body.innerHTML = `
     <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;">
       <div style="font-size:16px; font-weight:800; letter-spacing:.2px;">${stats.name}</div>
@@ -314,7 +336,6 @@ async function loadMatches() {
   allSeasonMatches = matches || [];
   matchesMeta.textContent = allSeasonMatches.length + " összesen";
 
-  // rounds
   availableRounds = [...new Set(allSeasonMatches.map(m => m.round))].sort((a,b)=>b-a);
   roundSelect.innerHTML = "";
 
@@ -360,8 +381,6 @@ function renderRound() {
   }
 
   const ms = allSeasonMatches.filter(m => m.round == selectedRound);
-
-  // mutassuk mennyi meccs van a fordulóban
   matchesStatus.textContent = String(ms.length);
 
   ms.forEach(m => {
@@ -389,7 +408,6 @@ function renderRound() {
     matchesList.appendChild(div);
   });
 
-  // prev/next disable
   const idx = availableRounds.indexOf(Number(selectedRound));
   prevRoundBtn.disabled = idx === availableRounds.length - 1;
   nextRoundBtn.disabled = idx === 0;
