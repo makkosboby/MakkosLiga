@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="assets/style.css">
 
-  <!-- Small page-specific fix: Tabella header layout -->
+  <!-- Tabella header layout + mobile season select sizing -->
   <style>
     .tabella-header{
       display:flex;
@@ -26,7 +26,12 @@
     }
     @media (max-width: 640px){
       .tabella-header-right{ width:100%; }
-      .tabella-header-right select{ width:100%; }
+      .tabella-header-right select{
+        padding: 6px 8px;
+        font-size: 12px;
+        border-radius: 10px;
+        max-width: 140px;
+      }
     }
   </style>
 </head>
@@ -39,7 +44,6 @@
       <img src="assets/logo2.png" alt="Makkos Liga logo" style="height:42px; object-fit:contain;">
       <h1>Makkos Liga</h1>
     </div>
-    <!-- ✅ A szezon választó kikerült innen -->
   </div>
 
   <div class="layout">
@@ -51,7 +55,6 @@
 
         <div class="tabella-header-right">
           <select id="seasonSelect"></select>
-          <span id="status" class="pill">—</span>
           <span id="tableMeta" class="pill">—</span>
         </div>
       </div>
@@ -90,11 +93,9 @@
         </div>
         <div class="card-body">
           <div class="roundbar">
-            <label>Forduló</label>
             <select id="roundSelect"></select>
             <button class="btn" id="prevRoundBtn" type="button">◀</button>
             <button class="btn" id="nextRoundBtn" type="button">▶</button>
-            <span id="matchesStatus" class="pill">—</span>
           </div>
           <div id="matchesList" style="margin-top:10px;"></div>
         </div>
@@ -112,7 +113,6 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 /* ==== DOM ==== */
 const seasonSelect = document.getElementById("seasonSelect");
-const statusEl = document.getElementById("status");
 const tableMeta = document.getElementById("tableMeta");
 const tbody = document.getElementById("tbody");
 const playerCard = document.getElementById("playerCard");
@@ -120,7 +120,6 @@ const playerCard = document.getElementById("playerCard");
 const roundSelect = document.getElementById("roundSelect");
 const prevRoundBtn = document.getElementById("prevRoundBtn");
 const nextRoundBtn = document.getElementById("nextRoundBtn");
-const matchesStatus = document.getElementById("matchesStatus");
 const matchesMeta = document.getElementById("matchesMeta");
 const matchesList = document.getElementById("matchesList");
 
@@ -145,7 +144,6 @@ async function loadSeasons() {
 
   if (error) {
     console.error(error);
-    statusEl.textContent = "❌ hiba";
     return;
   }
 
@@ -165,9 +163,6 @@ async function loadSeasons() {
     selectedSeasonId = cur.id;
     selectedSeasonYear = cur.year;
     seasonSelect.value = cur.id;
-    statusEl.textContent = String(cur.year);
-  } else {
-    statusEl.textContent = "—";
   }
 }
 
@@ -181,7 +176,7 @@ async function loadTable() {
 
   if (error) {
     console.error(error);
-    tableMeta.textContent = "❌ hiba";
+    tableMeta.textContent = "❌";
     return;
   }
 
@@ -233,7 +228,6 @@ async function loadPlayerCard(playerId) {
   const body = playerCard.querySelector(".card-body");
   body.innerHTML = `<div class="muted">Betöltés…</div>`;
 
-  // 1) Összesített stat (view)
   const { data: stats, error: statsErr } = await supabaseClient
     .from("player_overall_stats")
     .select(`
@@ -257,7 +251,6 @@ async function loadPlayerCard(playerId) {
     return;
   }
 
-  // 2) Forma (utolsó 5 meccs)
   const { data: lastRows, error: formErr } = await supabaseClient
     .from("match_players")
     .select(`
@@ -329,7 +322,6 @@ async function loadMatches() {
 
   if (mErr) {
     console.error(mErr);
-    matchesStatus.textContent = "❌";
     return;
   }
 
@@ -352,7 +344,6 @@ async function loadMatches() {
   const ids = allSeasonMatches.map(m => m.id);
 
   if (!ids.length) {
-    matchesStatus.textContent = "0";
     matchesList.innerHTML = `<div class="muted">Ebben a szezonban még nincs meccs.</div>`;
     return;
   }
@@ -364,7 +355,6 @@ async function loadMatches() {
 
   if (mpErr) {
     console.error(mpErr);
-    matchesStatus.textContent = "❌";
     return;
   }
 
@@ -375,13 +365,9 @@ async function loadMatches() {
 function renderRound() {
   matchesList.innerHTML = "";
 
-  if (selectedRound === null) {
-    matchesStatus.textContent = "0";
-    return;
-  }
+  if (selectedRound === null) return;
 
   const ms = allSeasonMatches.filter(m => m.round == selectedRound);
-  matchesStatus.textContent = String(ms.length);
 
   ms.forEach(m => {
     const b = allSeasonMP
@@ -441,7 +427,6 @@ seasonSelect.onchange = async () => {
   selectedSeasonId = seasonSelect.value;
   const s = seasons.find(x => x.id === selectedSeasonId);
   selectedSeasonYear = s ? s.year : null;
-  statusEl.textContent = selectedSeasonYear ? String(selectedSeasonYear) : "—";
 
   await loadTable();
   await loadMatches();
