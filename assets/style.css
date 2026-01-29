@@ -191,3 +191,128 @@
     font-size: 12px;
     }
  
+/* =========================
+   MOBILE OPTIMIZATION
+   ========================= */
+
+/* Kisebb címsor, nagyobb touch target */
+@media (max-width: 980px){
+  .container{ margin: 14px auto; padding: 0 12px 18px; }
+  h1{ font-size: 22px; }
+  .controls{ width: 100%; justify-content: space-between; }
+  select, .btn{ padding: 10px 12px; border-radius: 12px; }
+  .card-header{ padding: 12px; }
+  .card-body{ padding: 12px; }
+}
+
+/* Mobilon: a jobb oldali blokkok menjenek a tabella alá (már így is van), de legyen szellősebb */
+@media (max-width: 980px){
+  .layout{ gap: 12px; }
+}
+
+/* -------- Tabella mobil nézet: "card rows" --------
+   Mobilon elrejtjük a táblázat fejléceit és minden sort kártyává alakítunk.
+*/
+@media (max-width: 640px){
+  /* ne legyen min-width, ne kényszerítsen vízszintes scrollt */
+  table{ min-width: 0; }
+
+  thead{ display:none; }
+
+  tbody tr{
+    display:block;
+    border:1px solid var(--line);
+    border-radius: 12px;
+    margin: 10px 0;
+    background: #000;
+    overflow:hidden;
+  }
+
+  tbody td{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    text-align:left;
+    font-size: 13px;
+  }
+
+  tbody td:last-child{
+    border-bottom: none;
+  }
+
+  /* első sor: helyezés + név legyen erős */
+  tbody td:nth-child(1){
+    justify-content:flex-start;
+    gap: 10px;
+    font-weight: 800;
+  }
+
+  /* név cella */
+  td.name{
+    min-width: 0;
+  }
+
+  /* címkék (a td elé teszünk labelt CSS-ből) */
+  tbody td::before{
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* az 1. oszlopnál ne legyen label */
+  tbody td:nth-child(1)::before{
+    content: "";
+  }
+}
+
+/* -------- Jobb oldali kártyák: összecsukható feel -------- */
+@media (max-width: 640px){
+  /* A két kártya fejléce legyen "tap-friendly" */
+  .card-header{
+    position: sticky;
+    top: 0;
+    background: linear-gradient(180deg, var(--panel2), var(--panel));
+    z-index: 3;
+  }
+
+  /* meccslistában a forduló sor törjön szépen */
+  .roundbar{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items:center;
+  }
+
+  .roundbar label{
+    grid-column: 1 / -1;
+  }
+
+  .roundbar #roundSelect{
+    grid-column: 1 / -1;
+  }
+
+  .roundbar #prevRoundBtn{
+    width: 100%;
+  }
+  .roundbar #nextRoundBtn{
+    width: 100%;
+  }
+
+  /* meccskártyák */
+  .match{
+    padding: 12px;
+  }
+  .match-top{
+    flex-direction: column;
+    align-items:flex-start;
+  }
+}
+
+/* Optional: simább scroll élmény iOS-en */
+.table-wrap{
+  -webkit-overflow-scrolling: touch;
+}
