@@ -58,7 +58,7 @@ body{
 }
 
 .logo-cup{
-  height:84px;
+  height:110px;
   width:auto;
   object-fit:contain;
 }
@@ -437,4 +437,5 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
     height:100%;
   }
 }
+
 
