@@ -21,42 +21,89 @@ body{
   color:var(--text);
 }
 
+.container{
+  max-width:1240px;
+  margin:24px auto;
+  padding:0 14px 24px;
+}
 
-.container{ max-width:1240px; margin:24px auto; padding:0 14px 24px; }
-h1{ margin:0; font-size:26px; letter-spacing:.3px; }
+/* ===== FEHÉR HEADER: 1 sor mobilon is ===== */
+.site-header{
+  background:#fff;
+  border-bottom:1px solid #e5e5e5;
+}
 
-.brand{ display:flex; align-items:center; gap:12px; }
-.brand-logo{ height:42px; object-fit:contain; }
-
-.top{
+.header-inner{
+  max-width:1240px;
+  margin:0 auto;
+  padding:12px 14px;
   display:flex;
+  align-items:center;
   justify-content:space-between;
-  align-items:flex-end;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-bottom:16px;
+  gap:10px;
+  flex-wrap:nowrap;             /* 🔒 soha ne törjön */
 }
 
-label{ font-size:13px; color:var(--muted); }
-select{
-  background:#000; color:#fff;
-  border:1px solid var(--line2);
-  border-radius:10px; padding:8px 10px;
+.header-left,
+.header-center,
+.header-right{
+  display:flex;
+  align-items:center;
+  flex: 0 0 auto;
 }
 
-.pill{
-  font-size:12px; padding:6px 10px;
-  border-radius:999px;
-  background:var(--red-soft);
-  border:1px solid rgba(196,22,28,.4);
+/* középső kapjon teret, de ne törjön */
+.header-center{
+  flex: 1 1 auto;
+  justify-content:center;
+  min-width: 0;
 }
 
+.logo-main{
+  height:56px;
+  width:auto;
+  object-fit:contain;
+}
+
+.logo-center{
+  height:40px;
+  width:auto;
+  object-fit:contain;
+  max-width: 100%;
+}
+
+.logo-right{
+  height:56px;
+  width:auto;
+  object-fit:contain;
+}
+
+/* mobilon is maradjanak egy sorban: kicsit zsugorítunk */
+@media (max-width: 640px){
+  .header-inner{ gap:8px; }
+  .logo-main{ height:44px; }
+  .logo-center{ height:30px; }
+  .logo-right{ height:44px; }
+}
+
+/* ===== PIROS ACCENT SÁV ===== */
+.accent-bar{
+  height:6px;
+  background: var(--red);
+}
+
+/* ===== LAYOUT ===== */
 .layout{
-  display:grid; grid-template-columns:1fr 380px;
-  gap:14px; align-items:start;
+  display:grid;
+  grid-template-columns:1fr 380px;
+  gap:14px;
+  align-items:start;
 }
-@media(max-width:980px){ .layout{ grid-template-columns:1fr; } }
+@media(max-width:980px){
+  .layout{ grid-template-columns:1fr; }
+}
 
+/* ===== CARDS ===== */
 .card{
   background:linear-gradient(180deg, var(--panel2), var(--panel));
   border:1px solid var(--line);
@@ -74,19 +121,18 @@ select{
 }
 
 .card-title{
-  font-size:14px; font-weight:700;
-  letter-spacing:.3px; text-transform:uppercase;
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.3px;
+  text-transform:uppercase;
 }
 
 .card-body{ padding:12px 14px; }
 
-/* ===== Tabella header: mindig 1 sor (mobilon is) ===== */
-.tabella-header{
-  flex-wrap:nowrap;
-}
-.tabella-header .card-title{
-  white-space:nowrap;
-}
+/* ===== Tabella header: 1 sor mobilon is ===== */
+.tabella-header{ flex-wrap:nowrap; }
+.tabella-header .card-title{ white-space:nowrap; }
+
 .tabella-header-right{
   margin-left:auto;
   display:flex;
@@ -96,21 +142,41 @@ select{
   flex-wrap:nowrap;
 }
 
-/* mobilon: még kisebb szezon select, de 1 sor */
+label{ font-size:13px; color:var(--muted); }
+
+select{
+  background:#000;
+  color:#fff;
+  border:1px solid var(--line2);
+  border-radius:10px;
+  padding:8px 10px;
+}
+
 @media (max-width: 640px){
   .tabella-header{ gap:8px; }
   .tabella-header-right select{
     padding:6px 8px;
     font-size:12px;
-    border-radius:10px;
-    max-width: 150px;
+    max-width:150px;
   }
 }
 
-/* ===== Table base ===== */
+.pill{
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:var(--red-soft);
+  border:1px solid rgba(196,22,28,.4);
+}
+
+/* ===== TABLE ===== */
 .table-wrap{ overflow:auto; -webkit-overflow-scrolling: touch; }
 
-table{ width:100%; border-collapse:collapse; min-width:760px; }
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:760px;
+}
 
 thead th{
   position:sticky;
@@ -132,20 +198,32 @@ tbody td{
 }
 
 tbody tr:hover{ background:rgba(196,22,28,.08); }
-td.name{ text-align:left; min-width:180px; }
+
+td.name{
+  text-align:left;
+  min-width:180px;
+}
 
 button.link{
-  background:none; border:none; color:#fff;
-  cursor:pointer; font:inherit;
+  background:none;
+  border:none;
+  color:#fff;
+  cursor:pointer;
+  font:inherit;
 }
 button.link:hover{ color:var(--red); text-decoration:underline; }
 
 .rank{
-  display:inline-flex; width:26px; height:26px;
-  align-items:center; justify-content:center;
-  border-radius:8px; background:#000;
+  display:inline-flex;
+  width:26px;
+  height:26px;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  background:#000;
   border:1px solid var(--line);
-  font-weight:700; font-size:12px;
+  font-weight:700;
+  font-size:12px;
 }
 .rank.top1{ border-color:var(--red); background:var(--red-soft); }
 .rank.top2{ border-color:#aaa; }
@@ -161,28 +239,39 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
   font-size:13px;
 }
 
+/* ===== MATCHES ===== */
 .roundbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+
 .btn{
-  background:#000; border:1px solid var(--line2);
-  color:#fff; border-radius:10px;
-  padding:8px 10px; cursor:pointer;
+  background:#000;
+  border:1px solid var(--line2);
+  color:#fff;
+  border-radius:10px;
+  padding:8px 10px;
+  cursor:pointer;
 }
 .btn:hover{ border-color:var(--red); background:var(--red-soft); }
 .btn:disabled{ opacity:.4; }
 
 .match{
-  background:#000; border:1px solid var(--line);
-  border-radius:12px; padding:12px; margin:10px 0;
+  background:#000;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+  margin:10px 0;
 }
 .match-top{
-  display:flex; justify-content:space-between;
-  align-items:center; gap:10px; margin-bottom:6px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:6px;
 }
 .score{ font-weight:800; letter-spacing:.5px; }
 .teams{ font-size:13px; margin-top:6px; }
 .teams span{ color:var(--muted); }
 
-/* Form (utolsó 5) */
+/* ===== FORM ===== */
 .form-row{
   margin-top: 12px;
   padding-top: 10px;
@@ -195,7 +284,6 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
   gap:10px;
   margin-bottom: 8px;
 }
-.form-title b{ letter-spacing:.2px; }
 .form{
   display:flex;
   gap:8px;
@@ -211,7 +299,6 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
   border: 1px solid var(--line2);
   background: rgba(255,255,255,.04);
   font-weight: 800;
-  letter-spacing: .3px;
 }
 .form-badge.win{
   border-color: rgba(196,22,28,.65);
@@ -226,139 +313,46 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
   background: rgba(0,0,0,.25);
   opacity: .9;
 }
-.form-empty{
-  color: var(--muted);
-  font-size: 12px;
-}
+.form-empty{ color: var(--muted); font-size: 12px; }
 
-/* =========================
-   MOBILE OPTIMIZATION
-   ========================= */
-@media (max-width: 980px){
-  .container{ margin: 14px auto; padding: 0 12px 18px; }
-  h1{ font-size: 22px; }
-  select, .btn{ padding: 10px 12px; border-radius: 12px; }
-  .card-header{ padding: 12px; }
-  .card-body{ padding: 12px; }
-  .layout{ gap: 12px; }
-}
-
-/* ===== MOBILE: TABLE, minimal columns + sticky header ===== */
+/* ===== MOBILE TABLE: minimal columns ===== */
 @media (max-width: 640px){
-
-  /* Fontos: mobilon ne legyen vízszintes scroll, maradjon képernyőn belül */
-  .table-wrap{ overflow-x: hidden; }
+  .table-wrap{ overflow-x:hidden; }
 
   table{
-    width: 100%;
-    min-width: 0;
-    table-layout: fixed;
+    width:100%;
+    min-width:0;
+    table-layout:fixed;
   }
 
-  /* maradjon táblázat, ne kártyás */
-  thead{ display: table-header-group; }
-  tbody tr{ display: table-row; }
-  tbody td{
-    display: table-cell;
-    padding: 10px 8px;
-    text-align: center;
-  }
-  tbody td::before{ content: none !important; }
+  th:nth-child(1), td:nth-child(1){ width:44px; }   /* # */
+  th:nth-child(2), td:nth-child(2){ width:auto; }   /* Név */
+  th:nth-child(3), td:nth-child(3){ width:56px; }   /* M */
+  th:nth-child(9), td:nth-child(9){ width:60px; }   /* GK */
+  th:nth-child(10), td:nth-child(10){ width:56px; } /* P */
 
-  /* Sticky header mobilon is */
-  thead th{
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 8px 18px rgba(0,0,0,.35);
-  }
-
-  /* fix szélességek */
-  th:nth-child(1), td:nth-child(1){ width: 44px; }   /* # */
-  th:nth-child(2), td:nth-child(2){ width: auto; }   /* Név */
-  th:nth-child(3), td:nth-child(3){ width: 56px; }   /* M */
-  th:nth-child(9), td:nth-child(9){ width: 60px; }   /* GK */
-  th:nth-child(10), td:nth-child(10){ width: 56px; } /* P */
-
-  /* csak ezek maradnak: #, Név, M, GK, P */
-  th:nth-child(4), td:nth-child(4){ display:none; }  /* Gy */
-  th:nth-child(5), td:nth-child(5){ display:none; }  /* D */
-  th:nth-child(6), td:nth-child(6){ display:none; }  /* V */
-  th:nth-child(7), td:nth-child(7){ display:none; }  /* LG */
-  th:nth-child(8), td:nth-child(8){ display:none; }  /* KG */
+  th:nth-child(4), td:nth-child(4){ display:none; } /* Gy */
+  th:nth-child(5), td:nth-child(5){ display:none; } /* D */
+  th:nth-child(6), td:nth-child(6){ display:none; } /* V */
+  th:nth-child(7), td:nth-child(7){ display:none; } /* LG */
+  th:nth-child(8), td:nth-child(8){ display:none; } /* KG */
 
   td.name{
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
 
-  .rank{
-    width: 22px;
-    height: 22px;
-    border-radius: 7px;
-    font-size: 11px;
-  }
+  .rank{ width:22px; height:22px; border-radius:7px; font-size:11px; }
 
-  /* Meccsek blokk mobilon szellősebb elrendezés */
   .roundbar{
     display:grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:1fr 1fr;
     gap:10px;
   }
-  .roundbar #roundSelect{
-    grid-column: 1 / -1;
-  }
+  .roundbar #roundSelect{ grid-column:1 / -1; }
   .roundbar #prevRoundBtn,
-  .roundbar #nextRoundBtn{
-    width: 100%;
-  }
+  .roundbar #nextRoundBtn{ width:100%; }
 
-  .match-top{
-    flex-direction: column;
-    align-items:flex-start;
-  }
+  .match-top{ flex-direction:column; align-items:flex-start; }
 }
-
-/* ===== HEADER ===== */
-.site-header{
-  background: #ffffff;
-  color: #000;
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.header-inner{
-  max-width:1240px;
-  margin:0 auto;
-  padding:14px 16px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.site-header h1{
-  font-size:22px;
-  font-weight:800;
-  letter-spacing:.3px;
-  margin:0;
-}
-
-.logo{
-  height:110px;
-  width:auto;
-  object-fit:contain;
-}
-
-/* ===== PIROS ACCENT SÁV ===== */
-.accent-bar{
-  height:8px;
-  background: linear-gradient(
-    90deg,
-    var(--red),
-    #ff4d4d
-  );
-}
-
-
-
