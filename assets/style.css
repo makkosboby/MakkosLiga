@@ -52,13 +52,13 @@ body{
 }
 
 .logo-main{
-  height:84px;   /* 56 * 1.5 */
+  height:120px;
   width:auto;
   object-fit:contain;
 }
 
 .logo-cup{
-  height:84px;   /* 56 * 1.5 */
+  height:84px;
   width:auto;
   object-fit:contain;
 }
@@ -89,7 +89,7 @@ body{
 /* mobilon is egy sor maradjon: arányosan kisebb képek */
 @media (max-width: 640px){
   .header-inner{ gap:10px; }
-  .logo-main{ height:60px; } /* 1.5x -> mobilon visszább */
+  .logo-main{ height:60px; }
   .logo-cup{ height:60px; }
   .admin-link{ padding:8px 10px; font-size:13px; }
 }
@@ -97,32 +97,6 @@ body{
 /* ===== PIROS ACCENT SÁVOK ===== */
 .accent-bar{ height:6px; background: var(--red); }
 .footer-accent-bar{ height:6px; background: var(--red); }
-
-/* ===== FOOTER ===== */
-.site-footer{
-  background:#fff;
-  border-top:1px solid #e5e5e5;
-}
-
-.footer-inner{
-  max-width:1240px;
-  margin:0 auto;
-  padding:12px 14px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.footer-players{
-  height:240px; /* 40 * 1.5 */
-  width:auto;
-  object-fit:contain;
-  max-width: 100%;
-}
-
-@media (max-width: 640px){
-  .footer-players{ height:80px; }
-}
 
 /* ===== LAYOUT ===== */
 .layout{
@@ -345,7 +319,68 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
 }
 .form-empty{ color: var(--muted); font-size: 12px; }
 
-/* ===== MOBILE TABLE: minimal columns ===== */
+/* ===== FOOTER (ÚJ elrendezés) ===== */
+.site-footer{
+  background:#fff;
+  border-top:1px solid #e5e5e5;
+}
+
+.footer-inner{
+  max-width:1240px;
+  margin:0 auto;
+  padding:12px 14px;
+  height:170px;              /* FIX: a sáv mérete stabil */
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+
+/* BAL OLDAL */
+.footer-left{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-width: 0;
+}
+
+.footer-title{
+  color:#000;
+  font-weight:800;
+  font-size:14px;
+  letter-spacing:.2px;
+}
+
+.footer-partners{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.partner-logo{
+  height:130px;
+  width:auto;
+  object-fit:contain;
+}
+
+/* JOBB OLDAL */
+.footer-right{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex: 0 0 auto;
+}
+
+/* Nagyobb, de a sávon belül marad */
+.footer-players{
+  height:100%;
+  max-height:flex;
+  width:auto;
+  object-fit:contain;
+}
+
+/* ===== MOBILE ===== */
 @media (max-width: 640px){
   .table-wrap{ overflow-x:hidden; }
 
@@ -355,17 +390,17 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
     table-layout:fixed;
   }
 
-  th:nth-child(1), td:nth-child(1){ width:44px; }   /* # */
-  th:nth-child(2), td:nth-child(2){ width:auto; }   /* Név */
-  th:nth-child(3), td:nth-child(3){ width:56px; }   /* M */
-  th:nth-child(9), td:nth-child(9){ width:60px; }   /* GK */
-  th:nth-child(10), td:nth-child(10){ width:56px; } /* P */
+  th:nth-child(1), td:nth-child(1){ width:44px; }
+  th:nth-child(2), td:nth-child(2){ width:auto; }
+  th:nth-child(3), td:nth-child(3){ width:56px; }
+  th:nth-child(9), td:nth-child(9){ width:60px; }
+  th:nth-child(10), td:nth-child(10){ width:56px; }
 
-  th:nth-child(4), td:nth-child(4){ display:none; } /* Gy */
-  th:nth-child(5), td:nth-child(5){ display:none; } /* D */
-  th:nth-child(6), td:nth-child(6){ display:none; } /* V */
-  th:nth-child(7), td:nth-child(7){ display:none; } /* LG */
-  th:nth-child(8), td:nth-child(8){ display:none; } /* KG */
+  th:nth-child(4), td:nth-child(4){ display:none; }
+  th:nth-child(5), td:nth-child(5){ display:none; }
+  th:nth-child(6), td:nth-child(6){ display:none; }
+  th:nth-child(7), td:nth-child(7){ display:none; }
+  th:nth-child(8), td:nth-child(8){ display:none; }
 
   td.name{
     white-space:nowrap;
@@ -385,4 +420,20 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
   .roundbar #nextRoundBtn{ width:100%; }
 
   .match-top{ flex-direction:column; align-items:flex-start; }
+
+  /* Footer mobil */
+  .footer-inner{
+    height:110px;            /* sáv marad */
+    padding:10px 12px;
+    gap:10px;
+  }
+  .footer-title{
+    font-size:12px;
+  }
+  .partner-logo{
+    height:70px;
+  }
+  .footer-players{
+    height:100%;
+  }
 }
