@@ -27,7 +27,7 @@ body{
   padding:0 14px 24px;
 }
 
-/* ===== FEHÉR HEADER: 1 sor mobilon is ===== */
+/* ===== HEADER ===== */
 .site-header{
   background:#fff;
   border-bottom:1px solid #e5e5e5;
@@ -40,56 +40,88 @@ body{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:10px;
-  flex-wrap:nowrap;             /* 🔒 soha ne törjön */
+  gap:12px;
+  flex-wrap:nowrap; /* mobilon se törjön */
 }
 
-.header-left,
-.header-center,
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex: 0 0 auto;
+}
+
+.logo-main{
+  height:84px;   /* 56 * 1.5 */
+  width:auto;
+  object-fit:contain;
+}
+
+.logo-cup{
+  height:84px;   /* 56 * 1.5 */
+  width:auto;
+  object-fit:contain;
+}
+
 .header-right{
   display:flex;
   align-items:center;
   flex: 0 0 auto;
 }
 
-/* középső kapjon teret, de ne törjön */
-.header-center{
-  flex: 1 1 auto;
+.admin-link{
+  color:#000;
+  text-decoration:none;
+  font-weight:800;
+  letter-spacing:.3px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid #e5e5e5;
+  background:#fff;
+  transition: .15s ease;
+}
+
+.admin-link:hover{
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* mobilon is egy sor maradjon: arányosan kisebb képek */
+@media (max-width: 640px){
+  .header-inner{ gap:10px; }
+  .logo-main{ height:60px; } /* 1.5x -> mobilon visszább */
+  .logo-cup{ height:60px; }
+  .admin-link{ padding:8px 10px; font-size:13px; }
+}
+
+/* ===== PIROS ACCENT SÁVOK ===== */
+.accent-bar{ height:6px; background: var(--red); }
+.footer-accent-bar{ height:6px; background: var(--red); }
+
+/* ===== FOOTER ===== */
+.site-footer{
+  background:#fff;
+  border-top:1px solid #e5e5e5;
+}
+
+.footer-inner{
+  max-width:1240px;
+  margin:0 auto;
+  padding:12px 14px;
+  display:flex;
   justify-content:center;
-  min-width: 0;
+  align-items:center;
 }
 
-.logo-main{
-  height:56px;
-  width:auto;
-  object-fit:contain;
-}
-
-.logo-center{
-  height:40px;
+.footer-players{
+  height:240px; /* 40 * 1.5 */
   width:auto;
   object-fit:contain;
   max-width: 100%;
 }
 
-.logo-right{
-  height:56px;
-  width:auto;
-  object-fit:contain;
-}
-
-/* mobilon is maradjanak egy sorban: kicsit zsugorítunk */
 @media (max-width: 640px){
-  .header-inner{ gap:8px; }
-  .logo-main{ height:44px; }
-  .logo-center{ height:30px; }
-  .logo-right{ height:44px; }
-}
-
-/* ===== PIROS ACCENT SÁV ===== */
-.accent-bar{
-  height:6px;
-  background: var(--red);
+  .footer-players{ height:80px; }
 }
 
 /* ===== LAYOUT ===== */
@@ -142,8 +174,6 @@ body{
   flex-wrap:nowrap;
 }
 
-label{ font-size:13px; color:var(--muted); }
-
 select{
   background:#000;
   color:#fff;
@@ -153,7 +183,6 @@ select{
 }
 
 @media (max-width: 640px){
-  .tabella-header{ gap:8px; }
   .tabella-header-right select{
     padding:6px 8px;
     font-size:12px;
@@ -168,6 +197,8 @@ select{
   background:var(--red-soft);
   border:1px solid rgba(196,22,28,.4);
 }
+
+.muted{ color:var(--muted); font-size:12px; }
 
 /* ===== TABLE ===== */
 .table-wrap{ overflow:auto; -webkit-overflow-scrolling: touch; }
@@ -229,8 +260,7 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
 .rank.top2{ border-color:#aaa; }
 .rank.top3{ border-color:#777; }
 
-.muted{ color:var(--muted); font-size:12px; }
-
+/* ===== PLAYER CARD KV ===== */
 .kv{
   display:grid;
   grid-template-columns:1fr auto;
