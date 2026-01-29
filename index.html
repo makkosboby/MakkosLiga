@@ -8,78 +8,93 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="assets/style.css">
 </head>
-<header class="site-header">
-  <div class="header-inner">
-    <img src="assets/logo4.png" alt="Makkos Liga logo" class="logo">
-  </div>
-</header>
-
-<div class="accent-bar"></div>
-
-<div class="container">
-  <!-- IDE jön a tabella + minden más -->
 
 <body>
-<div class="container">
 
-  <div class="layout">
-
-    <!-- TABLA -->
-    <div class="card">
-      <div class="card-header tabella-header">
-        <div class="card-title">Tabella</div>
-
-        <div class="tabella-header-right">
-          <select id="seasonSelect"></select>
-        </div>
+  <!-- FEHÉR HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <!-- BAL: LOGÓ -->
+      <div class="header-left">
+        <img src="assets/logo4.png" alt="Makkos Liga logo" class="logo-main">
       </div>
 
-      <div class="card-body table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th style="text-align:left">Név</th>
-              <th>M</th><th>Gy</th><th>D</th><th>V</th>
-              <th>LG</th><th>KG</th><th>GK</th><th>P</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
+      <!-- KÖZÉP: JÁTÉKOSOK -->
+      <div class="header-center">
+        <img src="assets/jatekosok.png" alt="Játékosok" class="logo-center">
+      </div>
+
+      <!-- JOBB: KUPA -->
+      <div class="header-right">
+        <img src="assets/kupa.png" alt="Kupa" class="logo-right">
       </div>
     </div>
+  </header>
 
-    <!-- RIGHT -->
-    <div>
+  <!-- PIROS SÁV -->
+  <div class="accent-bar"></div>
 
-      <div class="card" id="playerCard">
-        <div class="card-header">
-          <div class="card-title">Játékos</div>
-          <span class="pill">Összesített</span>
-        </div>
-        <div class="card-body">
-          <div class="muted">Kattints egy névre a tabellában.</div>
-        </div>
-      </div>
+  <!-- TARTALOM -->
+  <div class="container">
 
-      <div class="card" style="margin-top:14px;">
-        <div class="card-header">
-          <div class="card-title">Meccsek</div>
-          <span id="matchesMeta" class="pill">—</span>
-        </div>
-        <div class="card-body">
-          <div class="roundbar">
-            <select id="roundSelect"></select>
-            <button class="btn" id="prevRoundBtn" type="button">◀</button>
-            <button class="btn" id="nextRoundBtn" type="button">▶</button>
+    <div class="layout">
+
+      <!-- TABLA -->
+      <div class="card">
+        <div class="card-header tabella-header">
+          <div class="card-title">Tabella</div>
+
+          <div class="tabella-header-right">
+            <select id="seasonSelect"></select>
           </div>
-          <div id="matchesList" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="card-body table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th style="text-align:left">Név</th>
+                <th>M</th><th>Gy</th><th>D</th><th>V</th>
+                <th>LG</th><th>KG</th><th>GK</th><th>P</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
         </div>
       </div>
 
+      <!-- RIGHT -->
+      <div>
+
+        <div class="card" id="playerCard">
+          <div class="card-header">
+            <div class="card-title">Játékos</div>
+            <span class="pill">Összesített</span>
+          </div>
+          <div class="card-body">
+            <div class="muted">Kattints egy névre a tabellában.</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px;">
+          <div class="card-header">
+            <div class="card-title">Meccsek</div>
+            <span id="matchesMeta" class="pill">—</span>
+          </div>
+          <div class="card-body">
+            <div class="roundbar">
+              <select id="roundSelect"></select>
+              <button class="btn" id="prevRoundBtn" type="button">◀</button>
+              <button class="btn" id="nextRoundBtn" type="button">▶</button>
+            </div>
+            <div id="matchesList" style="margin-top:10px;"></div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
-</div>
 
 <script>
 /* ==== SUPABASE CLIENT ==== */
@@ -171,24 +186,24 @@ async function loadTable() {
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <td data-label=""><span class="rank ${rankClass}">${rankLabel}</span></td>
-      <td class="name" data-label="Név">
+      <td><span class="rank ${rankClass}">${rankLabel}</span></td>
+      <td class="name">
         <button class="link" data-id="${r.player_id}">${r.tabella?.name ?? ""}</button>
       </td>
-      <td data-label="M">${r.matches}</td>
-      <td data-label="Gy">${r.wins}</td>
-      <td data-label="D">${r.draws}</td>
-      <td data-label="V">${r.losses}</td>
-      <td data-label="LG">${r.goals_for}</td>
-      <td data-label="KG">${r.goals_against}</td>
-      <td data-label="GK">${r.goal_diff}</td>
-      <td data-label="P"><b>${r.points}</b></td>
+      <td>${r.matches}</td>
+      <td>${r.wins}</td>
+      <td>${r.draws}</td>
+      <td>${r.losses}</td>
+      <td>${r.goals_for}</td>
+      <td>${r.goals_against}</td>
+      <td>${r.goal_diff}</td>
+      <td><b>${r.points}</b></td>
     `;
 
     tbody.appendChild(tr);
   });
 
-  tbody.querySelectorAll("button").forEach(b => {
+  tbody.querySelectorAll("button.link").forEach(b => {
     b.onclick = () => loadPlayerCard(b.dataset.id);
   });
 }
@@ -199,7 +214,6 @@ async function loadPlayerCard(playerId) {
   const body = playerCard.querySelector(".card-body");
   body.innerHTML = `<div class="muted">Betöltés…</div>`;
 
-  // 1) Összesített stat (view)
   const { data: stats, error: statsErr } = await supabaseClient
     .from("player_overall_stats")
     .select(`
@@ -223,13 +237,9 @@ async function loadPlayerCard(playerId) {
     return;
   }
 
-  // 2) Forma (utolsó 5 meccs)
   const { data: lastRows, error: formErr } = await supabaseClient
     .from("match_players")
-    .select(`
-      team,
-      matches ( black_score, white_score, created_at )
-    `)
+    .select(`team, matches ( black_score, white_score, created_at )`)
     .eq("player_id", playerId)
     .order("created_at", { foreignTable: "matches", ascending: false })
     .limit(5);
@@ -396,9 +406,6 @@ nextRoundBtn.onclick = () => {
 
 seasonSelect.onchange = async () => {
   selectedSeasonId = seasonSelect.value;
-  const s = seasons.find(x => x.id === selectedSeasonId);
-  selectedSeasonYear = s ? s.year : null;
-
   await loadTable();
   await loadMatches();
   if (selectedPlayerId) await loadPlayerCard(selectedPlayerId);
