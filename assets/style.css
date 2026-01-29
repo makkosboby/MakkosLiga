@@ -208,7 +208,7 @@
 /* Mobilon: a jobb oldali blokkok menjenek a tabella alá (már így is van), de legyen szellősebb */
 @media (max-width: 980px){
   .layout{ gap: 12px; }
-}}
+}
 
 
 /* -------- Jobb oldali kártyák: összecsukható feel -------- */
@@ -339,6 +339,17 @@
     height: 22px;
     border-radius: 7px;
     font-size: 11px;
+  }
+}
+
+@media (max-width: 640px){
+  .table-wrap{ overflow-x: hidden; }
+}
+
+@media (max-width: 640px){
+  .card-header select{
+    padding: 6px 8px;
+    font-size: 12px;
   }
 }
 
