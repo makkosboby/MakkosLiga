@@ -345,7 +345,7 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
 }
 
 .logo{
-  height:110px;
+  height:40px;
   width:auto;
   object-fit:contain;
 }
@@ -359,4 +359,5 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
     #ff4d4d
   );
 }
+
 
