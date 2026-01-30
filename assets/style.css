@@ -478,42 +478,113 @@ tr.updated{
   100%{ background: transparent; }
 }
 
+/* =========================
+   NEWS / ÜZENŐFAL – MODERN, FIGYELEMFELKELTŐ
+   ========================= */
+
 .news-wall{
-  border: 5px solid #ffe44d; /* citromsárga */
-  background:#000;
-  border-radius:12px;
-  padding:12px;
+  /* panel */
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  border: 1px solid rgba(196,22,28,.35);
+  border-radius: 14px;
+  padding: 14px 14px 12px;
+  position: relative;
+  overflow: hidden;
+
+  /* finom kiemelés */
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.55),
+    0 0 0 1px rgba(196,22,28,.10),
+    0 0 28px rgba(196,22,28,.18);
 }
 
+/* bal oldali “accent” csík */
+.news-wall::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width: 5px;
+  background: linear-gradient(180deg, rgba(196,22,28,1), rgba(196,22,28,.45));
+}
+
+/* felső fénycsík */
+.news-wall::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height: 1px;
+  background: rgba(255,255,255,.10);
+}
+
+/* fejléc sor */
 .news-title{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  margin-bottom:8px;
+  margin-bottom:10px;
 }
 
+/* bal: cím + kis “live” dot */
 .news-title b{
-  letter-spacing:.2px;
-  font-size:13px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  letter-spacing:.25px;
+  font-size: 13px;
+  text-transform: uppercase;
 }
 
-.news-body{
-  color:#fff;
-  font-size:20px;
-  line-height:1.5;
-  white-space:pre-wrap; /* sortörések megtartása */
+.news-title b::before{
+  content:"";
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(196,22,28,1);
+  box-shadow: 0 0 0 4px rgba(196,22,28,.18);
 }
 
+/* jobb oldali meta chip */
 .news-meta{
-  color:var(--muted);
-  font-size:15px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(196,22,28,.35);
+  background: rgba(196,22,28,.10);
+  color: rgba(255,255,255,.85);
+  font-size: 12px;
+  white-space: nowrap;
 }
 
-.news-empty{
-  color:var(--muted);
-  font-size:12px;
+/* szöveg */
+.news-body{
+  color: rgba(255,255,255,.92);
+  font-size: 15px;         /* modern olvashatóság */
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
+
+/* üres állapot */
+.news-empty{
+  color: rgba(255,255,255,.65);
+  font-size: 13px;
+}
+
+/* mobil: kicsit kompaktabb */
+@media (max-width: 640px){
+  .news-wall{ padding: 12px 12px 10px; }
+  .news-body{ font-size: 14px; }
+  .news-meta{ font-size: 11px; padding: 5px 9px; }
+}
+
 
 /* =========================
    FIX: LANDSCAPE PHONE OVERFLOW
@@ -566,4 +637,5 @@ img, svg { max-width: 100%; height: auto; }
   overflow-wrap: anywhere;
   word-break: break-word;
 }
+
 
