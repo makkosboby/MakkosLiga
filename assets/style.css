@@ -515,6 +515,16 @@ tr.updated{
   font-size:12px;
 }
 
+/* 2) FULL-BLEED SÁVOK: mindig érjenek a kijelző széléig */
+.site-header,
+.accent-bar,
+.footer-accent-bar,
+.site-footer{
+  width: 100vw !important;
+  max-width: none !important;
+  margin-left: calc(50% - 50vw) !important;
+  margin-right: calc(50% - 50vw) !important;
+}
 
 
 
