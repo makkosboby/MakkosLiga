@@ -515,6 +515,20 @@ tr.updated{
   font-size:12px;
 }
 
-* { outline: 1px solid rgba(255,0,0,.15); }
+/* 1) vágjuk le a vízszintes kilógást (1-2px mobilon nagyon gyakori) */
+html, body { overflow-x: hidden; }
+
+/* 2) FULL-BLEED SÁVOK: mindig érjenek a kijelző széléig */
+.site-header,
+.accent-bar,
+.footer-accent-bar,
+.site-footer{
+  width: 100vw !important;
+  max-width: none !important;
+  margin-left: calc(50% - 50vw) !important;
+  margin-right: calc(50% - 50vw) !important;
+}
+
+
 
 
