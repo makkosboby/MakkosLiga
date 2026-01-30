@@ -479,94 +479,103 @@ tr.updated{
 }
 
 /* =========================
-   NEWS / ÜZENŐFAL – MODERN, FIGYELEMFELKELTŐ
+   NEWS / ÜZENŐFAL – KIEMELT (STRONG)
    ========================= */
 
 .news-wall{
-  /* panel */
-  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-  border: 1px solid rgba(196,22,28,.35);
-  border-radius: 14px;
-  padding: 14px 14px 12px;
+  background:
+    linear-gradient(180deg, rgba(196,22,28,.18), rgba(0,0,0,.85) 40%);
+  border: 1px solid rgba(196,22,28,.6);
+  border-radius: 16px;
+  padding: 16px 16px 14px;
   position: relative;
   overflow: hidden;
 
-  /* finom kiemelés */
   box-shadow:
-    0 12px 30px rgba(0,0,0,.55),
-    0 0 0 1px rgba(196,22,28,.10),
-    0 0 28px rgba(196,22,28,.18);
+    0 18px 45px rgba(0,0,0,.75),
+    0 0 0 1px rgba(196,22,28,.25),
+    0 0 40px rgba(196,22,28,.45);
 }
 
-/* bal oldali “accent” csík */
+/* erős bal oldali piros sáv */
 .news-wall::before{
   content:"";
   position:absolute;
   left:0;
   top:0;
   bottom:0;
-  width: 5px;
-  background: linear-gradient(180deg, rgba(196,22,28,1), rgba(196,22,28,.45));
+  width: 7px;
+  background: linear-gradient(
+    180deg,
+    rgba(255,80,80,1),
+    rgba(196,22,28,.9)
+  );
 }
 
-/* felső fénycsík */
+/* pulzáló felső fénycsík */
 .news-wall::after{
   content:"";
   position:absolute;
   left:0;
   right:0;
   top:0;
-  height: 1px;
-  background: rgba(255,255,255,.10);
+  height: 2px;
+  background: rgba(255,255,255,.18);
+  animation: newsGlow 3.5s ease-in-out infinite;
 }
 
-/* fejléc sor */
+/* fejléc */
 .news-title{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:10px;
-  margin-bottom:10px;
+  gap:12px;
+  margin-bottom:12px;
 }
 
-/* bal: cím + kis “live” dot */
 .news-title b{
   display:flex;
   align-items:center;
-  gap:10px;
-  letter-spacing:.25px;
-  font-size: 13px;
+  gap:12px;
+  letter-spacing:.35px;
+  font-size: 14px;
   text-transform: uppercase;
 }
 
+/* “BREAKING” pont */
 .news-title b::before{
   content:"";
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 999px;
-  background: rgba(196,22,28,1);
-  box-shadow: 0 0 0 4px rgba(196,22,28,.18);
+  background: #ff4d4d;
+  box-shadow:
+    0 0 0 6px rgba(196,22,28,.35),
+    0 0 22px rgba(255,80,80,.9);
+  animation: pulseDot 2.2s ease-in-out infinite;
 }
 
-/* jobb oldali meta chip */
+/* dátum / meta */
 .news-meta{
   display:inline-flex;
   align-items:center;
   gap:8px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(196,22,28,.35);
-  background: rgba(196,22,28,.10);
-  color: rgba(255,255,255,.85);
+  border: 1px solid rgba(255,80,80,.6);
+  background: rgba(196,22,28,.22);
+  color: #fff;
   font-size: 12px;
+  font-weight: 600;
   white-space: nowrap;
 }
 
-/* szöveg */
+/* szöveg – nagyobb, hangsúlyosabb */
 .news-body{
-  color: rgba(255,255,255,.92);
-  font-size: 15px;         /* modern olvashatóság */
-  line-height: 1.55;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -574,15 +583,31 @@ tr.updated{
 
 /* üres állapot */
 .news-empty{
-  color: rgba(255,255,255,.65);
+  color: rgba(255,255,255,.7);
   font-size: 13px;
 }
 
-/* mobil: kicsit kompaktabb */
+/* animációk */
+@keyframes pulseDot{
+  0%{ transform: scale(1); opacity: 1; }
+  50%{ transform: scale(1.15); opacity: .85; }
+  100%{ transform: scale(1); opacity: 1; }
+}
+
+@keyframes newsGlow{
+  0%{ opacity:.25; }
+  50%{ opacity:.7; }
+  100%{ opacity:.25; }
+}
+
+/* mobil finomhangolás */
 @media (max-width: 640px){
-  .news-wall{ padding: 12px 12px 10px; }
-  .news-body{ font-size: 14px; }
-  .news-meta{ font-size: 11px; padding: 5px 9px; }
+  .news-wall{
+    padding: 14px 14px 12px;
+  }
+  .news-body{
+    font-size: 15px;
+  }
 }
 
 
