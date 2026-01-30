@@ -515,10 +515,55 @@ tr.updated{
   font-size:12px;
 }
 
+/* =========================
+   FIX: LANDSCAPE PHONE OVERFLOW
+   ========================= */
 
+/* 1) Mindent tartsunk a viewporton belül */
+html, body { overflow-x: hidden; }
+img, svg { max-width: 100%; height: auto; }
 
+/* 2) Ha keskeny a kijelző (pl. telefon landscape), ne legyen 2 oszlopos layout */
+@media (max-width: 980px){
+  .layout{ grid-template-columns: 1fr; }
+}
 
+/* 3) Táblázat: ne feszítsen oldalszélességet (landscape telefonon is) */
+@media (max-width: 920px), (max-height: 520px){
+  .table-wrap{
+    overflow-x: auto;                /* a táblázat görgessen, ne az oldal */
+    -webkit-overflow-scrolling: touch;
+  }
 
+  table{
+    min-width: 0 !important;         /* ✅ ez szünteti meg a kilógást */
+    width: 100%;
+    table-layout: fixed;
+  }
 
+  /* Landscape mobilon is a kompakt oszlopok maradjanak: #, Név, M, GK, P */
+  th:nth-child(4), td:nth-child(4),
+  th:nth-child(5), td:nth-child(5),
+  th:nth-child(6), td:nth-child(6),
+  th:nth-child(7), td:nth-child(7),
+  th:nth-child(8), td:nth-child(8){ display:none; }
 
+  th:nth-child(1), td:nth-child(1){ width: 44px; }
+  th:nth-child(3), td:nth-child(3){ width: 56px; }
+  th:nth-child(9), td:nth-child(9){ width: 60px; }
+  th:nth-child(10), td:nth-child(10){ width: 56px; }
+
+  td.name{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* 4) Kártyák/üzenőfal ne tudjon “szélesedni” hosszú szövegtől */
+.card, .news-wall { max-width: 100%; }
+.news-body{
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
 
