@@ -29,11 +29,9 @@
     </div>
   </header>
 
-  <!-- PIROS ACCENT SÁV -->
   <div class="accent-bar"></div>
 
-  <!-- TARTALOM -->
-  <main class="container">
+  <div class="container">
     <div class="layout">
 
       <!-- TABLA -->
@@ -85,13 +83,14 @@
               <button class="btn" id="prevRoundBtn" type="button">◀</button>
               <button class="btn" id="nextRoundBtn" type="button">▶</button>
             </div>
+
             <div id="matchesList" style="margin-top:10px;"></div>
           </div>
         </div>
 
       </div>
     </div>
-  </main>
+  </div>
 
   <!-- FOOTER: TÜKRÖZVE -->
   <div class="footer-accent-bar"></div>
@@ -114,7 +113,6 @@
     </div>
   </footer>
 
-
 <script>
 /* ==== SUPABASE CLIENT ==== */
 const supabaseUrl = "https://kqtzyhmksnjowielrwii.supabase.co";
@@ -135,12 +133,99 @@ const matchesList = document.getElementById("matchesList");
 /* ==== STATE ==== */
 let seasons = [];
 let selectedSeasonId = null;
+let selectedSeasonYear = null;
+
 let selectedPlayerId = null;
 
 let allSeasonMatches = [];
 let allSeasonMP = [];
 let availableRounds = [];
 let selectedRound = null;
+
+/* ==== REALTIME (debounced reload) ==== */
+let chSeasons = null;
+let chSeasonStats = null;
+let chMatches = null;
+let chMatchPlayers = null;
+
+let tableTimer = null;
+let matchesTimer = null;
+let playerTimer = null;
+
+function scheduleTable(fn, delay = 200) {
+  if (tableTimer) clearTimeout(tableTimer);
+  tableTimer = setTimeout(fn, delay);
+}
+
+function scheduleMatches(fn, delay = 250) {
+  if (matchesTimer) clearTimeout(matchesTimer);
+  matchesTimer = setTimeout(fn, delay);
+}
+
+function schedulePlayer(fn, delay = 350) {
+  if (playerTimer) clearTimeout(playerTimer);
+  playerTimer = setTimeout(fn, delay);
+}
+
+
+function stopRealtime() {
+  if (chSeasons) supabaseClient.removeChannel(chSeasons);
+  if (chSeasonStats) supabaseClient.removeChannel(chSeasonStats);
+  if (chMatches) supabaseClient.removeChannel(chMatches);
+  if (chMatchPlayers) supabaseClient.removeChannel(chMatchPlayers);
+  chSeasons = chSeasonStats = chMatches = chMatchPlayers = null;
+}
+
+function startRealtime() {
+  stopRealtime();
+
+  // 1) Szezon változás: admin "Szezon vége" -> új aktuális szezon -> automatikus váltás
+  chSeasons = supabaseClient
+    .channel("public:seasons-live")
+    .on("postgres_changes", { event: "*", schema: "public", table: "seasons" }, async () => {
+      await loadSeasons();     // ez mindig az aktuálisra állít
+      await loadTable();
+      await loadMatches();
+      if (selectedPlayerId) await loadPlayerCard(selectedPlayerId);
+
+      // ha közben szezon váltott, a realtime-t is érdemes újraindítani
+      schedule(() => startRealtime(), 150);
+    })
+    .subscribe();
+
+// 2) Tabella realtime
+chSeasonStats = supabaseClient
+  .channel("public:season-stats-live")
+  .on("postgres_changes", { event: "*", schema: "public", table: "season_stats" }, (payload) => {
+    const sid = payload?.new?.season_id || payload?.old?.season_id;
+    if (sid && sid === selectedSeasonId) {
+      scheduleTable(() => loadTable(), 200);
+      if (selectedPlayerId) schedulePlayer(() => loadPlayerCard(selectedPlayerId), 350);
+    }
+  })
+  .subscribe();
+
+// 3) Meccsek realtime
+chMatches = supabaseClient
+  .channel("public:matches-live")
+  .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, (payload) => {
+    const sid = payload?.new?.season_id || payload?.old?.season_id;
+    if (sid && sid === selectedSeasonId) {
+      scheduleMatches(() => loadMatches(), 250);
+    }
+  })
+  .subscribe();
+
+// 4) match_players realtime
+chMatchPlayers = supabaseClient
+  .channel("public:match-players-live")
+  .on("postgres_changes", { event: "*", schema: "public", table: "match_players" }, () => {
+    scheduleMatches(() => loadMatches(), 300);
+    if (selectedPlayerId) schedulePlayer(() => loadPlayerCard(selectedPlayerId), 450);
+  })
+  .subscribe();
+
+}
 
 /* ==== LOADERS ==== */
 async function loadSeasons() {
@@ -164,6 +249,7 @@ async function loadSeasons() {
   const cur = seasons.find(s => s.is_current) || seasons[0];
   if (cur) {
     selectedSeasonId = cur.id;
+    selectedSeasonYear = cur.year;
     seasonSelect.value = cur.id;
   }
 }
@@ -174,38 +260,38 @@ async function loadTable() {
     .select("player_id,matches,wins,draws,losses,goals_for,goals_against,goal_diff,points,tabella(name)")
     .eq("season_id", selectedSeasonId)
     .order("points", { ascending: false })
-    .order("goal_diff", { ascending: false });
+    .order("goal_diff", { ascending: false })
+    .order("matches", { ascending: false })
+    .order("goals_for", { ascending: false })
+    .order("goals_against", { ascending: true });
 
   if (error) { console.error(error); return; }
 
   tbody.innerHTML = "";
 
   (data || []).forEach((r, i) => {
-    const rankClass =
-      i === 0 ? "top1" :
-      i === 1 ? "top2" :
-      i === 2 ? "top3" : "";
-
-    const rankLabel =
-      i === 0 ? "🥇" :
-      i === 1 ? "🥈" :
-      i === 2 ? "🥉" : i + 1;
-
+    const name = r.tabella?.name ?? "";
     const tr = document.createElement("tr");
+
     tr.innerHTML = `
-      <td><span class="rank ${rankClass}">${rankLabel}</span></td>
-      <td class="name">
-        <button class="link" data-id="${r.player_id}">${r.tabella?.name ?? ""}</button>
+      <td data-label="">${i + 1}</td>
+      <td class="name" data-label="Név">
+        <button class="link" data-id="${r.player_id}">${name}</button>
       </td>
-      <td>${r.matches}</td>
-      <td>${r.wins}</td>
-      <td>${r.draws}</td>
-      <td>${r.losses}</td>
-      <td>${r.goals_for}</td>
-      <td>${r.goals_against}</td>
-      <td>${r.goal_diff}</td>
-      <td><b>${r.points}</b></td>
+      <td data-label="M">${r.matches}</td>
+      <td data-label="Gy">${r.wins}</td>
+      <td data-label="D">${r.draws}</td>
+      <td data-label="V">${r.losses}</td>
+      <td data-label="LG">${r.goals_for}</td>
+      <td data-label="KG">${r.goals_against}</td>
+      <td data-label="GK">${r.goal_diff}</td>
+      <td data-label="P"><b>${r.points}</b></td>
     `;
+
+    // villanás (opcionális)
+    tr.classList.add("updated");
+    setTimeout(() => tr.classList.remove("updated"), 1200);
+
     tbody.appendChild(tr);
   });
 
@@ -245,7 +331,10 @@ async function loadPlayerCard(playerId) {
 
   const { data: lastRows, error: formErr } = await supabaseClient
     .from("match_players")
-    .select(`team, matches ( black_score, white_score, created_at )`)
+    .select(`
+      team,
+      matches ( black_score, white_score, created_at )
+    `)
     .eq("player_id", playerId)
     .order("created_at", { foreignTable: "matches", ascending: false })
     .limit(5);
@@ -328,6 +417,7 @@ async function loadMatches() {
   if (selectedRound !== null) roundSelect.value = String(selectedRound);
 
   const ids = allSeasonMatches.map(m => m.id);
+
   if (!ids.length) {
     matchesList.innerHTML = `<div class="muted">Ebben a szezonban még nincs meccs.</div>`;
     return;
@@ -346,6 +436,7 @@ async function loadMatches() {
 
 function renderRound() {
   matchesList.innerHTML = "";
+
   if (selectedRound === null) return;
 
   const ms = allSeasonMatches.filter(m => m.round == selectedRound);
@@ -381,7 +472,10 @@ function renderRound() {
 }
 
 /* ==== EVENTS ==== */
-roundSelect.onchange = () => { selectedRound = Number(roundSelect.value); renderRound(); };
+roundSelect.onchange = () => {
+  selectedRound = Number(roundSelect.value);
+  renderRound();
+};
 
 prevRoundBtn.onclick = () => {
   const idx = availableRounds.indexOf(Number(selectedRound));
@@ -403,9 +497,14 @@ nextRoundBtn.onclick = () => {
 
 seasonSelect.onchange = async () => {
   selectedSeasonId = seasonSelect.value;
+  const s = seasons.find(x => x.id === selectedSeasonId);
+  selectedSeasonYear = s ? s.year : null;
+
   await loadTable();
   await loadMatches();
   if (selectedPlayerId) await loadPlayerCard(selectedPlayerId);
+
+  startRealtime(); // ✅ szezonváltáskor újra feliratkozunk
 };
 
 /* ==== INIT ==== */
@@ -413,6 +512,7 @@ seasonSelect.onchange = async () => {
   await loadSeasons();
   await loadTable();
   await loadMatches();
+  startRealtime(); // ✅ realtime indul
 })();
 </script>
 
