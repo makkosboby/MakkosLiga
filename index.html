@@ -61,7 +61,8 @@
 
       <!-- RIGHT -->
       <div>
-
+            <!-- ✅ ÜZENŐFAL / HÍREK: meccsek kártya alatt -->
+        <div id="newsWall" class="news-wall" "></div>
         <div class="card" id="playerCard">
           <div class="card-header">
             <div class="card-title">Játékos</div>
@@ -85,6 +86,7 @@
             </div>
 
             <div id="matchesList" style="margin-top:10px;"></div>
+
           </div>
         </div>
 
@@ -130,6 +132,8 @@ const nextRoundBtn = document.getElementById("nextRoundBtn");
 const matchesMeta = document.getElementById("matchesMeta");
 const matchesList = document.getElementById("matchesList");
 
+const newsWall = document.getElementById("newsWall");
+
 /* ==== STATE ==== */
 let seasons = [];
 let selectedSeasonId = null;
@@ -147,6 +151,7 @@ let chSeasons = null;
 let chSeasonStats = null;
 let chMatches = null;
 let chMatchPlayers = null;
+let chAnnouncements = null;
 
 let tableTimer = null;
 let matchesTimer = null;
@@ -167,13 +172,13 @@ function schedulePlayer(fn, delay = 350) {
   playerTimer = setTimeout(fn, delay);
 }
 
-
 function stopRealtime() {
   if (chSeasons) supabaseClient.removeChannel(chSeasons);
   if (chSeasonStats) supabaseClient.removeChannel(chSeasonStats);
   if (chMatches) supabaseClient.removeChannel(chMatches);
   if (chMatchPlayers) supabaseClient.removeChannel(chMatchPlayers);
-  chSeasons = chSeasonStats = chMatches = chMatchPlayers = null;
+  if (chAnnouncements) supabaseClient.removeChannel(chAnnouncements);
+  chSeasons = chSeasonStats = chMatches = chMatchPlayers = chAnnouncements = null;
 }
 
 function startRealtime() {
@@ -183,48 +188,103 @@ function startRealtime() {
   chSeasons = supabaseClient
     .channel("public:seasons-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "seasons" }, async () => {
+      const prevSeasonId = selectedSeasonId;
+
       await loadSeasons();     // ez mindig az aktuálisra állít
       await loadTable();
       await loadMatches();
       if (selectedPlayerId) await loadPlayerCard(selectedPlayerId);
 
-      // ha közben szezon váltott, a realtime-t is érdemes újraindítani
-      schedule(() => startRealtime(), 150);
+      // ha szezon váltott, a realtime-t újraindítjuk (biztos szűrés)
+      if (prevSeasonId !== selectedSeasonId) {
+        setTimeout(() => startRealtime(), 150);
+      }
     })
     .subscribe();
 
-// 2) Tabella realtime
-chSeasonStats = supabaseClient
-  .channel("public:season-stats-live")
-  .on("postgres_changes", { event: "*", schema: "public", table: "season_stats" }, (payload) => {
-    const sid = payload?.new?.season_id || payload?.old?.season_id;
-    if (sid && sid === selectedSeasonId) {
-      scheduleTable(() => loadTable(), 200);
-      if (selectedPlayerId) schedulePlayer(() => loadPlayerCard(selectedPlayerId), 350);
-    }
-  })
-  .subscribe();
+  // 2) Tabella realtime
+  chSeasonStats = supabaseClient
+    .channel("public:season-stats-live")
+    .on("postgres_changes", { event: "*", schema: "public", table: "season_stats" }, (payload) => {
+      const sid = payload?.new?.season_id || payload?.old?.season_id;
+      if (sid && sid === selectedSeasonId) {
+        scheduleTable(() => loadTable(), 200);
+        if (selectedPlayerId) schedulePlayer(() => loadPlayerCard(selectedPlayerId), 350);
+      }
+    })
+    .subscribe();
 
-// 3) Meccsek realtime
-chMatches = supabaseClient
-  .channel("public:matches-live")
-  .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, (payload) => {
-    const sid = payload?.new?.season_id || payload?.old?.season_id;
-    if (sid && sid === selectedSeasonId) {
-      scheduleMatches(() => loadMatches(), 250);
-    }
-  })
-  .subscribe();
+  // 3) Meccsek realtime
+  chMatches = supabaseClient
+    .channel("public:matches-live")
+    .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, (payload) => {
+      const sid = payload?.new?.season_id || payload?.old?.season_id;
+      if (sid && sid === selectedSeasonId) {
+        scheduleMatches(() => loadMatches(), 250);
+      }
+    })
+    .subscribe();
 
-// 4) match_players realtime
-chMatchPlayers = supabaseClient
-  .channel("public:match-players-live")
-  .on("postgres_changes", { event: "*", schema: "public", table: "match_players" }, () => {
-    scheduleMatches(() => loadMatches(), 300);
-    if (selectedPlayerId) schedulePlayer(() => loadPlayerCard(selectedPlayerId), 450);
-  })
-  .subscribe();
+  // 4) match_players realtime
+  chMatchPlayers = supabaseClient
+    .channel("public:match-players-live")
+    .on("postgres_changes", { event: "*", schema: "public", table: "match_players" }, () => {
+      scheduleMatches(() => loadMatches(), 300);
+      if (selectedPlayerId) schedulePlayer(() => loadPlayerCard(selectedPlayerId), 450);
+    })
+    .subscribe();
 
+  // 5) ✅ Üzenőfal realtime
+  chAnnouncements = supabaseClient
+    .channel("public:announcements-live")
+    .on("postgres_changes", { event: "*", schema: "public", table: "announcements" }, () => {
+      loadAnnouncementPublic();
+    })
+    .subscribe();
+}
+
+/* ==== ÜZENŐFAL (PUBLIC) ==== */
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+async function loadAnnouncementPublic(){
+  if (!newsWall) return;
+
+  const { data, error } = await supabaseClient
+    .from("announcements")
+    .select("id, body, is_pinned, updated_at, created_at")
+    .order("is_pinned", { ascending:false })
+    .order("updated_at", { ascending:false })
+    .limit(1);
+
+  if (error) {
+    console.error(error);
+    newsWall.innerHTML = `<div class="news-empty">❌ Üzenőfal hiba</div>`;
+    return;
+  }
+
+  const row = (data || [])[0];
+  if (!row) {
+    newsWall.innerHTML = `<div class="news-empty">Nincs friss hír.</div>`;
+    return;
+  }
+
+  const dt = new Date(row.updated_at || row.created_at);
+  const when = dt.toLocaleString("hu-HU");
+
+  newsWall.innerHTML = `
+    <div class="news-title">
+      <b>📰 Üzenőfal</b>
+      <span class="news-meta">${when}${row.is_pinned ? " • kiemelt" : ""}</span>
+    </div>
+    <div class="news-body">${escapeHtml(row.body)}</div>
+  `;
 }
 
 /* ==== LOADERS ==== */
@@ -512,6 +572,7 @@ seasonSelect.onchange = async () => {
   await loadSeasons();
   await loadTable();
   await loadMatches();
+  await loadAnnouncementPublic(); // ✅ első betöltés
   startRealtime(); // ✅ realtime indul
 })();
 </script>
