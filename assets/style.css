@@ -156,6 +156,12 @@ select{
   padding:8px 10px;
 }
 
+td:last-child{
+  background: rgba(196,22,28,.08);
+  font-weight: 800;
+}
+
+
 @media (max-width: 640px){
   .tabella-header-right select{
     padding:6px 8px;
@@ -436,6 +442,52 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
   .footer-players{
     height:100%;
   }
+}
+
+tr.updated{
+  animation: flash 1.2s ease;
+}
+
+@keyframes flash{
+  0%{ background: rgba(196,22,28,.35); }
+  100%{ background: transparent; }
+}
+
+.news-wall{
+  border: 5px solid #ffe44d; /* citromsárga */
+  background:#000;
+  border-radius:12px;
+  padding:12px;
+}
+
+.news-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.news-title b{
+  letter-spacing:.2px;
+  font-size:13px;
+}
+
+.news-body{
+  color:#fff;
+  font-size:20px;
+  line-height:1.5;
+  white-space:pre-wrap; /* sortörések megtartása */
+}
+
+.news-meta{
+  color:var(--muted);
+  font-size:15px;
+}
+
+.news-empty{
+  color:var(--muted);
+  font-size:12px;
 }
 
 
