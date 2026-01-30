@@ -2,7 +2,7 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Liga Admin</title>
+  <title>Makkos Liga – Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -276,7 +276,7 @@
     <div class="topbar-inner">
       <div class="brand">
         <img src="assets/logo4.png" alt="Makkos Liga">
-        <div class="brand-title">Liga Admin</div>
+        <div class="brand-title">Makkos Liga – Admin</div>
       </div>
 
       <div class="top-actions">
@@ -289,7 +289,6 @@
   <div class="wrap">
     <div class="status-row">
       <div id="status" class="pill">Ellenőrzés…</div>
-      <div class="muted">Tipp: játékosok kiválasztása után csak írd be a gólokat és mentés.</div>
     </div>
 
     <div class="grid">
@@ -341,25 +340,9 @@
         </div>
       </div>
 
-      <!-- RIGHT: season + add player -->
-      <div>
+      <!-- RIGHT: season + add player -->	  
+      <div> 
         <div class="card">
-          <div class="card-header">
-            <div class="card-title">Szezon kezelése</div>
-            <span class="pill">Veszélyzóna</span>
-          </div>
-          <div class="card-body">
-            <div class="danger-zone">
-              <div class="muted" style="margin-bottom:10px;">
-                A “Szezon vége” új évet indít és az aktuális szezon statjait nullázza (a nevek maradnak).
-              </div>
-              <button class="btn btn-danger" onclick="endSeason()" type="button">🏁 Szezon vége</button>
-              <div id="seasonMsg" class="muted" style="margin-top:10px;"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:14px;">
           <div class="card-header">
             <div class="card-title">Játékos hozzáadása</div>
             <span class="pill">Tabella</span>
@@ -371,6 +354,50 @@
               <button class="btn btn-primary" onclick="addPlayer()" type="button">➕ Hozzáadás</button>
             </div>
             <div id="addMsg" class="muted" style="margin-top:10px;"></div>
+          </div>
+        </div>	  
+	  
+		<div class="card" style="margin-top:14px;">
+		  <div class="card-header">
+		    <div class="card-title">Üzenőfal</div>
+		    <span class="pill">Index oldalon látszik</span>
+		  </div>
+          <div class="card-body">
+		    <label>Üzenet / hír</label>
+		    <textarea id="newsText" rows="5" placeholder="Írj ide hírt..."></textarea>
+
+          <div class="btns" style="margin-top:12px;">
+            <button class="btn btn-primary" onclick="saveAnnouncement()" type="button">💾 Mentés</button>
+            <button class="btn btn-ghost" onclick="loadAnnouncement()" type="button">↻ Betöltés</button>
+        </div>
+
+    <div class="row" style="margin-top:10px;">
+      <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+        <input type="checkbox" id="newsPinned" style="width:auto;">
+        Kiemelt (felül marad)
+      </label>
+    </div>
+
+    <div id="newsMsg" class="muted" style="margin-top:10px;"></div>
+  </div>
+</div>
+
+		
+		
+		
+        <div class="card">
+          <div class="card-header" style="margin-top:14px;">
+            <div class="card-title">Szezon kezelése</div>
+            <span class="pill">Veszélyzóna</span>
+          </div>
+          <div class="card-body">
+            <div class="danger-zone">
+              <div class="muted" style="margin-bottom:10px;">
+                A “Szezon vége” új évet indít és az aktuális szezon statjait nullázza (a nevek maradnak).
+              </div>
+              <button class="btn btn-danger" onclick="endSeason()" type="button">🏁 Szezon vége</button>
+              <div id="seasonMsg" class="muted" style="margin-top:10px;"></div>
+            </div>
           </div>
         </div>
 
@@ -565,13 +592,92 @@
     document.getElementById("seasonMsg").innerText =
       `✅ Új szezon elindítva: ${data}`;
   }
+  
+  
+  let currentAnnouncementId = null;
+
+async function loadAnnouncement() {
+  const msg = document.getElementById("newsMsg");
+  msg.textContent = "Betöltés…";
+
+  const { data, error } = await supabaseClient
+    .from("announcements")
+    .select("id, body, is_pinned, updated_at")
+    .order("is_pinned", { ascending: false })
+    .order("updated_at", { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error(error);
+    msg.textContent = "❌ " + error.message;
+    return;
+  }
+
+  const row = (data || [])[0];
+  if (!row) {
+    currentAnnouncementId = null;
+    document.getElementById("newsText").value = "";
+    document.getElementById("newsPinned").checked = false;
+    msg.textContent = "Nincs még üzenet. Írj egyet és mentsd el!";
+    return;
+  }
+
+  currentAnnouncementId = row.id;
+  document.getElementById("newsText").value = row.body;
+  document.getElementById("newsPinned").checked = !!row.is_pinned;
+  msg.textContent = "✅ Betöltve";
+}
+
+async function saveAnnouncement() {
+  const msg = document.getElementById("newsMsg");
+  const body = document.getElementById("newsText").value.trim();
+  const isPinned = document.getElementById("newsPinned").checked;
+
+  if (!body) {
+    msg.textContent = "❌ Üres üzenetet nem lehet menteni.";
+    return;
+  }
+
+  msg.textContent = "Mentés…";
+
+  // Ha már van üzenet, frissítjük, különben beszúrjuk
+  if (currentAnnouncementId) {
+    const { error } = await supabaseClient
+      .from("announcements")
+      .update({ body, is_pinned: isPinned })
+      .eq("id", currentAnnouncementId);
+
+    if (error) {
+      console.error(error);
+      msg.textContent = "❌ " + error.message;
+      return;
+    }
+
+    msg.textContent = "✅ Mentve (frissítve)";
+  } else {
+    const { data, error } = await supabaseClient
+      .from("announcements")
+      .insert([{ body, is_pinned: isPinned }])
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error(error);
+      msg.textContent = "❌ " + error.message;
+      return;
+    }
+
+    currentAnnouncementId = data.id;
+    msg.textContent = "✅ Mentve (új)";
+  }
+}
+
 
   checkLogin();
   loadPlayersForMatch();
   loadMatches();
+  loadAnnouncement();
 </script>
 
 </body>
 </html>
-
-
