@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Makkos Liga – Bajnokaink</title>
+
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+
+<body>
+
+  <!-- FEHÉR HEADER (ugyanaz, mint indexen) -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <img src="assets/logo4.png" alt="Makkos Liga logo" class="logo-main">
+        <img src="assets/kupa.png" alt="Kupa" class="logo-cup">
+      </div>
+
+      <div class="header-right nav">
+        <a class="nav-link" href="index.html">Tabella</a>
+        <a class="nav-link" href="bajnokaink.html">Bajnokaink</a>
+        <a class="admin-link" href="login.html">Admin</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="accent-bar"></div>
+
+  <main class="container">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Dicsőségfal</div>
+        <span class="pill">Galéria</span>
+      </div>
+
+      <div class="card-body">
+<!--         <p class="muted" style="margin-top:0;">
+          Ide kerülnek a szezon bajnokai. Később feltöltöd a képeket az <b>assets</b> mappába és itt csak hivatkozunk rájuk.
+        </p> -->
+
+        <!-- BAJNOK KÁRTYÁK -->
+        <div class="champ-grid">
+          <article class="champ-card">
+            <img class="champ-img" src="assets/2025bajnok.png" alt="2025 bajnoka">
+            <div class="champ-info">
+              <div class="champ-year">2025</div>
+              <div class="champ-title">Bajnok</div>
+              <div class="champ-sub muted">Szatmári Norbert #36</div>
+            </div>
+          </article>
+
+          <!-- ide jönnek majd a következő évek -->
+          <!--
+          <article class="champ-card">
+            <img class="champ-img" src="assets/2026bajnok.png" alt="2026 bajnoka">
+            <div class="champ-info">
+              <div class="champ-year">2026</div>
+              <div class="champ-title">Bajnok</div>
+              <div class="champ-sub muted">Név / mezszám</div>
+            </div>
+          </article>
+          -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- alsó piros csík + fehér footer (ha nálad van ilyen az indexen, hagyd meg ugyanúgy) -->
+  <div class="footer-accent-bar"></div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <div class="footer-title">Együttműködő partnereink:</div>
+        <div class="footer-partners">
+          <img class="partner-logo" src="assets/szatmari.png" alt="Szatmari">
+          <img class="partner-logo" src="assets/bernath.png" alt="Bernath">
+          <img class="partner-logo" src="assets/imiteto.png" alt="Imiteto">
+        </div>
+      </div>
+
+      <div class="footer-right">
+        <img class="footer-players" src="assets/jatekosok.png" alt="Játékosok">
+      </div>
+    </div>
+  </footer>
+
+  <!-- kis extra CSS csak ehhez az oldalhoz: grid + kártyák -->
+  <style>
+    .champ-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:14px;
+    }
+    .champ-card{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      overflow:hidden;
+      background: #000;
+      box-shadow: var(--shadow);
+      transition: transform .15s ease, border-color .15s ease;
+    }
+    .champ-card:hover{
+      transform: translateY(-2px);
+      border-color: rgba(196,22,28,.55);
+    }
+    .champ-img{
+      width:100%;
+      display:block;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+    }
+    .champ-info{
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .champ-year{
+      font-weight: 900;
+      letter-spacing: .5px;
+      font-size: 14px;
+      color:#fff;
+    }
+    .champ-title{
+      font-weight: 900;
+      color: rgba(255,255,255,.92);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing:.35px;
+    }
+    .champ-sub{
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px){
+      .champ-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px){
+      .champ-grid{ grid-template-columns: 1fr; }
+      .champ-img{ aspect-ratio: 4 / 3; }
+    }
+  </style>
+
+</body>
+</html>
