@@ -695,5 +695,90 @@ img, svg { max-width: 100%; height: auto; }
   }
 }
 
+/* =========================
+   MOBILE HAMBURGER MENU
+   ========================= */
+
+.menu-btn{
+  display:none; /* desktopon rejtve */
+  color:#000;
+  text-decoration:none;
+  font-weight:900;
+  letter-spacing:.25px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid #e5e5e5;
+  background:#fff;
+  transition:.15s ease;
+  cursor:pointer;
+}
+
+.menu-btn:hover{
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.nav-desktop{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:nowrap;
+}
+
+/* mobil panel (lenyíló) */
+.mobile-menu{
+  position:absolute;
+  right:14px;
+  top: calc(100% + 10px);
+  min-width: 190px;
+  background:#fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.25);
+  padding: 8px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  z-index: 999;
+}
+
+/* mobil linkek a panelben */
+.mobile-link{
+  color:#000;
+  text-decoration:none;
+  font-weight:900;
+  letter-spacing:.25px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid #e5e5e5;
+  background:#fff;
+  transition:.15s ease;
+}
+
+.mobile-link:hover{
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* a panel a header-right-hoz igazodjon */
+.header-right.nav{
+  position:relative;
+}
+
+/* MOBILON: a desktop nav eltűnik, a Menü gomb megjelenik */
+@media (max-width: 640px){
+  .menu-btn{ display:inline-flex; align-items:center; gap:8px; }
+  .nav-desktop{ display:none; }
+}
+
+/* Biztonsági: a [hidden] mindig legyen rejtve */
+[hidden] { display: none !important; }
+
+/* Desktopon a mobil dropdown sose jelenjen meg */
+@media (min-width: 641px){
+  .mobile-menu{ display:none !important; }
+  .menu-btn{ display:none !important; }
+  .nav-desktop{ display:flex !important; }
+}
 
 
