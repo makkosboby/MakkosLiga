@@ -19,9 +19,27 @@
       </div>
 
       <div class="header-right nav">
-        <a class="nav-link" href="index.html">Tabella</a>
-        <a class="nav-link" href="bajnokaink.html">Bajnokaink</a>
-        <a class="admin-link" href="login.html">Admin</a>
+
+        <!-- MOBIL: HAMBURGER -->
+        <button class="menu-btn" id="menuBtn" type="button"
+                aria-expanded="false" aria-controls="mobileMenu">
+          Menü ☰
+        </button>
+
+        <!-- DESKTOP -->
+        <nav class="nav-desktop" aria-label="Fő navigáció">
+          <a class="nav-link" href="index.html">Tabella</a>
+          <a class="nav-link" href="bajnokaink.html">Bajnokaink</a>
+          <a class="admin-link" href="login.html">Admin</a>
+        </nav>
+
+        <!-- MOBIL PANEL -->
+        <div class="mobile-menu" id="mobileMenu" hidden>
+          <a class="mobile-link" href="index.html">Tabella</a>
+          <a class="mobile-link" href="bajnokaink.html">Bajnokaink</a>
+          <a class="mobile-link" href="login.html">Admin</a>
+        </div>
+
       </div>
     </div>
   </header>
@@ -36,10 +54,6 @@
       </div>
 
       <div class="card-body">
-<!--         <p class="muted" style="margin-top:0;">
-          Ide kerülnek a szezon bajnokai. Később feltöltöd a képeket az <b>assets</b> mappába és itt csak hivatkozunk rájuk.
-        </p> -->
-
         <!-- BAJNOK KÁRTYÁK -->
         <div class="champ-grid">
           <article class="champ-card">
@@ -52,22 +66,11 @@
           </article>
 
           <!-- ide jönnek majd a következő évek -->
-          <!--
-          <article class="champ-card">
-            <img class="champ-img" src="assets/2026bajnok.png" alt="2026 bajnoka">
-            <div class="champ-info">
-              <div class="champ-year">2026</div>
-              <div class="champ-title">Bajnok</div>
-              <div class="champ-sub muted">Név / mezszám</div>
-            </div>
-          </article>
-          -->
         </div>
       </div>
     </div>
   </main>
 
-  <!-- alsó piros csík + fehér footer (ha nálad van ilyen az indexen, hagyd meg ugyanúgy) -->
   <div class="footer-accent-bar"></div>
 
   <footer class="site-footer">
@@ -87,7 +90,41 @@
     </div>
   </footer>
 
-  <!-- kis extra CSS csak ehhez az oldalhoz: grid + kártyák -->
+  <!-- MOBIL MENÜ JS -->
+  <script>
+  (() => {
+    const btn = document.getElementById("menuBtn");
+    const menu = document.getElementById("mobileMenu");
+    if (!btn || !menu) return;
+
+    function closeMenu() {
+      menu.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+    }
+    function toggleMenu() {
+      const willOpen = menu.hidden;
+      menu.hidden = !willOpen;
+      btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+    }
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleMenu();
+    });
+
+    menu.querySelectorAll("a").forEach(a => a.addEventListener("click", closeMenu));
+    document.addEventListener("click", closeMenu);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
+	
+	// ha átméretezed desktopra, automatikusan zárjon
+    window.addEventListener("resize", () => {
+      if (window.innerWidth >= 641) closeMenu();
+    });
+
+  })();
+  </script>
+
+  <!-- a kis extra CSS csak ehhez az oldalhoz: grid + kártyák -->
   <style>
     .champ-grid{
       display:grid;
@@ -131,9 +168,7 @@
       text-transform: uppercase;
       letter-spacing:.35px;
     }
-    .champ-sub{
-      font-size: 12px;
-    }
+    .champ-sub{ font-size: 12px; }
 
     @media (max-width: 980px){
       .champ-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
