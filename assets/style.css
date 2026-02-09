@@ -663,4 +663,37 @@ img, svg { max-width: 100%; height: auto; }
   word-break: break-word;
 }
 
+/* ===== HEADER MENU LINKS ===== */
+.header-right.nav{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:nowrap;
+}
+
+.nav-link{
+  color:#000;
+  text-decoration:none;
+  font-weight:900;
+  letter-spacing:.25px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid #e5e5e5;
+  background:#fff;
+  transition:.15s ease;
+}
+
+.nav-link:hover{
+  border-color: var(--red);
+  color: var(--red);
+}
+
+@media (max-width: 640px){
+  .nav-link{
+    padding:8px 10px;
+    font-size:13px;
+  }
+}
+
+
 
