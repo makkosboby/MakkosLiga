@@ -22,11 +22,29 @@
         <img src="assets/kupa.png" alt="Kupa" class="logo-cup">
       </div>
 
-      <!-- JOBB: ADMIN -->
-      <<div class="header-right nav">
-        <a class="nav-link" href="index.html">Tabella</a>
-        <a class="nav-link" href="bajnokaink.html">Bajnokaink</a>
-        <a class="admin-link" href="login.html">Admin</a>
+      <!-- JOBB: NAV + ADMIN + MOBILE MENU -->
+      <div class="header-right nav">
+
+        <!-- MOBIL: HAMBURGER -->
+        <button class="menu-btn" id="menuBtn" type="button"
+                aria-expanded="false" aria-controls="mobileMenu">
+          Menü ☰
+        </button>
+
+        <!-- DESKTOP: linkek -->
+        <nav class="nav-desktop" aria-label="Fő navigáció">
+          <a class="nav-link" href="index.html">Tabella</a>
+          <a class="nav-link" href="bajnokaink.html">Bajnokaink</a>
+          <a class="admin-link" href="login.html">Admin</a>
+        </nav>
+
+        <!-- MOBIL: lenyíló panel -->
+        <div class="mobile-menu" id="mobileMenu" hidden>
+          <a class="mobile-link" href="index.html">Tabella</a>
+          <a class="mobile-link" href="bajnokaink.html">Bajnokaink</a>
+          <a class="mobile-link" href="login.html">Admin</a>
+        </div>
+
       </div>
 
     </div>
@@ -64,8 +82,9 @@
 
       <!-- RIGHT -->
       <div>
-            <!-- ✅ ÜZENŐFAL / HÍREK: meccsek kártya alatt -->
-        <div id="newsWall" class="news-wall" "></div>
+        <!-- ✅ ÜZENŐFAL / HÍREK: meccsek kártya alatt -->
+        <div id="newsWall" class="news-wall"></div>
+
         <div class="card" id="playerCard">
           <div class="card-header">
             <div class="card-title">Játékos</div>
@@ -117,6 +136,47 @@
 
     </div>
   </footer>
+
+<script>
+/* ===== MOBILE MENU (hamburger) ===== */
+(() => {
+  const btn = document.getElementById("menuBtn");
+  const menu = document.getElementById("mobileMenu");
+  if (!btn || !menu) return;
+
+  function closeMenu() {
+    menu.hidden = true;
+    btn.setAttribute("aria-expanded", "false");
+  }
+  function toggleMenu() {
+    const willOpen = menu.hidden;
+    menu.hidden = !willOpen;
+    btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+  }
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleMenu();
+  });
+
+  // kattintásra zárjon
+  menu.querySelectorAll("a").forEach(a => a.addEventListener("click", closeMenu));
+
+  // oldalra katt -> zár
+  document.addEventListener("click", closeMenu);
+
+  // ESC -> zár
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMenu();
+  });
+  // ha átméretezed desktopra, automatikusan zárjon
+  window.addEventListener("resize", () => {
+    if (window.innerWidth >= 641) closeMenu();
+  });
+
+})();
+
+</script>
 
 <script>
 /* ==== SUPABASE CLIENT ==== */
@@ -351,7 +411,6 @@ async function loadTable() {
       <td data-label="P"><b>${r.points}</b></td>
     `;
 
-    // villanás (opcionális)
     tr.classList.add("updated");
     setTimeout(() => tr.classList.remove("updated"), 1200);
 
@@ -567,7 +626,7 @@ seasonSelect.onchange = async () => {
   await loadMatches();
   if (selectedPlayerId) await loadPlayerCard(selectedPlayerId);
 
-  startRealtime(); // ✅ szezonváltáskor újra feliratkozunk
+  startRealtime();
 };
 
 /* ==== INIT ==== */
@@ -575,13 +634,10 @@ seasonSelect.onchange = async () => {
   await loadSeasons();
   await loadTable();
   await loadMatches();
-  await loadAnnouncementPublic(); // ✅ első betöltés
-  startRealtime(); // ✅ realtime indul
+  await loadAnnouncementPublic();
+  startRealtime();
 })();
 </script>
 
 </body>
 </html>
-
-
-
