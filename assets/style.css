@@ -781,4 +781,61 @@ img, svg { max-width: 100%; height: auto; }
   .nav-desktop{ display:flex !important; }
 }
 
+/* =========================
+   MATCHES CARD – BACKGROUND IMAGE
+   ========================= */
 
+/* csak a Meccsek kártya */
+.card.matches-card{
+  position: relative;
+  overflow: hidden;
+  background: none; /* felülírjuk az alap gradientet */
+}
+
+/* háttérkép + sötétítés */
+.card.matches-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,.75),
+      rgba(0,0,0,.85)
+    ),
+    url("bg-meccsek.jpeg") center / cover no-repeat;
+  z-index:0;
+  filter: saturate(0.9) contrast(1.05);
+}
+
+/* finom vignetta */
+.card.matches-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0,0,0,0) 40%,
+    rgba(0,0,0,.65) 100%
+  );
+  z-index:1;
+}
+
+/* a kártya belső tartalma a kép fölé kerüljön */
+.card.matches-card > *{
+  position: relative;
+  z-index:2;
+}
+
+/* fejléc külön kiemelése */
+.card.matches-card .card-header{
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(6px);
+}
+
+/* meccs elemek enyhe üveg-hatás */
+.card.matches-card .match{
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,.08);
+}
