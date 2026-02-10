@@ -82,11 +82,14 @@
 
       <!-- RIGHT -->
       <div>
-        <!-- ✅ ÜZENŐFAL / HÍREK: meccsek kártya alatt -->
+
+        <!-- ÜZENŐFAL -->
         <div id="newsWall" class="news-wall"></div>
 
-        <div class="card" id="playerCard">
-		  <div class="card matches-card" style="margin-top:14px;">
+        <!-- ✅ PLAYER CARD (JAVÍTVA: nincs egymásba ágyazott .card) -->
+        <!-- FONTOS: ha a CSS-ed #playerCard-ra / vagy pl. .player-card-bg-ra teszi a hátteret,
+             akkor ide tedd azt a class-t. Most betettem: player-card-bg -->
+        <div class="card player-card-bg" id="playerCard" style="margin-top:14px;">
           <div class="card-header">
             <div class="card-title">Játékos</div>
             <span class="pill">Összesített</span>
@@ -96,8 +99,8 @@
           </div>
         </div>
 
+        <!-- MECCSEK -->
         <div class="card" style="margin-top:14px;">
-		  
           <div class="card-header">
             <div class="card-title">Meccsek</div>
             <span id="matchesMeta" class="pill">—</span>
@@ -161,23 +164,17 @@
     toggleMenu();
   });
 
-  // kattintásra zárjon
   menu.querySelectorAll("a").forEach(a => a.addEventListener("click", closeMenu));
-
-  // oldalra katt -> zár
   document.addEventListener("click", closeMenu);
 
-  // ESC -> zár
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeMenu();
   });
-  // ha átméretezed desktopra, automatikusan zárjon
+
   window.addEventListener("resize", () => {
     if (window.innerWidth >= 641) closeMenu();
   });
-
 })();
-
 </script>
 
 <script>
@@ -249,25 +246,22 @@ function stopRealtime() {
 function startRealtime() {
   stopRealtime();
 
-  // 1) Szezon változás: admin "Szezon vége" -> új aktuális szezon -> automatikus váltás
   chSeasons = supabaseClient
     .channel("public:seasons-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "seasons" }, async () => {
       const prevSeasonId = selectedSeasonId;
 
-      await loadSeasons();     // ez mindig az aktuálisra állít
+      await loadSeasons();
       await loadTable();
       await loadMatches();
       if (selectedPlayerId) await loadPlayerCard(selectedPlayerId);
 
-      // ha szezon váltott, a realtime-t újraindítjuk (biztos szűrés)
       if (prevSeasonId !== selectedSeasonId) {
         setTimeout(() => startRealtime(), 150);
       }
     })
     .subscribe();
 
-  // 2) Tabella realtime
   chSeasonStats = supabaseClient
     .channel("public:season-stats-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "season_stats" }, (payload) => {
@@ -279,7 +273,6 @@ function startRealtime() {
     })
     .subscribe();
 
-  // 3) Meccsek realtime
   chMatches = supabaseClient
     .channel("public:matches-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, (payload) => {
@@ -290,7 +283,6 @@ function startRealtime() {
     })
     .subscribe();
 
-  // 4) match_players realtime
   chMatchPlayers = supabaseClient
     .channel("public:match-players-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "match_players" }, () => {
@@ -299,7 +291,6 @@ function startRealtime() {
     })
     .subscribe();
 
-  // 5) ✅ Üzenőfal realtime
   chAnnouncements = supabaseClient
     .channel("public:announcements-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "announcements" }, () => {
@@ -560,7 +551,6 @@ async function loadMatches() {
 
 function renderRound() {
   matchesList.innerHTML = "";
-
   if (selectedRound === null) return;
 
   const ms = allSeasonMatches.filter(m => m.round == selectedRound);
