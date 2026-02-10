@@ -610,7 +610,6 @@ tr.updated{
   }
 }
 
-
 /* =========================
    FIX: LANDSCAPE PHONE OVERFLOW
    ========================= */
@@ -782,34 +781,28 @@ img, svg { max-width: 100%; height: auto; }
 }
 
 /* =========================
-   MATCHES CARD – BACKGROUND IMAGE
+   PLAYER CARD – BACKGROUND IMAGE
+   (a háttérkép az assets/bg-meccsek.jpeg)
    ========================= */
 
-/* csak a Meccsek kártya */
-.card.matches-card{
+#playerCard{
   position: relative;
   overflow: hidden;
   background: none; /* felülírjuk az alap gradientet */
 }
 
-/* háttérkép + sötétítés */
-.card.matches-card::before{
+#playerCard::before{
   content:"";
   position:absolute;
   inset:0;
   background:
-    linear-gradient(
-      180deg,
-      rgba(0,0,0,.75),
-      rgba(0,0,0,.85)
-    ),
+    linear-gradient(180deg, rgba(0,0,0,.72), rgba(0,0,0,.88)),
     url("bg-meccsek.jpeg") center / cover no-repeat;
   z-index:0;
   filter: saturate(0.9) contrast(1.05);
 }
 
-/* finom vignetta */
-.card.matches-card::after{
+#playerCard::after{
   content:"";
   position:absolute;
   inset:0;
@@ -821,21 +814,42 @@ img, svg { max-width: 100%; height: auto; }
   z-index:1;
 }
 
-/* a kártya belső tartalma a kép fölé kerüljön */
-.card.matches-card > *{
+#playerCard > *{
   position: relative;
   z-index:2;
 }
 
-/* fejléc külön kiemelése */
-.card.matches-card .card-header{
+/* üveg-fejléc */
+#playerCard .card-header{
   background: rgba(0,0,0,.55);
   backdrop-filter: blur(6px);
 }
 
-/* meccs elemek enyhe üveg-hatás */
-.card.matches-card .match{
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255,255,255,.08);
+/* ✅ belső elemek ne lógjanak ki */
+#playerCard .card-body{ overflow: hidden; }
+#playerCard .kv,
+#playerCard .form-row{
+  box-sizing: border-box;
+  max-width: 100%;
+  width: 100%;
 }
+
+/* olvashatóság */
+#playerCard .kv{
+  background: rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+#playerCard .form-row{
+  background: rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-top: 12px;
+  border-top: none;
+}
+
+/* extra: a forma badge-ek se tudjanak kilógni */
+#playerCard .form{ max-width: 100%; }
