@@ -45,14 +45,14 @@
         <nav class="nav-desktop" aria-label="Fő navigáció">
           <a class="nav-link" href="index.html">Tabella</a>
           <a class="nav-link" href="bajnokaink.html">Bajnokaink</a>
-          <a class="admin-link" href="login.html">Admin</a>
+          <a class="admin-link" href="admin.html">Admin</a>
         </nav>
 
         <!-- MOBIL: lenyíló panel -->
         <div class="mobile-menu" id="mobileMenu" hidden>
           <a class="mobile-link" href="index.html">Tabella</a>
           <a class="mobile-link" href="bajnokaink.html">Bajnokaink</a>
-          <a class="mobile-link" href="login.html">Admin</a>
+          <a class="mobile-link" href="admin.html">Admin</a>
         </div>
 
       </div>
@@ -96,22 +96,27 @@
         <!-- ÜZENŐFAL -->
         <div id="newsWall" class="news-wall"></div>
 
-        <!-- ✅ PLAYER CARD (JAVÍTVA: nincs egymásba ágyazott .card) -->
-        <!-- FONTOS: ha a CSS-ed #playerCard-ra / vagy pl. .player-card-bg-ra teszi a hátteret,
-             akkor ide tedd azt a class-t. Most betettem: player-card-bg -->
+        <!-- ✅ PLAYER CARD (csak ezt alakítottam át belül) -->
         <div class="card player-card-bg" id="playerCard" style="margin-top:14px;">
           <div class="card-header">
             <div class="card-title">Játékos</div>
           </div>
+
           <div class="card-body">
-            <div class="muted">Kattints egy névre a tabellában.</div>
+            <!-- választás előtt ez látszik -->
+            <div id="playerHint" class="muted">Kattints egy névre a tabellában.</div>
+
+            <!-- ide rendereljük a játékos statot, animálva -->
+            <div id="playerContent" class="player-content" aria-live="polite"></div>
           </div>
         </div>
 
         <!-- MECCSEK -->
+		<div class="card matches-card" style="margin-top:14px;">
         <div class="card" style="margin-top:14px;">
+		
           <div class="card-header">
-            <div class="card-title">Meccsek</div>
+            <div class="card-title">Eredmények</div>
             <span id="matchesMeta" class="pill">—</span>
           </div>
           <div class="card-body">
@@ -196,6 +201,8 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 const seasonSelect = document.getElementById("seasonSelect");
 const tbody = document.getElementById("tbody");
 const playerCard = document.getElementById("playerCard");
+const playerHint = document.getElementById("playerHint");
+const playerContent = document.getElementById("playerContent");
 
 const roundSelect = document.getElementById("roundSelect");
 const prevRoundBtn = document.getElementById("prevRoundBtn");
@@ -345,7 +352,7 @@ async function loadAnnouncementPublic(){
 
   newsWall.innerHTML = `
     <div class="news-title">
-      <b>📰 Üzenőfal</b>
+      <b>Üzenőfal</b>
       <span class="news-meta">${when}${row.is_pinned ? " • kiemelt" : ""}</span>
     </div>
     <div class="news-body">${escapeHtml(row.body)}</div>
@@ -424,11 +431,37 @@ async function loadTable() {
   });
 }
 
+/* ✅ PLAYER CARD ANIM: elsőre lenyílás, utána fade csere (nem csuk!) */
+function setPlayerContentHeight() {
+  // max-height animációhoz mindig állítsuk scrollHeight-re
+  playerContent.style.maxHeight = playerContent.scrollHeight + "px";
+}
+
+function openPlayerCardIfNeeded() {
+  if (!playerCard.classList.contains("is-open")) {
+    playerCard.classList.add("is-open");
+  }
+}
+
 async function loadPlayerCard(playerId) {
   selectedPlayerId = playerId;
 
-  const body = playerCard.querySelector(".card-body");
-  body.innerHTML = `<div class="muted">Betöltés…</div>`;
+  const firstOpen = !playerCard.classList.contains("is-open");
+
+  // hint: csak addig látszik, amíg nincs választás
+  if (playerHint) playerHint.style.display = "none";
+
+  // nyitás (első választásnál is azonnal, betöltés közben)
+  openPlayerCardIfNeeded();
+
+  // váltásnál fade-out (de NEM csukunk)
+  if (!firstOpen) {
+    playerContent.classList.add("is-fading");
+  }
+
+  // töltés szöveg
+  playerContent.innerHTML = `<div class="muted">Betöltés…</div>`;
+  requestAnimationFrame(() => setPlayerContentHeight());
 
   const { data: stats, error: statsErr } = await supabaseClient
     .from("player_overall_stats")
@@ -449,7 +482,9 @@ async function loadPlayerCard(playerId) {
 
   if (statsErr) {
     console.error(statsErr);
-    body.innerHTML = `<div class="error">❌ ${statsErr.message}</div>`;
+    playerContent.innerHTML = `<div class="error">❌ ${statsErr.message}</div>`;
+    requestAnimationFrame(() => setPlayerContentHeight());
+    playerContent.classList.remove("is-fading");
     return;
   }
 
@@ -486,7 +521,8 @@ async function loadPlayerCard(playerId) {
     ? `<div class="form">${form.map(x => `<span class="form-badge ${x.cls}" title="${x.title}">${x.code}</span>`).join("")}</div>`
     : `<div class="form-empty">Még nincs elég meccs a formához.</div>`;
 
-  body.innerHTML = `
+  // új tartalom
+  playerContent.innerHTML = `
     <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;">
       <div style="font-size:16px; font-weight:800; letter-spacing:.2px;">${stats.name}</div>
       <div class="pill">minden szezon</div>
@@ -513,6 +549,12 @@ async function loadPlayerCard(playerId) {
       ${formHtml}
     </div>
   `;
+
+  // magasság újramérés + fade-in vissza
+  requestAnimationFrame(() => {
+    setPlayerContentHeight();
+    playerContent.classList.remove("is-fading");
+  });
 }
 
 async function loadMatches() {
@@ -642,4 +684,3 @@ seasonSelect.onchange = async () => {
 
 </body>
 </html>
-
