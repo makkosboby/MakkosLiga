@@ -453,8 +453,8 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
     grid-template-columns:1fr 1fr;
     gap:10px;
 	background: rgba(0,0,0,0.15);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
     padding: 10px;
     border-radius: 0px;
   }
@@ -938,5 +938,6 @@ img, svg { max-width: 100%; height: auto; }
   position: relative;
   z-index: 2;
 }
+
 
 
