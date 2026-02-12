@@ -454,7 +454,7 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
     gap:10px;
 	background: rgba(0,0,0,0.15);
     backdrop-filter: blur(1px);
-    -webkit-backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(5px);
     padding: 10px;
     border-radius: 0px;
   }
@@ -572,6 +572,19 @@ tr.updated{
   color: rgba(255,255,255,.7);
   font-size:13px;
 }
+
+.news-icon{
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  opacity: .95;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,.55));
+}
+
+@media (max-width: 640px){
+  .news-icon{ width: 20px; height: 20px; }
+}
+
 
 
 /* =========================
@@ -890,6 +903,5 @@ img, svg { max-width: 100%; height: auto; }
   position: relative;
   z-index: 2;
 }
-
 
 
