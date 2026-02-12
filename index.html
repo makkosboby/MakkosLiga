@@ -351,10 +351,11 @@ async function loadAnnouncementPublic(){
   const when = dt.toLocaleString("hu-HU");
 
   newsWall.innerHTML = `
-    <div class="news-title">
-      <b>Üzenőfal</b>
-      <span class="news-meta">${when}${row.is_pinned ? " • kiemelt" : ""}</span>
-    </div>
+	<div class="news-title">
+		<img class="news-icon" src="assets/info.png" alt="Info">
+		<span class="news-meta">${new Date(row.updated_at).toLocaleString("hu-HU")}</span>
+	</div>
+
     <div class="news-body">${escapeHtml(row.body)}</div>
   `;
 }
@@ -684,4 +685,3 @@ seasonSelect.onchange = async () => {
 
 </body>
 </html>
-
