@@ -203,12 +203,15 @@ td:last-child{
 .muted{ color:var(--muted); font-size:12px; }
 
 /* ===== TABLE ===== */
-.table-wrap{ overflow:auto; -webkit-overflow-scrolling: touch; }
+.table-wrap{
+  overflow:auto;
+  -webkit-overflow-scrolling: touch;
+}
 
 table{
   width:100%;
   border-collapse:collapse;
-  min-width:760px;
+  min-width:760px;  /* ha keskeny a kijelző, a table-wrap görget */
 }
 
 thead th{
@@ -289,7 +292,7 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
 .match{
   background: rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(6px);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 14px;
   padding: 14px;
@@ -413,13 +416,19 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
 /* Nagyobb, de a sávon belül marad */
 .footer-players{
   height:100%;
-  max-height:100%;  /* ✅ fix (max-height:flex hibás volt) */
+  max-height:100%;
   width:auto;
   object-fit:contain;
 }
 
-/* ===== MOBILE ===== */
-@media (max-width: 640px){
+/* =========================
+   MOBILE TABLE VISIBILITY
+   - PORTRAIT: rövidített
+   - LANDSCAPE: teljes
+   ========================= */
+
+/* Telefon álló: rövid tabella (#, Név, M, GK, P) */
+@media (max-width: 640px) and (orientation: portrait){
   .table-wrap{ overflow-x:hidden; }
 
   table{
@@ -434,11 +443,11 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
   th:nth-child(9), td:nth-child(9){ width:60px; }
   th:nth-child(10), td:nth-child(10){ width:56px; }
 
-  th:nth-child(4), td:nth-child(4){ display:none; }
-  th:nth-child(5), td:nth-child(5){ display:none; }
-  th:nth-child(6), td:nth-child(6){ display:none; }
-  th:nth-child(7), td:nth-child(7){ display:none; }
-  th:nth-child(8), td:nth-child(8){ display:none; }
+  th:nth-child(4), td:nth-child(4){ display:none; }  /* Gy */
+  th:nth-child(5), td:nth-child(5){ display:none; }  /* D */
+  th:nth-child(6), td:nth-child(6){ display:none; }  /* V */
+  th:nth-child(7), td:nth-child(7){ display:none; }  /* LG */
+  th:nth-child(8), td:nth-child(8){ display:none; }  /* KG */
 
   td.name{
     white-space:nowrap;
@@ -447,14 +456,39 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
   }
 
   .rank{ width:22px; height:22px; border-radius:7px; font-size:11px; }
+}
 
+/* Telefon fekvő: teljes tabella (ha kell: vízszintes görgetés a kártyán belül) */
+@media (max-width: 640px) and (orientation: landscape){
+  .table-wrap{
+    overflow-x:auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table{
+    width:100%;
+    min-width:760px;
+    table-layout:auto;
+  }
+
+  th:nth-child(4), td:nth-child(4),
+  th:nth-child(5), td:nth-child(5),
+  th:nth-child(6), td:nth-child(6),
+  th:nth-child(7), td:nth-child(7),
+  th:nth-child(8), td:nth-child(8){
+    display: table-cell !important;
+  }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 640px){
   .roundbar{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
-	background: rgba(0,0,0,0.15);
+    background: rgba(0,0,0,0.15);
     backdrop-filter: blur(1px);
-    -webkit-backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(5px);
     padding: 10px;
     border-radius: 0px;
   }
@@ -466,7 +500,7 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
 
   /* Footer mobil */
   .footer-inner{
-    height:110px;            /* sáv marad */
+    height:110px;
     padding:10px 12px;
     gap:10px;
   }
@@ -585,8 +619,6 @@ tr.updated{
   .news-icon{ width: 20px; height: 20px; }
 }
 
-
-
 /* =========================
    FIX: LANDSCAPE PHONE OVERFLOW
    ========================= */
@@ -603,32 +635,12 @@ img, svg { max-width: 100%; height: auto; }
 /* 3) Táblázat: ne feszítsen oldalszélességet (landscape telefonon is) */
 @media (max-width: 920px), (max-height: 520px){
   .table-wrap{
-    overflow-x: auto;                /* a táblázat görgessen, ne az oldal */
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
   table{
-    min-width: 0 !important;         /* ✅ ez szünteti meg a kilógást */
-    width: 100%;
-    table-layout: fixed;
-  }
-
-  /* Landscape mobilon is a kompakt oszlopok maradjanak: #, Név, M, GK, P */
-  th:nth-child(4), td:nth-child(4),
-  th:nth-child(5), td:nth-child(5),
-  th:nth-child(6), td:nth-child(6),
-  th:nth-child(7), td:nth-child(7),
-  th:nth-child(8), td:nth-child(8){ display:none; }
-
-  th:nth-child(1), td:nth-child(1){ width: 44px; }
-  th:nth-child(3), td:nth-child(3){ width: 56px; }
-  th:nth-child(9), td:nth-child(9){ width: 60px; }
-  th:nth-child(10), td:nth-child(10){ width: 56px; }
-
-  td.name{
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    width:100%;
   }
 }
 
@@ -799,7 +811,7 @@ img, svg { max-width: 100%; height: auto; }
 /* üveg-fejléc */
 #playerCard .card-header{
   background: rgba(0,0,0,.55);
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(6px);
 }
 
 /* ✅ belső elemek ne lógjanak ki */
@@ -878,7 +890,7 @@ img, svg { max-width: 100%; height: auto; }
   position: absolute;
   inset: 0;
   background: url("mezek.png") center center / cover no-repeat;
-  opacity: 0.55;                /* kép erőssége */
+  opacity: 0.55;
   z-index: 0;
   border-radius: inherit;
 }
@@ -903,6 +915,3 @@ img, svg { max-width: 100%; height: auto; }
   position: relative;
   z-index: 2;
 }
-
-
-
