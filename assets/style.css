@@ -419,7 +419,7 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
 }
 
 /* ===== MOBILE ===== */
-@media (max-width: 640px) and (orientation: portrait{
+@media (max-width: 640px){
   .table-wrap{ overflow-x:hidden; }
 
   table{
@@ -585,18 +585,7 @@ tr.updated{
   .news-icon{ width: 20px; height: 20px; }
 }
 
-@media (max-width: 920px) and (orientation: landscape){
 
-  .table-wrap{
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  table{
-    min-width: 760px;
-  }
-
-}
 
 /* =========================
    FIX: LANDSCAPE PHONE OVERFLOW
