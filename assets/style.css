@@ -284,7 +284,7 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
 .kv > *{ min-width:0; } /* ✅ hosszú szöveg se feszítsen */
 
 /* ===== MATCHES ===== */
-.roundbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; } 
+.roundbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 
 .btn{
   background: rgba(0,0,0,0.35);
@@ -494,11 +494,10 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
 }
 
 /* =========================================================
-   ✅ FOOTER MOBILE FIX: 1 SORBAN maradjon (3 logo + players)
-   - nincs wrap
-   - képek clamp-pel kicsinyednek
+   ✅ FOOTER MOBILE FIX (iPhone SE landscape miatt 740px-ig!)
+   - 3 logo + csapatkép 1 sorban
    ========================================================= */
-@media (max-width: 640px){
+@media (max-width: 740px){
   .footer-inner{
     height:auto;                 /* ✅ ne feszüljön fix magasságtól */
     min-height:96px;
@@ -513,7 +512,6 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
     min-width:0;
   }
 
-  /* cím maradhat, de ne feszítsen */
   .footer-title{
     font-size:12px;
     line-height:1.1;
@@ -529,10 +527,9 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
     min-width:0;
   }
 
-  /* 3 logo: mind tudjon kicsire zsugorodni, de ne torzuljon */
   .footer-partners img.partner-logo{
     flex: 0 1 auto;
-    height: clamp(28px, 8.5vw, 50px);
+    height: clamp(26px, 7.5vw, 50px);
     width: auto;
     max-width: 18vw;            /* 3 logo + gap mellett is befér */
     object-fit: contain;
@@ -546,9 +543,9 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
 
   .footer-players{
     flex: 0 0 auto;
-    height: clamp(44px, 14vw, 86px);
+    height: clamp(44px, 13vw, 86px);
     width:auto;
-    max-width: 34vw;            /* a jobb oldali kép se tolja ki */
+    max-width: 34vw;
     object-fit: contain;
   }
 }
@@ -585,23 +582,76 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
   }
 }
 
-/* ✅ LANDSCAPE PHONE: teljes tabella, alapesetben scroll nélkül (összehúzott spacing) */
-@media (max-width: 920px) and (orientation:landscape){
+/* =========================================================
+   ✅ iPhone SE LANDSCAPE – TABELLA TELJESEN LÁTSZÓDJON
+   - nincs vízszintes kilógás
+   - table-layout: fixed + oszlop szélességek
+   - kisebb padding/font
+   ========================================================= */
+@media (max-width: 740px) and (orientation:landscape){
   .table-wrap{
-    overflow-x: hidden; /* ✅ ne a scroll legyen az alap */
+    overflow-x:hidden;           /* ✅ ne scrollozzon, ne is vágjon ki */
     -webkit-overflow-scrolling: touch;
   }
 
   table{
     width:100%;
-    min-width:0 !important;     /* ✅ lehessen összemenni */
+    min-width:0 !important;
+    table-layout:fixed;          /* ✅ befér a viewportba */
+  }
+
+  thead th{
+    padding:4px 4px;
+    font-size:10px;
+    letter-spacing:0;
+  }
+  tbody td{
+    padding:4px 4px;
+    font-size:11px;
+  }
+
+  /* oszlopok (10 oszlopos táblához hangolva) */
+  th:nth-child(1), td:nth-child(1){ width:36px; }  /* # / helyezés */
+  th:nth-child(2), td:nth-child(2){ width:auto; }  /* név */
+  th:nth-child(3), td:nth-child(3){ width:44px; }  /* meccs */
+  th:nth-child(4), td:nth-child(4){ width:44px; }  /* gy */
+  th:nth-child(5), td:nth-child(5){ width:44px; }  /* d */
+  th:nth-child(6), td:nth-child(6){ width:44px; }  /* v */
+  th:nth-child(7), td:nth-child(7){ width:52px; }  /* gól */
+  th:nth-child(8), td:nth-child(8){ width:52px; }  /* kapott */
+  th:nth-child(9), td:nth-child(9){ width:52px; }  /* gk */
+  th:nth-child(10), td:nth-child(10){ width:54px; }/* pont */
+
+  td.name{
+    min-width:0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .rank{
+    width:22px;
+    height:22px;
+    border-radius:7px;
+    font-size:11px;
+  }
+}
+
+/* ✅ LANDSCAPE PHONE (általános): sűrítés, de még nem fix-layout */
+@media (max-width: 920px) and (orientation:landscape){
+  .table-wrap{
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table{
+    width:100%;
+    min-width:0 !important;
     table-layout:auto;
   }
 
-  /* ✅ minden oszlop látszik */
   th, td{ display:table-cell !important; }
 
-  /* ✅ “sportoldalas” sűrítés */
   thead th{
     padding:6px 6px;
     font-size:11px;
@@ -612,25 +662,24 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
   }
 
   td.name{
-    min-width:0;                 /* ✅ ne erőltesse a szélességet */
+    min-width:0;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
   }
 }
 
-/* ✅ HA nagyon kicsi a landscape (pl. régi telefon): inkább a tabella görgessen */
-@media (max-width: 720px) and (orientation:landscape){
+/* ✅ HA nagyon kicsi a landscape (nagyon régi / extrém): inkább görgessen, ne törjön szét */
+@media (max-width: 520px) and (orientation:landscape){
   .table-wrap{ overflow-x:auto; }
   table{
-    min-width:760px !important;  /* ✅ legyen olvasható, inkább scroll */
+    min-width:760px !important;
     table-layout:auto;
   }
 }
 
 /* =========================================================
    ✅ LANDSCAPE SMALL SCREEN: kártyák ne lógjanak ki
-   - playerCard + matches-card + news-wall
    ========================================================= */
 @media (orientation:landscape) and (max-height: 520px){
   .container{
@@ -641,7 +690,7 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
   .card-header{ padding:10px 12px; }
   .card-body{
     padding:10px 12px;
-    overflow-x:hidden; /* ✅ belső tartalom ne tolja ki */
+    overflow-x:hidden;
   }
 
   #playerCard,
@@ -650,7 +699,6 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
     max-width:100%;
   }
 
-  /* playerCard belső túlcsúszás védelem */
   #playerCard .card-body{ overflow:hidden; }
   #playerCard .kv,
   #playerCard .form-row{
@@ -658,12 +706,10 @@ button.link:hover{ color:var(--red); text-decoration:underline; }
     width:100%;
   }
 
-  /* meccs kártya belső elemek kisebbek */
   .match{ padding:12px; }
   .match-top{ flex-wrap:wrap; }
   .teams{ font-size:12px; }
 
-  /* roundbar: ne nyújtson ki vízszintbe */
   .roundbar{
     display:grid;
     grid-template-columns: 1fr 1fr;
@@ -922,13 +968,12 @@ img, svg { max-width: 100%; height: auto; }
 
 /* =========================
    PLAYER CARD – BACKGROUND IMAGE
-   (a háttérkép az assets/bg-meccsek.jpeg)
    ========================= */
 
 #playerCard{
   position: relative;
   overflow: hidden;
-  background: none; /* felülírjuk az alap gradientet */
+  background: none;
   max-width:100%;
 }
 
@@ -996,12 +1041,12 @@ img, svg { max-width: 100%; height: auto; }
 #playerCard .form{ max-width: 100%; }
 
 /* =========================================================
-   ✅ PLAYER CARD ANIMÁCIÓ (csak ehhez a funkcióhoz)
+   ✅ PLAYER CARD ANIMÁCIÓ
    ========================================================= */
 
 #playerCard .player-content{
   overflow: hidden;
-  max-height: 0;               /* JS állítja scrollHeight-re */
+  max-height: 0;
   opacity: 0;
   transform: translateY(-6px);
   transition:
@@ -1012,13 +1057,11 @@ img, svg { max-width: 100%; height: auto; }
   will-change: max-height, opacity, transform;
 }
 
-/* nyitott állapot (a max-height-et JS adja) */
 #playerCard.is-open .player-content{
   opacity: 1;
   transform: translateY(0);
 }
 
-/* váltáskor fade */
 #playerCard .player-content.is-fading{
   opacity: .18;
   transform: translateY(2px);
@@ -1041,7 +1084,7 @@ img, svg { max-width: 100%; height: auto; }
   position: absolute;
   inset: 0;
   background: url("mezek.png") center center / cover no-repeat;
-  opacity: 0.55;                /* kép erőssége */
+  opacity: 0.55;
   z-index: 0;
   border-radius: inherit;
 }
@@ -1060,9 +1103,25 @@ img, svg { max-width: 100%; height: auto; }
   border-radius: inherit;
 }
 
-/* tartalom legyen a kép felett */
 .matches-card .card-header,
 .matches-card .card-body{
   position: relative;
   z-index: 2;
+}
+
+/* EXTRA: nagyon alacsony landscape footer (biztonsági) */
+@media (orientation: landscape) and (max-height: 450px){
+  .footer-inner{
+    height:auto;
+    min-height:80px;
+    padding:8px 12px;
+  }
+  .partner-logo{
+    height:36px;
+    max-width:16vw;
+  }
+  .footer-players{
+    height:60px;
+    max-width:30vw;
+  }
 }
