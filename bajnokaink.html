@@ -6,50 +6,44 @@
   <title>Makkos Liga – Bajnokaink</title>
 
   <link rel="stylesheet" href="assets/style.css">
-  <!-- Favicon / App Icons -->
-<link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
-<link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
-<link rel="shortcut icon" href="assets/icons/favicon.ico">
-
-<link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
-
-<link rel="manifest" href="assets/icons/site.webmanifest">
-<meta name="theme-color" content="#c4161c">
-
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
+  <link rel="shortcut icon" href="assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="assets/icons/site.webmanifest">
+  <meta name="theme-color" content="#c4161c">
 </head>
 
 <body>
 
-  <!-- FEHÉR HEADER (ugyanaz, mint indexen) -->
   <header class="site-header">
     <div class="header-inner">
       <div class="header-left">
-        <img src="assets/logo4.png" alt="Makkos Liga logo" class="logo-main">
+        <a href="index.html" class="header-logo-link" aria-label="Vissza a főoldalra">
+          <img src="assets/logo4.png" alt="Makkos Liga logo" class="logo-main">
+        </a>
         <img src="assets/kupa.png" alt="Kupa" class="logo-cup">
       </div>
 
       <div class="header-right nav">
-
-        <!-- MOBIL: HAMBURGER -->
         <button class="menu-btn" id="menuBtn" type="button"
                 aria-expanded="false" aria-controls="mobileMenu">
           Menü ☰
         </button>
 
-        <!-- DESKTOP -->
         <nav class="nav-desktop" aria-label="Fő navigáció">
           <a class="nav-link" href="index.html">Tabella</a>
           <a class="nav-link" href="bajnokaink.html">Bajnokaink</a>
+		  <a class="nav-link" href="kommentfal.html">Fórum</a>
           <a class="admin-link" href="login.html">Admin</a>
         </nav>
 
-        <!-- MOBIL PANEL -->
         <div class="mobile-menu" id="mobileMenu" hidden>
           <a class="mobile-link" href="index.html">Tabella</a>
           <a class="mobile-link" href="bajnokaink.html">Bajnokaink</a>
+		  <a class="mobile-link" href="kommentfal.html">Fórum</a>
           <a class="mobile-link" href="login.html">Admin</a>
         </div>
-
       </div>
     </div>
   </header>
@@ -64,7 +58,6 @@
       </div>
 
       <div class="card-body">
-        <!-- BAJNOK KÁRTYÁK -->
         <div class="champ-grid">
           <article class="champ-card">
             <img class="champ-img" src="assets/2025bajnok.png" alt="2025 bajnoka">
@@ -100,7 +93,6 @@
     </div>
   </footer>
 
-  <!-- MOBIL MENÜ JS -->
   <script>
   (() => {
     const btn = document.getElementById("menuBtn");
@@ -125,16 +117,13 @@
     menu.querySelectorAll("a").forEach(a => a.addEventListener("click", closeMenu));
     document.addEventListener("click", closeMenu);
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
-	
-	// ha átméretezed desktopra, automatikusan zárjon
+
     window.addEventListener("resize", () => {
       if (window.innerWidth >= 641) closeMenu();
     });
-
   })();
   </script>
 
-  <!-- a kis extra CSS csak ehhez az oldalhoz: grid + kártyák -->
   <style>
     .champ-grid{
       display:grid;
@@ -185,7 +174,7 @@
     }
     @media (max-width: 640px){
       .champ-grid{ grid-template-columns: 1fr; }
-      .champ-img{ aspect-ratio: 4 / 3; }
+      .champ-info{ padding:10px; }
     }
   </style>
 
