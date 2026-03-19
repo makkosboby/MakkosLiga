@@ -1239,3 +1239,48 @@ img, svg { max-width: 100%; height: auto; }
     gap:12px;
   }
 }
+
+/* =========================
+   FIXED HEADER MOBILON
+   ========================= */
+
+@media (max-width: 640px){
+  .site-header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3000;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  }
+
+  .site-header::after{
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 6px;
+    background: var(--red);
+  }
+
+  .header-inner{
+    min-height: 78px;
+  }
+
+  .accent-bar{
+    display: none;
+  }
+
+  body{
+    padding-top: 84px; /* 78px header + 6px piros csík */
+  }
+
+  .mobile-menu{
+    position: fixed;
+    top: 86px;
+    right: 14px;
+    z-index: 3100;
+  }
+}
