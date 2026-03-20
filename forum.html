@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
+<link rel="stylesheet" href="assets/css/main.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Makkos Liga – Fórum</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="assets/style.css">
-
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
   <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
   <link rel="shortcut icon" href="assets/icons/favicon.ico">
@@ -189,8 +188,10 @@ const COMMENTS_PER_PAGE = 15;
 
 let commentsChannel = null;
 let cooldownTimer = null;
-let allComments = [];
 let currentPage = 1;
+let totalComments = 0;
+let totalPages = 1;
+let currentComments = [];
 
 function escapeHtml(str){
   return String(str)
@@ -234,14 +235,14 @@ function startCooldownTicker(){
   cooldownTimer = setInterval(updateCooldownUi, 500);
 }
 
-function getTotalPages(){
-  return Math.max(1, Math.ceil(allComments.length / COMMENTS_PER_PAGE));
+function updateTotals(count){
+  totalComments = count || 0;
+  totalPages = Math.max(1, Math.ceil(totalComments / COMMENTS_PER_PAGE));
+  commentsCount.textContent = `${totalComments} komment`;
 }
 
 function renderPagination(){
-  const totalPages = getTotalPages();
-
-  if (!allComments.length) {
+  if (!totalComments) {
     commentPagination.hidden = true;
     return;
   }
@@ -253,18 +254,13 @@ function renderPagination(){
 }
 
 function renderComments(){
-  commentsCount.textContent = `${allComments.length} komment`;
-
-  if (!allComments.length) {
+  if (!currentComments.length) {
     commentsList.innerHTML = `<div class="muted">Még nincs komment.</div>`;
     renderPagination();
     return;
   }
 
-  const start = (currentPage - 1) * COMMENTS_PER_PAGE;
-  const pageRows = allComments.slice(start, start + COMMENTS_PER_PAGE);
-
-  commentsList.innerHTML = pageRows.map(row => `
+  commentsList.innerHTML = currentComments.map(row => `
     <article class="comment-item">
       <div class="comment-top">
         <div class="comment-name">${escapeHtml(row.name)}</div>
@@ -280,10 +276,18 @@ function renderComments(){
 async function loadComments(options = {}){
   const keepPage = options.keepPage === true;
 
-  const { data, error } = await supabaseClient
+  if (!keepPage) {
+    currentPage = 1;
+  }
+
+  const from = (currentPage - 1) * COMMENTS_PER_PAGE;
+  const to = from + COMMENTS_PER_PAGE - 1;
+
+  const { data, count, error } = await supabaseClient
     .from("comments_wall")
-    .select("id,name,message,created_at")
-    .order("created_at", { ascending: false });
+    .select("id,name,message,created_at", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
 
   if (error) {
     console.error(error);
@@ -292,16 +296,14 @@ async function loadComments(options = {}){
     return;
   }
 
-  allComments = data || [];
+  updateTotals(count);
 
-  const totalPages = getTotalPages();
-
-  if (keepPage) {
-    currentPage = Math.min(currentPage, totalPages);
-  } else {
-    currentPage = 1;
+  if (keepPage && currentPage > totalPages) {
+    currentPage = totalPages;
+    return loadComments({ keepPage: true });
   }
 
+  currentComments = data || [];
   renderComments();
 }
 
@@ -362,7 +364,7 @@ function startRealtime(){
     .on(
       "postgres_changes",
       { event: "*", schema: "public", table: "comments_wall" },
-      () => loadComments()
+      () => loadComments({ keepPage: true })
     )
     .subscribe();
 }
@@ -370,15 +372,14 @@ function startRealtime(){
 prevPageBtn.addEventListener("click", () => {
   if (currentPage > 1) {
     currentPage -= 1;
-    renderComments();
+    loadComments({ keepPage: true });
   }
 });
 
 nextPageBtn.addEventListener("click", () => {
-  const totalPages = getTotalPages();
   if (currentPage < totalPages) {
     currentPage += 1;
-    renderComments();
+    loadComments({ keepPage: true });
   }
 });
 
