@@ -29,7 +29,7 @@
 
       <div class="header-right nav">
         <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileMenu">
-          Menü ☰
+          Menü
         </button>
 
         <nav class="nav-desktop" aria-label="Fő navigáció">
@@ -97,9 +97,17 @@
           </div>
 
           <div class="comment-pagination" id="commentPagination" hidden>
-            <button id="prevPageBtn" class="page-btn" type="button">Előző</button>
+            <button id="prevPageBtn" class="page-btn" type="button" aria-label="Előző oldal">
+              <span class="page-btn-icon" aria-hidden="true">←</span>
+              <span>Előző</span>
+            </button>
+
             <div id="pageIndicator" class="page-indicator">1 / 1</div>
-            <button id="nextPageBtn" class="page-btn" type="button">Következő</button>
+
+            <button id="nextPageBtn" class="page-btn" type="button" aria-label="Következő oldal">
+              <span>Következő</span>
+              <span class="page-btn-icon" aria-hidden="true">→</span>
+            </button>
           </div>
         </div>
       </section>
@@ -152,9 +160,7 @@
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeMenu();
   });
-  window.addEventListener("resize", () => {
-    if (window.innerWidth >= 641) closeMenu();
-  });
+  window.addEventListener("resize", closeMenu);
 })();
 </script>
 
