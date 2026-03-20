@@ -1,0 +1,702 @@
+/* ===== HEADER ===== */
+.site-header{
+  background:#fff;
+  border-bottom:1px solid #e5e5e5;
+
+  /* ✅ FULL WIDTH FIX */
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.header-inner{
+  max-width:1240px;
+  margin:0 auto;
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:nowrap; /* mobilon se törjön */
+}
+
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex: 0 0 auto;
+}
+
+.logo-main{
+  height:120px;
+  width:auto;
+  object-fit:contain;
+}
+
+.logo-cup{
+  height:110px;
+  width:auto;
+  object-fit:contain;
+}
+
+.header-right{
+  display:flex;
+  align-items:center;
+  flex: 0 0 auto;
+}
+
+.admin-link{
+  color:#000;
+  text-decoration:none;
+  font-weight:800;
+  letter-spacing:.3px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid #e5e5e5;
+  background:#fff;
+  transition: .15s ease;
+}
+
+.admin-link:hover{
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* mobilon is egy sor maradjon: arányosan kisebb képek */
+@media (max-width: 640px){
+  .header-inner{ gap:10px; }
+  .logo-main{ height:60px; }
+  .logo-cup{ height:60px; }
+  .admin-link{ padding:8px 10px; font-size:13px; }
+}
+
+/* ===== PIROS ACCENT SÁVOK ===== */
+.accent-bar{
+  height:6px;
+  background: var(--red);
+
+  /* ✅ FULL WIDTH FIX */
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+.footer-accent-bar{
+  height:6px;
+  background: var(--red);
+
+  /* ✅ FULL WIDTH FIX */
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+/* ===== LAYOUT ===== */
+.layout{
+  display:grid;
+  grid-template-columns:1fr 380px;
+  gap:14px;
+  align-items:start;
+
+  /* ✅ grid overflow fix */
+  min-width:0;
+}
+.layout > *{ min-width:0; }
+
+@media(max-width:980px){
+  .layout{ grid-template-columns:1fr; }
+}
+
+/* ===== CARDS ===== */
+.card{
+  background:linear-gradient(180deg, var(--panel2), var(--panel));
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+
+  /* ✅ child overflow fix */
+  min-width:0;
+  max-width:100%;
+}
+
+.card-header{
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.card-title{
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.3px;
+  text-transform:uppercase;
+}
+
+.card-body{ padding:12px 14px; }
+
+/* ===== Tabella header: 1 sor mobilon is ===== */
+.tabella-header{ flex-wrap:nowrap; }
+.tabella-header .card-title{ white-space:nowrap; }
+
+.tabella-header-right{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:nowrap;
+  min-width:0;
+}
+
+select{
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(1px);
+  border:1px solid rgba(255,255,255,0.15);
+  color:#fff;
+  border:1px solid var(--line2);
+  border-radius:10px;
+  padding:8px 10px;
+  max-width:100%;
+}
+
+td:last-child{
+  background: rgba(196,22,28,.08);
+  font-weight: 800;
+}
+
+@media (max-width: 640px){
+  .tabella-header-right select{
+    padding:6px 8px;
+    font-size:12px;
+    max-width:150px;
+  }
+}
+
+.pill{
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:var(--red-soft);
+  border:1px solid rgba(196,22,28,.4);
+}
+
+.muted{ color:var(--muted); font-size:12px; }
+
+/* ===== TABLE ===== */
+.table-wrap{ overflow:auto; -webkit-overflow-scrolling: touch; }
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:760px;
+}
+
+thead th{
+  position:sticky;
+  top:0;
+  background:#000;
+  color:var(--muted);
+  font-size:12px;
+  padding:10px;
+  border-bottom:1px solid var(--line);
+  text-align:center;
+  z-index: 5;
+}
+
+tbody td{
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  text-align:center;
+  font-size:13px;
+}
+
+tbody tr:hover{ background:rgba(196,22,28,.08); }
+
+td.name{
+  text-align:left;
+  min-width:180px;
+}
+
+button.link{
+  background:none;
+  border:none;
+  color:#fff;
+  cursor:pointer;
+  font:inherit;
+}
+button.link:hover{ color:var(--red); text-decoration:underline; }
+
+.rank{
+  display:inline-flex;
+  width:26px;
+  height:26px;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  background:#000;
+  border:1px solid var(--line);
+  font-weight:700;
+  font-size:12px;
+}
+.rank.top1{ border-color:var(--red); background:var(--red-soft); }
+.rank.top2{ border-color:#aaa; }
+.rank.top3{ border-color:#777; }
+
+/* ===== PLAYER CARD KV ===== */
+.kv{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto; /* ✅ ne nyomja túl szélesre */
+  gap:8px 10px;
+  margin-top:10px;
+  font-size:13px;
+}
+.kv > *{ min-width:0; } /* ✅ hosszú szöveg se feszítsen */
+
+/* ===== MATCHES ===== */
+.roundbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+
+.btn{
+  background: rgba(0,0,0,0.35);
+  border:1px solid rgba(255,255,255,0.15);
+  border:1px solid var(--line2);
+  color:#fff;
+  border-radius:10px;
+  padding:8px 10px;
+  cursor:pointer;
+}
+.btn:hover{ border-color:var(--red); background:var(--red-soft); }
+.btn:disabled{ opacity:.4; }
+
+.match{
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(1px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 14px;
+  margin: 12px 0;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+  max-width:100%;
+}
+
+.match-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:6px;
+  min-width:0;
+}
+.score{ font-weight:800; letter-spacing:.5px; }
+.teams{
+  font-size:13px;
+  margin-top:6px;
+  min-width:0;
+  overflow-wrap:anywhere; /* ✅ hosszú nevek ne lógjanak ki */
+}
+.teams span{ color:var(--muted); }
+
+/* ===== FORM ===== */
+.form-row{
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.form-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom: 8px;
+  min-width:0;
+}
+.form{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  max-width:100%;
+}
+.form-badge{
+  width: 30px;
+  height: 30px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius: 10px;
+  border: 1px solid var(--line2);
+  background: rgba(255,255,255,.04);
+  font-weight: 800;
+}
+.form-badge.win{
+  border-color: rgba(196,22,28,.65);
+  background: rgba(196,22,28,.22);
+}
+.form-badge.draw{
+  border-color: rgba(255,255,255,.22);
+  background: rgba(255,255,255,.06);
+}
+.form-badge.loss{
+  border-color: rgba(196,22,28,.35);
+  background: rgba(0,0,0,.25);
+  opacity: .9;
+}
+.form-empty{ color: var(--muted); font-size: 12px; }
+
+/* ===== FOOTER (ÚJ elrendezés) ===== */
+.site-footer{
+  background:#fff;
+  border-top:1px solid #e5e5e5;
+
+  /* ✅ FULL WIDTH FIX */
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.footer-inner{
+  max-width:1240px;
+  margin:0 auto;
+  padding:12px 14px;
+  height:170px;              /* desktopon maradhat fix */
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  min-width:0;
+}
+
+/* BAL OLDAL */
+.footer-left{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.footer-title{
+  color:#000;
+  font-weight:800;
+  font-size:14px;
+  letter-spacing:.2px;
+}
+
+.footer-partners{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+.partner-logo{
+  height:130px;
+  width:auto;
+  object-fit:contain;
+  display:block;
+}
+
+/* JOBB OLDAL */
+.footer-right{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex: 0 0 auto;
+  min-width:0;
+}
+
+/* Nagyobb, de a sávon belül marad */
+.footer-players{
+  height:100%;
+  max-height:100%;
+  width:auto;
+  object-fit:contain;
+  display:block;
+}
+
+/* ===== MOBILE: PORTRAIT táblázat + általános mobil layout ===== */
+@media (max-width: 640px) and (orientation:portrait){
+  .table-wrap{ overflow-x:hidden; }
+
+  table{
+    width:100%;
+    min-width:0;
+    table-layout:fixed;
+  }
+
+  th:nth-child(1), td:nth-child(1){ width:44px; }
+  th:nth-child(2), td:nth-child(2){ width:auto; }
+  th:nth-child(3), td:nth-child(3){ width:56px; }
+  th:nth-child(9), td:nth-child(9){ width:60px; }
+  th:nth-child(10), td:nth-child(10){ width:56px; }
+
+  /* PORTRAIT: kompakt oszlopok */
+  th:nth-child(4), td:nth-child(4){ display:none; }
+  th:nth-child(5), td:nth-child(5){ display:none; }
+  th:nth-child(6), td:nth-child(6){ display:none; }
+  th:nth-child(7), td:nth-child(7){ display:none; }
+  th:nth-child(8), td:nth-child(8){ display:none; }
+
+  td.name{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .rank{ width:22px; height:22px; border-radius:7px; font-size:11px; }
+
+  .roundbar{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    background: rgba(0,0,0,0.15);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    padding: 10px;
+    border-radius: 0px;
+  }
+  .roundbar #roundSelect{ grid-column:1 / -1; }
+  .roundbar #prevRoundBtn,
+  .roundbar #nextRoundBtn{ width:100%; }
+
+  .match-top{ flex-direction:column; align-items:flex-start; }
+}
+
+/* =========================================================
+   ✅ FOOTER MOBILE FIX (iPhone SE landscape miatt 740px-ig!)
+   - 3 logo + csapatkép 1 sorban
+   ========================================================= */
+@media (max-width: 740px){
+  .footer-inner{
+    height:auto;                 /* ✅ ne feszüljön fix magasságtól */
+    min-height:96px;
+    padding:10px 12px;
+    gap:10px;
+    flex-wrap:nowrap;            /* ✅ egy sor */
+    align-items:center;
+  }
+
+  .footer-left{
+    flex: 1 1 auto;
+    min-width:0;
+  }
+
+  .footer-title{
+    font-size:12px;
+    line-height:1.1;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:100%;
+  }
+
+  .footer-partners{
+    flex-wrap:nowrap;            /* ✅ 3 logo egy sor */
+    gap:8px;
+    min-width:0;
+  }
+
+  .footer-partners img.partner-logo{
+    flex: 0 1 auto;
+    height: clamp(26px, 7.5vw, 50px);
+    width: auto;
+    max-width: 18vw;            /* 3 logo + gap mellett is befér */
+    object-fit: contain;
+  }
+
+  .footer-right{
+    flex: 0 0 auto;
+    min-width:0;
+    height:auto;
+  }
+
+  .footer-players{
+    flex: 0 0 auto;
+    height: clamp(44px, 13vw, 86px);
+    width:auto;
+    max-width: 34vw;
+    object-fit: contain;
+  }
+}
+
+/* EXTRA: nagyon kicsi szélességnél még szorosabb, de továbbra is 1 sor */
+@media (max-width: 420px){
+  .footer-inner{ gap:8px; padding:8px 10px; }
+  .footer-partners{ gap:6px; }
+
+  .footer-partners img.partner-logo{
+    height: clamp(24px, 9vw, 44px);
+    max-width: 17vw;
+  }
+
+  .footer-players{
+    height: clamp(40px, 16vw, 78px);
+    max-width: 33vw;
+  }
+
+  .footer-title{ font-size:11px; }
+}
+@media (max-width: 360px){
+  .footer-inner{ gap:6px; padding:8px 8px; }
+  .footer-partners{ gap:5px; }
+
+  .footer-partners img.partner-logo{
+    height: clamp(22px, 9.5vw, 40px);
+    max-width: 16vw;
+  }
+
+  .footer-players{
+    height: clamp(38px, 17vw, 72px);
+    max-width: 32vw;
+  }
+}
+
+/* =========================================================
+   ✅ iPhone SE LANDSCAPE – TABELLA TELJESEN LÁTSZÓDJON
+   - nincs vízszintes kilógás
+   - table-layout: fixed + oszlop szélességek
+   - kisebb padding/font
+   ========================================================= */
+@media (max-width: 740px) and (orientation:landscape){
+  .table-wrap{
+    overflow-x:hidden;           /* ✅ ne scrollozzon, ne is vágjon ki */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table{
+    width:100%;
+    min-width:0 !important;
+    table-layout:fixed;          /* ✅ befér a viewportba */
+  }
+
+  thead th{
+    padding:4px 4px;
+    font-size:10px;
+    letter-spacing:0;
+  }
+  tbody td{
+    padding:4px 4px;
+    font-size:11px;
+  }
+
+  /* oszlopok (10 oszlopos táblához hangolva) */
+  th:nth-child(1), td:nth-child(1){ width:36px; }  /* # / helyezés */
+  th:nth-child(2), td:nth-child(2){ width:auto; }  /* név */
+  th:nth-child(3), td:nth-child(3){ width:44px; }  /* meccs */
+  th:nth-child(4), td:nth-child(4){ width:44px; }  /* gy */
+  th:nth-child(5), td:nth-child(5){ width:44px; }  /* d */
+  th:nth-child(6), td:nth-child(6){ width:44px; }  /* v */
+  th:nth-child(7), td:nth-child(7){ width:52px; }  /* gól */
+  th:nth-child(8), td:nth-child(8){ width:52px; }  /* kapott */
+  th:nth-child(9), td:nth-child(9){ width:52px; }  /* gk */
+  th:nth-child(10), td:nth-child(10){ width:54px; }/* pont */
+
+  td.name{
+    min-width:0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .rank{
+    width:22px;
+    height:22px;
+    border-radius:7px;
+    font-size:11px;
+  }
+}
+
+/* ✅ LANDSCAPE PHONE (általános): sűrítés, de még nem fix-layout */
+@media (max-width: 920px) and (orientation:landscape){
+  .table-wrap{
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table{
+    width:100%;
+    min-width:0 !important;
+    table-layout:auto;
+  }
+
+  th, td{ display:table-cell !important; }
+
+  thead th{
+    padding:6px 6px;
+    font-size:11px;
+  }
+  tbody td{
+    padding:6px 6px;
+    font-size:12px;
+  }
+
+  td.name{
+    min-width:0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+}
+
+/* ✅ HA nagyon kicsi a landscape (nagyon régi / extrém): inkább görgessen, ne törjön szét */
+@media (max-width: 520px) and (orientation:landscape){
+  .table-wrap{ overflow-x:auto; }
+  table{
+    min-width:760px !important;
+    table-layout:auto;
+  }
+}
+
+/* =========================================================
+   ✅ LANDSCAPE SMALL SCREEN: kártyák ne lógjanak ki
+   ========================================================= */
+@media (orientation:landscape) and (max-height: 520px){
+  .container{
+    padding:0 10px 18px;
+    margin:16px auto;
+  }
+
+  .card-header{ padding:10px 12px; }
+  .card-body{
+    padding:10px 12px;
+    overflow-x:hidden;
+  }
+
+  #playerCard,
+  .matches-card,
+  .news-wall{
+    max-width:100%;
+  }
+
+  #playerCard .card-body{ overflow:hidden; }
+  #playerCard .kv,
+  #playerCard .form-row{
+    max-width:100%;
+    width:100%;
+  }
+
+  .match{ padding:12px; }
+  .match-top{ flex-wrap:wrap; }
+  .teams{ font-size:12px; }
+
+  .roundbar{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:10px;
+  }
+  .roundbar #roundSelect{ grid-column: 1 / -1; }
+  .roundbar #prevRoundBtn,
+  .roundbar #nextRoundBtn{ width:100%; }
+}
+
+tr.updated{
+  animation: flash 1.2s ease;
+}
+
+@keyframes flash{
+  0%{ background: rgba(196,22,28,.35); }
+  100%{ background: transparent; }
+}
+
