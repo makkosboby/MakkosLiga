@@ -225,6 +225,27 @@ let matches = [];
 let matchPlayers = [];
 let currentScope = "current";
 
+let statsBundleCache = new Map();
+let cacheDataVersion = 0;
+let playersById = new Map();
+
+function clearStatsCaches(){
+  statsBundleCache.clear();
+  cacheDataVersion += 1;
+}
+
+function getBundleCacheKey(scope){
+  return `${cacheDataVersion}|${scope === "current" ? `season:${currentSeasonId ?? "none"}` : "overall"}`;
+}
+
+function getStatsBundleCached(scope){
+  const key = getBundleCacheKey(scope);
+  if (!statsBundleCache.has(key)) {
+    statsBundleCache.set(key, buildBundle(scope));
+  }
+  return statsBundleCache.get(key);
+}
+
 function escapeHtml(str){
   return String(str)
     .replaceAll("&","&amp;")
@@ -369,7 +390,6 @@ function buildBundle(scope){
     playerStatsMap.set(player.id, createEmptyPlayerStats(player));
   });
 
-  const playersById = new Map(players.map(p => [p.id, p]));
   const matchPlayersByMatch = new Map();
 
   filteredMatchPlayers.forEach(mp => {
@@ -800,8 +820,8 @@ function renderHeadToHead(bundle){
   const pair = bundle.pairList.find(item => getTogetherKey(item.playerAId, item.playerBId) === togetherKey);
   const h2h = bundle.h2hMap.get(togetherKey);
 
-  const aName = players.find(p => String(p.id) === String(aId))?.name || "Játékos A";
-  const bName = players.find(p => String(p.id) === String(bId))?.name || "Játékos B";
+  const aName = playersById.get(aId)?.name || "Játékos A";
+  const bName = playersById.get(bId)?.name || "Játékos B";
 
   let againstHtml = `
     <div class="info-card h2h-redesign-card">
@@ -956,7 +976,7 @@ function renderHeadToHead(bundle){
 }
 
 function renderAll(){
-  const bundle = buildBundle(currentScope);
+  const bundle = getStatsBundleCached(currentScope);
 
   modeBadge.textContent = getScopeLabel();
   leaderboardBadge.textContent = getScopeLabel();
@@ -989,6 +1009,8 @@ async function loadData(){
   matches = matchesData || [];
   matchPlayers = matchPlayersData || [];
   currentSeasonId = seasons.find(item => item.is_current)?.id || seasons[0]?.id || null;
+  playersById = new Map(players.map(player => [String(player.id), player]));
+  clearStatsCaches();
 
   playerSelect.innerHTML = `<option value="">Válassz egy játékost</option>` + players.map(player => `<option value="${player.id}">${escapeHtml(player.name)}</option>`).join("");
   h2hPlayerA.innerHTML = `<option value="">Válassz játékost</option>` + players.map(player => `<option value="${player.id}">${escapeHtml(player.name)}</option>`).join("");
