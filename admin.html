@@ -6,282 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
 
-  <style>
-    :root{
-      --bg:#0b0b0d;
-      --panel:#111114;
-      --panel2:#15151a;
-      --text:#ffffff;
-      --muted:#b3b3b3;
-      --line: rgba(255,255,255,0.08);
-      --line2: rgba(255,255,255,0.14);
-      --red:#c4161c;
-      --red-soft: rgba(196,22,28,.15);
-      --shadow: 0 14px 40px rgba(0,0,0,.65);
-      --radius:14px;
-    }
-
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    /* ===== TOP BAR (sticky) ===== */
-    .admin-topbar{
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: linear-gradient(180deg, #ffffff, #f4f4f4);
-      color:#111;
-      border-bottom: 1px solid rgba(0,0,0,.08);
-    }
-    .admin-topbar::after{
-      content:"";
-      display:block;
-      height:4px;
-      background: var(--red);
-    }
-    .topbar-inner{
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 12px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 0;
-    }
-    .brand img{ height:34px; object-fit:contain; }
-    .brand-title{
-      font-weight: 900;
-      letter-spacing:.2px;
-      font-size: 16px;
-      white-space: nowrap;
-    }
-    .top-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .top-link{
-      text-decoration:none;
-      color:#111;
-      font-weight:700;
-      font-size:13px;
-      padding:8px 10px;
-      border-radius:12px;
-      border:1px solid rgba(0,0,0,.12);
-      background:#fff;
-      cursor:pointer;
-    }
-    .top-link:hover{ border-color: rgba(0,0,0,.22); }
-    .danger-link{
-      border-color: rgba(196,22,28,.45);
-      background: rgba(196,22,28,.08);
-    }
-    .danger-link:hover{ background: rgba(196,22,28,.14); }
-
-    /* ===== MAIN LAYOUT ===== */
-    .wrap{
-      max-width: 1180px;
-      margin: 16px auto 28px;
-      padding: 0 14px;
-    }
-
-    .status-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin: 10px 0 14px;
-      flex-wrap: wrap;
-    }
-
-    .pill{
-      font-size:12px;
-      padding:6px 10px;
-      border-radius:999px;
-      background: var(--red-soft);
-      border: 1px solid rgba(196,22,28,.35);
-      color: var(--text);
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 420px;
-      gap: 14px;
-      align-items: start;
-    }
-    @media(max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-    }
-
-    .card{
-      background: linear-gradient(180deg, var(--panel2), var(--panel));
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-    .card-header{
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-    }
-    .card-title{
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing:.35px;
-      text-transform: uppercase;
-      color: #fff;
-    }
-    .card-body{ padding: 12px 14px; }
-
-    .muted{ color: var(--muted); font-size: 12px; }
-    .sep{ height:1px; background: var(--line); margin: 12px 0; }
-
-    /* ===== FORMS ===== */
-    label{ font-size: 12px; color: var(--muted); }
-    input, select{
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--line2);
-      background:#000;
-      color:#fff;
-      outline: none;
-    }
-    input:focus, select:focus{ border-color: rgba(196,22,28,.8); }
-
-    .row{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .row > *{ flex:1; }
-
-    .btn{
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--line2);
-      background: #000;
-      color:#fff;
-      cursor:pointer;
-      font-weight: 800;
-      letter-spacing:.15px;
-    }
-    .btn:hover{
-      border-color: rgba(196,22,28,.7);
-      background: rgba(196,22,28,.12);
-    }
-    .btn-primary{
-      border-color: rgba(196,22,28,.85);
-      background: linear-gradient(180deg, rgba(196,22,28,.35), rgba(196,22,28,.14));
-    }
-    .btn-primary:hover{ background: rgba(196,22,28,.28); }
-    .btn-danger{
-      border-color: rgba(196,22,28,.75);
-      background: rgba(196,22,28,.10);
-    }
-    .btn-danger:hover{ background: rgba(196,22,28,.18); }
-    .btn-ghost{
-      background: transparent;
-    }
-    .btns{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .btns .btn{ width:auto; }
-
-    /* ===== TEAM SELECTOR ===== */
-    .selector{
-      max-height: 420px;
-      overflow:auto;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(0,0,0,.35);
-    }
-    .player-row{
-      display:grid;
-      grid-template-columns: 1fr 160px;
-      gap:10px;
-      align-items:center;
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-    .player-row:last-child{ border-bottom: none; }
-    .player-name{
-      font-weight: 700;
-      font-size: 13px;
-    }
-    .player-row select{ width: 100%; }
-
-    /* ===== MATCH LIST ===== */
-    .match-card{
-      border: 1px solid var(--line);
-      background: #000;
-      border-radius: 12px;
-      padding: 12px;
-      margin: 10px 0;
-    }
-    .match-top{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom: 6px;
-    }
-    .small{ font-size: 12px; color: var(--muted); }
-    .score{
-      font-weight: 900;
-      letter-spacing: .3px;
-    }
-    .teams{ font-size: 13px; margin-top: 6px; }
-    .teams span{ color: var(--muted); }
-
-    .danger-zone{
-      border: 1px solid rgba(196,22,28,.35);
-      background: rgba(196,22,28,.06);
-      border-radius: 12px;
-      padding: 12px;
-    }
-
-    /* mobile tweaks */
-    @media(max-width: 520px){
-      .player-row{ grid-template-columns: 1fr 140px; }
-      .top-link{ padding:8px 9px; }
-    }
-  </style>
   <!-- Favicon / App Icons -->
-<link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
-<link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
-<link rel="shortcut icon" href="assets/icons/favicon.ico">
-
-<link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
-
-<link rel="manifest" href="assets/icons/site.webmanifest">
-<meta name="theme-color" content="#c4161c">
-
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
+  <link rel="shortcut icon" href="assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="assets/icons/site.webmanifest">
+  <meta name="theme-color" content="#c4161c">
 </head>
 
-<body>
+<body class="admin-page">
 
-  <!-- Sticky top bar -->
   <div class="admin-topbar">
     <div class="topbar-inner">
       <div class="brand">
@@ -303,7 +41,6 @@
 
     <div class="grid">
 
-      <!-- LEFT: match input + recent matches -->
       <div class="card">
         <div class="card-header">
           <div class="card-title">Meccs rögzítése</div>
@@ -312,13 +49,13 @@
 
         <div class="card-body">
 
-          <div class="muted" style="margin-bottom:8px;">Válaszd ki, ki melyik csapatban játszott.</div>
+          <div class="muted admin-note">Válaszd ki, ki melyik csapatban játszott.</div>
 
           <div class="selector" id="teamSelector"></div>
 
           <div class="sep"></div>
 
-          <div class="row" style="gap:12px;">
+          <div class="row score-row">
             <div>
               <label>⚫ Fekete gól</label>
               <input type="number" id="blackScore" min="0" value="0">
@@ -329,19 +66,19 @@
             </div>
           </div>
 
-          <div class="btns" style="margin-top:12px;">
+          <div class="btns top-space-md">
             <button class="btn btn-primary" onclick="saveMatch()" type="button">💾 Meccs mentése</button>
             <button class="btn btn-ghost" onclick="clearTeamSelection()" type="button">🧹 Kijelölések törlése</button>
             <button class="btn btn-ghost" onclick="clearTeam('black')" type="button">⚫ Fekete ürít</button>
             <button class="btn btn-ghost" onclick="clearTeam('white')" type="button">⚪ Fehér ürít</button>
           </div>
 
-          <div id="matchMsg" class="muted" style="margin-top:10px;"></div>
+          <div id="matchMsg" class="muted top-space-sm"></div>
 
           <div class="sep"></div>
 
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-            <div class="card-title" style="text-transform:none; font-size:12px; letter-spacing:.2px;">Utolsó meccsek</div>
+          <div class="section-head-inline">
+            <div class="card-title card-title-normal">Utolsó meccsek</div>
             <button class="btn btn-ghost" onclick="loadMatches()" type="button">↻ Frissítés</button>
           </div>
 
@@ -350,7 +87,6 @@
         </div>
       </div>
 
-      <!-- RIGHT: season + add player -->	  
       <div> 
         <div class="card">
           <div class="card-header">
@@ -360,58 +96,55 @@
           <div class="card-body">
             <label>Játékos neve</label>
             <input type="text" id="playerName" placeholder="Pl.: Kovács Dani">
-            <div class="btns" style="margin-top:12px;">
+            <div class="btns top-space-md">
               <button class="btn btn-primary" onclick="addPlayer()" type="button">➕ Hozzáadás</button>
             </div>
-            <div id="addMsg" class="muted" style="margin-top:10px;"></div>
+            <div id="addMsg" class="muted top-space-sm"></div>
           </div>
         </div>	  
-	  
-		<div class="card" style="margin-top:14px;">
-		  <div class="card-header">
-		    <div class="card-title">Üzenőfal</div>
-		    <span class="pill">Index oldalon látszik</span>
-		  </div>
-          <div class="card-body">
-		    <label>Üzenet / hír</label>
-		    <textarea id="newsText" rows="5" placeholder="Írj ide hírt..."></textarea>
 
-          <div class="btns" style="margin-top:12px;">
-            <button class="btn btn-primary" onclick="saveAnnouncement()" type="button">💾 Mentés</button>
-            <button class="btn btn-ghost" onclick="loadAnnouncement()" type="button">↻ Betöltés</button>
+        <div class="card top-space-lg">
+          <div class="card-header">
+            <div class="card-title">Üzenőfal</div>
+            <span class="pill">Index oldalon látszik</span>
+          </div>
+          <div class="card-body">
+            <label>Üzenet / hír</label>
+            <textarea id="newsText" rows="5" placeholder="Írj ide hírt..."></textarea>
+
+            <div class="btns top-space-md">
+              <button class="btn btn-primary" onclick="saveAnnouncement()" type="button">💾 Mentés</button>
+              <button class="btn btn-ghost" onclick="loadAnnouncement()" type="button">↻ Betöltés</button>
+            </div>
+
+            <div class="row top-space-sm">
+              <label class="checkbox-label">
+                <input type="checkbox" id="newsPinned" class="checkbox-inline">
+                Kiemelt (felül marad)
+              </label>
+            </div>
+
+            <div id="newsMsg" class="muted top-space-sm"></div>
+          </div>
         </div>
 
-    <div class="row" style="margin-top:10px;">
-      <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-        <input type="checkbox" id="newsPinned" style="width:auto;">
-        Kiemelt (felül marad)
-      </label>
-    </div>
-
-    <div id="newsMsg" class="muted" style="margin-top:10px;"></div>
-  </div>
-</div>
-
-		
-		
-		
-        <div class="card">
-          <div class="card-header" style="margin-top:14px;">
+        <div class="card top-space-lg">
+          <div class="card-header">
             <div class="card-title">Szezon kezelése</div>
             <span class="pill">Veszélyzóna</span>
           </div>
           <div class="card-body">
             <div class="danger-zone">
-              <div class="muted" style="margin-bottom:10px;">
+              <div class="muted top-space-xs">
                 A “Szezon vége” új évet indít és az aktuális szezon statjait nullázza (a nevek maradnak).
               </div>
-              <button class="btn btn-danger" onclick="endSeason()" type="button">🏁 Szezon vége</button>
-              <div id="seasonMsg" class="muted" style="margin-top:10px;"></div>
+              <button class="btn btn-danger top-space-md" onclick="endSeason()" type="button">🏁 Szezon vége</button>
+              <div id="seasonMsg" class="muted top-space-sm"></div>
             </div>
           </div>
         </div>
 
-        <div class="card" style="margin-top:14px;">
+        <div class="card top-space-lg">
           <div class="card-header">
             <div class="card-title">Gyors tippek</div>
             <span class="pill">UX</span>
@@ -581,7 +314,7 @@
         </div>
         <div class="teams"><span>⚫</span> ${black.join(", ") || "—"}</div>
         <div class="teams"><span>⚪</span> ${white.join(", ") || "—"}</div>
-        <div style="margin-top:10px;">
+        <div class="top-space-sm">
           <button class="btn btn-danger" onclick="deleteMatch('${m.id}')" type="button">🗑️ Meccs törlése</button>
         </div>
       `;
@@ -602,74 +335,19 @@
     document.getElementById("seasonMsg").innerText =
       `✅ Új szezon elindítva: ${data}`;
   }
-  
-  
+
   let currentAnnouncementId = null;
 
-async function loadAnnouncement() {
-  const msg = document.getElementById("newsMsg");
-  msg.textContent = "Betöltés…";
+  async function loadAnnouncement() {
+    const msg = document.getElementById("newsMsg");
+    msg.textContent = "Betöltés…";
 
-  const { data, error } = await supabaseClient
-    .from("announcements")
-    .select("id, body, is_pinned, updated_at")
-    .order("is_pinned", { ascending: false })
-    .order("updated_at", { ascending: false })
-    .limit(1);
-
-  if (error) {
-    console.error(error);
-    msg.textContent = "❌ " + error.message;
-    return;
-  }
-
-  const row = (data || [])[0];
-  if (!row) {
-    currentAnnouncementId = null;
-    document.getElementById("newsText").value = "";
-    document.getElementById("newsPinned").checked = false;
-    msg.textContent = "Nincs még üzenet. Írj egyet és mentsd el!";
-    return;
-  }
-
-  currentAnnouncementId = row.id;
-  document.getElementById("newsText").value = row.body;
-  document.getElementById("newsPinned").checked = !!row.is_pinned;
-  msg.textContent = "✅ Betöltve";
-}
-
-async function saveAnnouncement() {
-  const msg = document.getElementById("newsMsg");
-  const body = document.getElementById("newsText").value.trim();
-  const isPinned = document.getElementById("newsPinned").checked;
-
-  if (!body) {
-    msg.textContent = "❌ Üres üzenetet nem lehet menteni.";
-    return;
-  }
-
-  msg.textContent = "Mentés…";
-
-  // Ha már van üzenet, frissítjük, különben beszúrjuk
-  if (currentAnnouncementId) {
-    const { error } = await supabaseClient
-      .from("announcements")
-      .update({ body, is_pinned: isPinned })
-      .eq("id", currentAnnouncementId);
-
-    if (error) {
-      console.error(error);
-      msg.textContent = "❌ " + error.message;
-      return;
-    }
-
-    msg.textContent = "✅ Mentve (frissítve)";
-  } else {
     const { data, error } = await supabaseClient
       .from("announcements")
-      .insert([{ body, is_pinned: isPinned }])
-      .select("id")
-      .single();
+      .select("id, body, is_pinned, updated_at")
+      .order("is_pinned", { ascending: false })
+      .order("updated_at", { ascending: false })
+      .limit(1);
 
     if (error) {
       console.error(error);
@@ -677,11 +355,63 @@ async function saveAnnouncement() {
       return;
     }
 
-    currentAnnouncementId = data.id;
-    msg.textContent = "✅ Mentve (új)";
-  }
-}
+    const row = (data || [])[0];
+    if (!row) {
+      currentAnnouncementId = null;
+      document.getElementById("newsText").value = "";
+      document.getElementById("newsPinned").checked = false;
+      msg.textContent = "Nincs még üzenet. Írj egyet és mentsd el!";
+      return;
+    }
 
+    currentAnnouncementId = row.id;
+    document.getElementById("newsText").value = row.body;
+    document.getElementById("newsPinned").checked = !!row.is_pinned;
+    msg.textContent = "✅ Betöltve";
+  }
+
+  async function saveAnnouncement() {
+    const msg = document.getElementById("newsMsg");
+    const body = document.getElementById("newsText").value.trim();
+    const isPinned = document.getElementById("newsPinned").checked;
+
+    if (!body) {
+      msg.textContent = "❌ Üres üzenetet nem lehet menteni.";
+      return;
+    }
+
+    msg.textContent = "Mentés…";
+
+    if (currentAnnouncementId) {
+      const { error } = await supabaseClient
+        .from("announcements")
+        .update({ body, is_pinned: isPinned })
+        .eq("id", currentAnnouncementId);
+
+      if (error) {
+        console.error(error);
+        msg.textContent = "❌ " + error.message;
+        return;
+      }
+
+      msg.textContent = "✅ Mentve (frissítve)";
+    } else {
+      const { data, error } = await supabaseClient
+        .from("announcements")
+        .insert([{ body, is_pinned: isPinned }])
+        .select("id")
+        .single();
+
+      if (error) {
+        console.error(error);
+        msg.textContent = "❌ " + error.message;
+        return;
+      }
+
+      currentAnnouncementId = data.id;
+      msg.textContent = "✅ Mentve (új)";
+    }
+  }
 
   checkLogin();
   loadPlayersForMatch();
