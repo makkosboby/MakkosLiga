@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Makkos Liga – Statisztikák</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="assets/style.css">
+
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
+  <link rel="shortcut icon" href="assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="assets/icons/site.webmanifest">
+  <meta name="theme-color" content="#c4161c">
+</head>
+
+<body class="stats-page">
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <a href="index.html" class="header-logo-link" aria-label="Vissza a főoldalra">
+          <img src="assets/logo4.png" alt="Makkos Liga logo" class="logo-main">
+        </a>
+        <img src="assets/kupa.png" alt="Kupa" class="logo-cup">
+      </div>
+
+      <div class="header-right nav">
+        <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileMenu">
+          Menü ☰
+        </button>
+
+        <nav class="nav-desktop" aria-label="Fő navigáció">
+          <a class="nav-link" href="index.html">Tabella</a>
+          <a class="nav-link" href="statisztikak.html">Statisztikák</a>
+		  <a class="nav-link" href="forum.html">Fórum</a>
+          <a class="nav-link" href="bajnokaink.html">Bajnokaink</a>
+          <a class="admin-link" href="admin.html">Admin</a>
+        </nav>
+
+        <div class="mobile-menu" id="mobileMenu" hidden>
+          <a class="mobile-link" href="index.html">Tabella</a>
+          <a class="mobile-link" href="statisztikak.html">Statisztikák</a>
+		  <a class="mobile-link" href="forum.html">Fórum</a>
+          <a class="mobile-link" href="bajnokaink.html">Bajnokaink</a>
+          <a class="mobile-link" href="admin.html">Admin</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="accent-bar"></div>
+
+  <main class="container">
+    <div class="page-stack">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Játékos statisztikák</div>
+          <span class="pill" id="modeBadge">Aktuális idény</span>
+        </div>
+
+        <div class="card-body">
+          <div class="filters-grid">
+            <div class="filter-box">
+              <label for="playerSelect">Játékos</label>
+              <select id="playerSelect"></select>
+            </div>
+
+            <div class="filter-box">
+              <label for="scopeSelect">Idény</label>
+              <select id="scopeSelect">
+                <option value="current">Aktuális idény</option>
+                <option value="all">Összesített</option>
+              </select>
+            </div>
+
+
+            <div class="filter-box">
+              <label>Megjegyzés</label>
+              <div class="section-note" id="seasonText">Az aktuális idény adatai látszanak.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Játékos</div>
+          <span class="pill" id="playerNameBadge">—</span>
+        </div>
+
+        <div class="card-body">
+          <div id="playerStatsContent" class="page-stack">
+            <div class="empty-state">Betöltés…</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Toplisták</div>
+          <span class="pill" id="leaderboardBadge">Aktuális idény</span>
+        </div>
+
+        <div class="card-body">
+          <div class="segment-grid">
+            <div>
+              <div class="form-title">
+                <b>Legjobb párosok</b>
+              </div>
+              <div id="pairsLeaderboard" class="duo-list"></div>
+            </div>
+
+            <div>
+              <div class="form-title">
+                <b>Egyéni toplisták</b>
+              </div>
+              <div id="individualLeaderboards" class="leader-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Head-to-head</div>
+          <span class="pill" id="h2hBadge">Aktuális idény</span>
+        </div>
+
+        <div class="card-body">
+          <div class="filters-grid two">
+            <div class="filter-box">
+              <label for="h2hPlayerA">Játékos A</label>
+              <select id="h2hPlayerA"></select>
+            </div>
+
+            <div class="filter-box">
+              <label for="h2hPlayerB">Játékos B</label>
+              <select id="h2hPlayerB"></select>
+            </div>
+          </div>
+
+          <div id="headToHeadContent" class="h2h-grid" style="margin-top:14px;">
+            <div class="empty-state">Válassz két játékost.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="footer-accent-bar"></div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <div class="footer-title">Együttműködő partnereink:</div>
+        <div class="footer-partners">
+          <img src="assets/szatmari.png" alt="Szatmari" class="partner-logo">
+          <img src="assets/bernath.png" alt="Bernath" class="partner-logo">
+          <img src="assets/imiteto.png" alt="Imiteto" class="partner-logo">
+        </div>
+      </div>
+
+      <div class="footer-right">
+        <img src="assets/jatekosok.png" alt="Játékosok" class="footer-players">
+      </div>
+    </div>
+  </footer>
+
+<script>
+(() => {
+  const btn = document.getElementById("menuBtn");
+  const menu = document.getElementById("mobileMenu");
+  if (!btn || !menu) return;
+
+  function closeMenu() {
+    menu.hidden = true;
+    btn.setAttribute("aria-expanded", "false");
+  }
+
+  function toggleMenu() {
+    const willOpen = menu.hidden;
+    menu.hidden = !willOpen;
+    btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+  }
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleMenu();
+  });
+
+  menu.querySelectorAll("a").forEach(a => a.addEventListener("click", closeMenu));
+  document.addEventListener("click", closeMenu);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMenu();
+  });
+  window.addEventListener("resize", () => {
+    if (window.innerWidth >= 641) closeMenu();
+  });
+})();
+</script>
+
+<script>
+const supabaseUrl = "https://kqtzyhmksnjowielrwii.supabase.co";
+const supabaseKey = "sb_publishable_vgSmqItheOG3aeOdoNionA_rd-4MTL2";
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+const playerSelect = document.getElementById("playerSelect");
+const scopeSelect = document.getElementById("scopeSelect");
+const modeBadge = document.getElementById("modeBadge");
+const seasonText = document.getElementById("seasonText");
+const playerNameBadge = document.getElementById("playerNameBadge");
+const leaderboardBadge = document.getElementById("leaderboardBadge");
+const h2hBadge = document.getElementById("h2hBadge");
+const playerStatsContent = document.getElementById("playerStatsContent");
+const pairsLeaderboard = document.getElementById("pairsLeaderboard");
+const individualLeaderboards = document.getElementById("individualLeaderboards");
+const h2hPlayerA = document.getElementById("h2hPlayerA");
+const h2hPlayerB = document.getElementById("h2hPlayerB");
+const headToHeadContent = document.getElementById("headToHeadContent");
+
+let seasons = [];
+let currentSeasonId = null;
+let players = [];
+let matches = [];
+let matchPlayers = [];
+let currentScope = "current";
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function formatRecord(stat){
+  if (!stat) return "—";
+  return `${stat.wins} Gy / ${stat.draws} D / ${stat.losses} V`;
+}
+
+function average(total, matchesCount){
+  if (!matchesCount) return "0.00";
+  return (total / matchesCount).toFixed(2);
+}
+
+function percentage(numerator, denominator){
+  if (!denominator) return "0%";
+  return `${Math.round((numerator / denominator) * 100)}%`;
+}
+
+function ratioValue(numerator, denominator){
+  if (!denominator) return 0;
+  return Math.round((numerator / denominator) * 100);
+}
+
+function getScopeLabel(){
+  return currentScope === "current" ? "Aktuális idény" : "Összesített";
+}
+
+function compareBestTeammate(a, b){
+  const aPpm = a.matches ? a.points / a.matches : -1;
+  const bPpm = b.matches ? b.points / b.matches : -1;
+  if (bPpm !== aPpm) return bPpm - aPpm;
+  const aGd = a.matches ? a.goalDiff / a.matches : -999;
+  const bGd = b.matches ? b.goalDiff / b.matches : -999;
+  if (bGd !== aGd) return bGd - aGd;
+  if (b.wins !== a.wins) return b.wins - a.wins;
+  return b.matches - a.matches;
+}
+
+function compareWorstOpponent(a, b){
+  const aPpm = a.matches ? a.points / a.matches : 999;
+  const bPpm = b.matches ? b.points / b.matches : 999;
+  if (aPpm !== bPpm) return aPpm - bPpm;
+  const aGd = a.matches ? a.goalDiff / a.matches : 999;
+  const bGd = b.matches ? b.goalDiff / b.matches : 999;
+  if (aGd !== bGd) return aGd - bGd;
+  if (b.losses !== a.losses) return b.losses - a.losses;
+  return b.matches - a.matches;
+}
+
+function compareByMostMatches(a, b){
+  if (b.matches !== a.matches) return b.matches - a.matches;
+  if (b.wins !== a.wins) return b.wins - a.wins;
+  if (b.goalDiff !== a.goalDiff) return b.goalDiff - a.goalDiff;
+  return a.name.localeCompare(b.name, 'hu');
+}
+
+function compareByFewestMatches(a, b){
+  if (a.matches !== b.matches) return a.matches - b.matches;
+  if (b.wins !== a.wins) return b.wins - a.wins;
+  if (b.goalDiff !== a.goalDiff) return b.goalDiff - a.goalDiff;
+  return a.name.localeCompare(b.name, 'hu');
+}
+
+function createEmptyPlayerStats(player){
+  return {
+    playerId: player.id,
+    name: player.name,
+    matches: 0,
+    wins: 0,
+    draws: 0,
+    losses: 0,
+    goalsFor: 0,
+    goalsAgainst: 0,
+    goalDiff: 0,
+    points: 0,
+    blackCount: 0,
+    whiteCount: 0,
+    teammates: new Map(),
+    opponents: new Map()
+  };
+}
+
+function addPairStat(targetMap, otherId, otherName, outcome, goalsFor, goalsAgainst){
+  if (!targetMap.has(otherId)) {
+    targetMap.set(otherId, {
+      playerId: otherId,
+      name: otherName,
+      matches: 0,
+      wins: 0,
+      draws: 0,
+      losses: 0,
+      goalsFor: 0,
+      goalsAgainst: 0,
+      goalDiff: 0,
+      points: 0
+    });
+  }
+
+  const item = targetMap.get(otherId);
+  item.matches += 1;
+  item.goalsFor += goalsFor;
+  item.goalsAgainst += goalsAgainst;
+  item.goalDiff = item.goalsFor - item.goalsAgainst;
+
+  if (outcome === "win") {
+    item.wins += 1;
+    item.points += 3;
+  } else if (outcome === "draw") {
+    item.draws += 1;
+    item.points += 1;
+  } else {
+    item.losses += 1;
+  }
+}
+
+function getResultFromTeam(team, blackScore, whiteScore){
+  if (blackScore === whiteScore) return "draw";
+  const isBlackWin = blackScore > whiteScore;
+  if ((team === "black" && isBlackWin) || (team === "white" && !isBlackWin)) {
+    return "win";
+  }
+  return "loss";
+}
+
+function buildBundle(scope){
+  const seasonId = scope === "current" ? currentSeasonId : null;
+  const filteredMatches = seasonId
+    ? matches.filter(m => String(m.season_id) === String(seasonId))
+    : [...matches];
+
+  const matchIds = new Set(filteredMatches.map(m => m.id));
+  const filteredMatchPlayers = matchPlayers.filter(mp => matchIds.has(mp.match_id));
+
+  const playerStatsMap = new Map();
+  players.forEach(player => {
+    playerStatsMap.set(player.id, createEmptyPlayerStats(player));
+  });
+
+  const playersById = new Map(players.map(p => [p.id, p]));
+  const matchPlayersByMatch = new Map();
+
+  filteredMatchPlayers.forEach(mp => {
+    if (!matchPlayersByMatch.has(mp.match_id)) {
+      matchPlayersByMatch.set(mp.match_id, []);
+    }
+    matchPlayersByMatch.get(mp.match_id).push(mp);
+  });
+
+  const pairMap = new Map();
+  const h2hMap = new Map();
+
+  filteredMatches.forEach(match => {
+    const participants = matchPlayersByMatch.get(match.id) || [];
+
+    participants.forEach(mp => {
+      const stats = playerStatsMap.get(mp.player_id);
+      if (!stats) return;
+
+      const goalsFor = mp.team === "black" ? match.black_score : match.white_score;
+      const goalsAgainst = mp.team === "black" ? match.white_score : match.black_score;
+      const result = getResultFromTeam(mp.team, match.black_score, match.white_score);
+
+      stats.matches += 1;
+      stats.goalsFor += goalsFor;
+      stats.goalsAgainst += goalsAgainst;
+      stats.goalDiff = stats.goalsFor - stats.goalsAgainst;
+      if (mp.team === "black") stats.blackCount += 1;
+      if (mp.team === "white") stats.whiteCount += 1;
+
+      if (result === "win") {
+        stats.wins += 1;
+        stats.points += 3;
+      } else if (result === "draw") {
+        stats.draws += 1;
+        stats.points += 1;
+      } else {
+        stats.losses += 1;
+      }
+
+      const teammates = participants.filter(p => p.team === mp.team && p.player_id !== mp.player_id);
+      teammates.forEach(tp => {
+        const teammateName = tp.tabella?.name || playersById.get(tp.player_id)?.name || "Ismeretlen";
+        addPairStat(stats.teammates, tp.player_id, teammateName, result, goalsFor, goalsAgainst);
+
+        const ids = [mp.player_id, tp.player_id].sort();
+        const key = ids.join("|");
+        if (!pairMap.has(key)) {
+          pairMap.set(key, {
+            playerAId: ids[0],
+            playerBId: ids[1],
+            playerAName: playersById.get(ids[0])?.name || "—",
+            playerBName: playersById.get(ids[1])?.name || "—",
+            matches: 0,
+            wins: 0,
+            draws: 0,
+            losses: 0,
+            goalsFor: 0,
+            goalsAgainst: 0,
+            goalDiff: 0,
+            points: 0
+          });
+        }
+        const pair = pairMap.get(key);
+        if (mp.player_id === ids[0]) {
+          pair.matches += 1;
+          pair.goalsFor += goalsFor;
+          pair.goalsAgainst += goalsAgainst;
+          pair.goalDiff = pair.goalsFor - pair.goalsAgainst;
+          if (result === "win") {
+            pair.wins += 1;
+            pair.points += 3;
+          } else if (result === "draw") {
+            pair.draws += 1;
+            pair.points += 1;
+          } else {
+            pair.losses += 1;
+          }
+        }
+      });
+
+      const opponents = participants.filter(p => p.team !== mp.team);
+      opponents.forEach(op => {
+        const opponentName = op.tabella?.name || playersById.get(op.player_id)?.name || "Ismeretlen";
+        addPairStat(stats.opponents, op.player_id, opponentName, result, goalsFor, goalsAgainst);
+
+        const ids = [mp.player_id, op.player_id].sort();
+        const key = ids.join("|");
+        if (!h2hMap.has(key)) {
+          h2hMap.set(key, {
+            playerAId: ids[0],
+            playerBId: ids[1],
+            playerAName: playersById.get(ids[0])?.name || "—",
+            playerBName: playersById.get(ids[1])?.name || "—",
+            matches: 0,
+            draws: 0,
+            playerAWins: 0,
+            playerBWins: 0,
+            playerAGoalsFor: 0,
+            playerBGoalsFor: 0,
+            playerAPoints: 0,
+            playerBPoints: 0
+          });
+        }
+        const item = h2hMap.get(key);
+        const isA = mp.player_id === ids[0];
+
+        if (isA) {
+          item.matches += 1;
+          item.playerAGoalsFor += goalsFor;
+          item.playerBGoalsFor += goalsAgainst;
+          if (result === "win") {
+            item.playerAWins += 1;
+            item.playerAPoints += 3;
+          } else if (result === "draw") {
+            item.draws += 1;
+            item.playerAPoints += 1;
+            item.playerBPoints += 1;
+          } else {
+            item.playerBWins += 1;
+            item.playerBPoints += 3;
+          }
+        }
+      });
+    });
+  });
+
+  const pairList = [...pairMap.values()].map(pair => ({
+    ...pair,
+    matches: Math.round(pair.matches),
+    wins: Math.round(pair.wins),
+    draws: Math.round(pair.draws),
+    losses: Math.round(pair.losses),
+    goalsFor: Math.round(pair.goalsFor),
+    goalsAgainst: Math.round(pair.goalsAgainst),
+    goalDiff: Math.round(pair.goalDiff),
+    points: Math.round(pair.points)
+  }));
+
+  return {
+    filteredMatches,
+    filteredMatchPlayers,
+    playerStatsMap,
+    playerStatsList: [...playerStatsMap.values()],
+    pairList,
+    h2hMap
+  };
+}
+
+function renderPlayerSection(bundle){
+  const playerId = playerSelect.value;
+  const stats = bundle.playerStatsMap.get(playerId);
+
+  if (!stats) {
+    playerStatsContent.innerHTML = `<div class="empty-state">Nincs adat.</div>`;
+    playerNameBadge.textContent = "—";
+    return;
+  }
+
+  playerNameBadge.textContent = stats.name;
+
+  const teammateStats = [...stats.teammates.values()].filter(item => item.matches > 0);
+  const mostUsedTeammate = [...teammateStats].sort(compareByMostMatches)[0] || null;
+  const leastUsedTeammate = [...teammateStats].sort(compareByFewestMatches)[0] || null;
+
+  const winPct = ratioValue(stats.wins, stats.matches);
+  const drawPct = ratioValue(stats.draws, stats.matches);
+  const lossPct = ratioValue(stats.losses, stats.matches);
+  const blackPct = ratioValue(stats.blackCount, stats.matches);
+  const whitePct = ratioValue(stats.whiteCount, stats.matches);
+
+  playerStatsContent.innerHTML = `
+    <div class="player-hero-card">
+      <div class="player-hero-top">
+        <div>
+          <div class="player-hero-name">${escapeHtml(stats.name)}</div>
+          <div class="player-hero-sub">${getScopeLabel()} • ${stats.matches} meccs • ${stats.points} pont</div>
+        </div>
+        <div class="scorebug">
+          <div class="scorebug-label">Pont / meccs</div>
+          <div class="scorebug-value">${average(stats.points, stats.matches)}</div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card accent-red">
+          <span class="big-number">${average(stats.goalsFor, stats.matches)}</span>
+          <div class="stat-label">Gól / meccs</div>
+        </div>
+        <div class="stat-card accent-blue">
+          <span class="big-number">${average(stats.goalsAgainst, stats.matches)}</span>
+          <div class="stat-label">Kapott gól / meccs</div>
+        </div>
+        <div class="stat-card accent-gold">
+          <span class="big-number">${average(stats.points, stats.matches)}</span>
+          <div class="stat-label">Pont / meccs</div>
+        </div>
+        <div class="stat-card accent-green">
+          <span class="big-number">${average(stats.goalDiff, stats.matches)}</span>
+          <div class="stat-label">Gólkülönbség / meccs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="segment-grid stats-visual-grid">
+      <div class="info-card broadcast-panel">
+        <div class="info-title">Forma és mérleg</div>
+        <div class="record-strip">
+          <div class="record-team win">
+            <span class="record-value">${stats.wins}</span>
+            <span class="record-key">Győzelem</span>
+          </div>
+          <div class="record-team draw">
+            <span class="record-value">${stats.draws}</span>
+            <span class="record-key">Döntetlen</span>
+          </div>
+          <div class="record-team loss">
+            <span class="record-value">${stats.losses}</span>
+            <span class="record-key">Vereség</span>
+          </div>
+        </div>
+        <div class="meter-stack">
+          <div class="meter-row">
+            <div class="meter-label">Győzelmi arány</div>
+            <div class="meter-value">${winPct}%</div>
+            <div class="meter-track"><span class="meter-fill fill-win" style="width:${winPct}%"></span></div>
+          </div>
+          <div class="meter-row">
+            <div class="meter-label">Döntetlen arány</div>
+            <div class="meter-value">${drawPct}%</div>
+            <div class="meter-track"><span class="meter-fill fill-draw" style="width:${drawPct}%"></span></div>
+          </div>
+          <div class="meter-row">
+            <div class="meter-label">Vereség arány</div>
+            <div class="meter-value">${lossPct}%</div>
+            <div class="meter-track"><span class="meter-fill fill-loss" style="width:${lossPct}%"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card broadcast-panel">
+        <div class="info-title">Oldalmegoszlás</div>
+        <div class="side-visual-wrap">
+          <div class="side-donut" style="--black:${blackPct}; --white:${whitePct};">
+            <div class="side-donut-inner">${stats.matches}</div>
+          </div>
+          <div class="side-legend">
+            <div class="side-legend-row">
+              <span class="side-swatch black"></span>
+              <span>Fekete oldalon</span>
+              <strong>${stats.blackCount} • ${blackPct}%</strong>
+            </div>
+            <div class="side-legend-row">
+              <span class="side-swatch white"></span>
+              <span>Fehér oldalon</span>
+              <strong>${stats.whiteCount} • ${whitePct}%</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="segment-grid">
+      <div class="info-card teammate-card most">
+        <div class="info-title">Legtöbbet együtt</div>
+        <div class="info-main">${mostUsedTeammate ? escapeHtml(mostUsedTeammate.name) : "—"}</div>
+        <div class="teammate-scoreline">
+          <span>${mostUsedTeammate ? mostUsedTeammate.matches : 0}</span>
+          <small>közös meccs</small>
+        </div>
+        <div class="broadcast-meta teammate-meta">
+          <span class="broadcast-chip">${mostUsedTeammate ? formatRecord(mostUsedTeammate) : "Nincs adat"}</span>
+          <span class="broadcast-chip">${mostUsedTeammate ? `${mostUsedTeammate.goalDiff >= 0 ? "+" : ""}${mostUsedTeammate.goalDiff} GK` : "—"}</span>
+          <span class="broadcast-chip">${mostUsedTeammate ? `${average(mostUsedTeammate.points, mostUsedTeammate.matches)} PPM` : "—"}</span>
+        </div>
+      </div>
+
+      <div class="info-card teammate-card least">
+        <div class="info-title">Legritkább csapattárs</div>
+        <div class="info-main">${leastUsedTeammate ? escapeHtml(leastUsedTeammate.name) : "—"}</div>
+        <div class="teammate-scoreline">
+          <span>${leastUsedTeammate ? leastUsedTeammate.matches : 0}</span>
+          <small>közös meccs</small>
+        </div>
+        <div class="broadcast-meta teammate-meta">
+          <span class="broadcast-chip">${leastUsedTeammate ? formatRecord(leastUsedTeammate) : "Nincs adat"}</span>
+          <span class="broadcast-chip">${leastUsedTeammate ? `${leastUsedTeammate.goalDiff >= 0 ? "+" : ""}${leastUsedTeammate.goalDiff} gk` : "—"}</span>
+          <span class="broadcast-chip">${leastUsedTeammate ? `${average(leastUsedTeammate.points, leastUsedTeammate.matches)} PPM` : "—"}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPairLeaderboard(bundle){
+  const rankedPairs = [...bundle.pairList]
+    .filter(pair => pair.matches > 0)
+    .sort((a, b) => {
+      const aPpm = a.matches ? a.points / a.matches : -1;
+      const bPpm = b.matches ? b.points / b.matches : -1;
+      if (bPpm !== aPpm) return bPpm - aPpm;
+      if (b.goalDiff !== a.goalDiff) return b.goalDiff - a.goalDiff;
+      if (b.wins !== a.wins) return b.wins - a.wins;
+      return b.matches - a.matches;
+    })
+    .slice(0, 5);
+
+  if (!rankedPairs.length) {
+    pairsLeaderboard.innerHTML = `<div class="empty-state">Nincs elég adat páros toplistához.</div>`;
+    return;
+  }
+
+  pairsLeaderboard.innerHTML = `
+    <div class="pair-ranking-board">
+      <div class="pair-ranking-head">
+        <div class="pair-ranking-title">Legjobb párosok ranglistája</div>
+        <div class="pair-ranking-note">Sorrend: pont / meccs, gólkülönbség, győzelmek</div>
+      </div>
+
+      <div class="pair-ranking-list">
+        ${rankedPairs.map((pair, index) => {
+          const winRate = percentage(pair.wins, pair.matches);
+          return `
+            <article class="pair-ranking-row ${index === 0 ? 'top' : ''}">
+              <div class="pair-rank-badge">#${index + 1}</div>
+
+              <div class="pair-ranking-main">
+                <div class="pair-ranking-names">${escapeHtml(pair.playerAName)} <span>×</span> ${escapeHtml(pair.playerBName)}</div>
+                <div class="pair-ranking-sub">${pair.matches} közös meccs • ${pair.wins} Gy / ${pair.draws} D / ${pair.losses} V • ${pair.goalDiff >= 0 ? '+' : ''}${pair.goalDiff} gk</div>
+              </div>
+
+              <div class="pair-ranking-metrics">
+                <div class="pair-metric-box highlight">
+                  <strong>${average(pair.points, pair.matches)}</strong>
+                  <span>PPM</span>
+                </div>
+                <div class="pair-metric-box">
+                  <strong>${winRate}</strong>
+                  <span>Winrate</span>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderIndividualLeaderboards(bundle){
+  const minMatches = 1;
+  const players = bundle.playerStatsList.filter(item => item.matches >= minMatches);
+
+  const categories = [
+    {
+      title: "Legtöbb lőtt gól",
+      icon: "⚽",
+      tone: "goal",
+      pick: [...players].sort((a, b) => b.goalsFor - a.goalsFor || b.matches - a.matches)[0],
+      value: player => `${player.goalsFor} gól`,
+      sub: player => `${player.matches} meccs`
+    },
+    {
+      title: "Legjobb gól / meccs",
+      icon: "🎯",
+      tone: "rate",
+      pick: [...players].sort((a, b) => (b.goalsFor / b.matches) - (a.goalsFor / a.matches) || b.goalsFor - a.goalsFor)[0],
+      value: player => `${average(player.goalsFor, player.matches)}`,
+      sub: player => `${player.goalsFor} gól / ${player.matches} meccs`
+    },
+    {
+      title: "Legjobb védelem",
+      icon: "🛡️",
+      tone: "defense",
+      pick: [...players].sort((a, b) => (a.goalsAgainst / a.matches) - (b.goalsAgainst / b.matches) || b.matches - a.matches)[0],
+      value: player => `${average(player.goalsAgainst, player.matches)}`,
+      sub: player => `${player.goalsAgainst} kapott / ${player.matches} meccs`
+    },
+    {
+      title: "Legjobb pont / meccs",
+      icon: "🏅",
+      tone: "points",
+      pick: [...players].sort((a, b) => (b.points / b.matches) - (a.points / a.matches) || b.points - a.points)[0],
+      value: player => `${average(player.points, player.matches)}`,
+      sub: player => `${player.points} pont / ${player.matches} meccs`
+    },
+    {
+      title: "Legjobb győzelmi arány",
+      icon: "👑",
+      tone: "win",
+      pick: [...players].sort((a, b) => (b.wins / b.matches) - (a.wins / a.matches) || b.wins - a.wins)[0],
+      value: player => `${percentage(player.wins, player.matches)}`,
+      sub: player => `${player.wins} győzelem / ${player.matches} meccs`
+    }
+  ].filter(item => item.pick);
+
+  individualLeaderboards.innerHTML = categories.map(item => `
+    <article class="leader-spotlight leader-spotlight--${item.tone}">
+      <div class="leader-spotlight-top">
+        <span class="leader-spotlight-icon" aria-hidden="true">${item.icon}</span>
+        <span class="leader-spotlight-title">${item.title}</span>
+      </div>
+      <div class="leader-spotlight-main">
+        <div class="leader-spotlight-left">
+          <div class="leader-spotlight-player">${escapeHtml(item.pick.name)}</div>
+          <div class="leader-spotlight-foot">${item.sub(item.pick)}</div>
+        </div>
+        <div class="leader-spotlight-metric">${item.value(item.pick)}</div>
+      </div>
+    </article>
+  `).join("");
+}
+
+function getTogetherKey(a, b){
+  return [a, b].sort().join("|");
+}
+
+function renderHeadToHead(bundle){
+  const aId = h2hPlayerA.value;
+  const bId = h2hPlayerB.value;
+
+  if (!aId || !bId || aId === bId) {
+    headToHeadContent.innerHTML = `<div class="empty-state">Válassz két különböző játékost.</div>`;
+    return;
+  }
+
+  const togetherKey = getTogetherKey(aId, bId);
+  const pair = bundle.pairList.find(item => getTogetherKey(item.playerAId, item.playerBId) === togetherKey);
+  const h2h = bundle.h2hMap.get(togetherKey);
+
+  const aName = players.find(p => String(p.id) === String(aId))?.name || "Játékos A";
+  const bName = players.find(p => String(p.id) === String(bId))?.name || "Játékos B";
+
+  let againstHtml = `
+    <div class="info-card h2h-redesign-card">
+      <div class="info-title">Egymás ellen</div>
+      <div class="info-main">${escapeHtml(aName)} vs ${escapeHtml(bName)}</div>
+      <div class="info-sub">Még nem játszottak egymás ellen.</div>
+    </div>
+  `;
+
+  if (h2h) {
+    const aIsPlayerA = String(h2h.playerAId) === String(aId);
+    const winsA = aIsPlayerA ? h2h.playerAWins : h2h.playerBWins;
+    const winsB = aIsPlayerA ? h2h.playerBWins : h2h.playerAWins;
+    const goalsA = aIsPlayerA ? h2h.playerAGoalsFor : h2h.playerBGoalsFor;
+    const goalsB = aIsPlayerA ? h2h.playerBGoalsFor : h2h.playerAGoalsFor;
+    const pointsA = aIsPlayerA ? h2h.playerAPoints : h2h.playerBPoints;
+    const pointsB = aIsPlayerA ? h2h.playerBPoints : h2h.playerAPoints;
+
+    const resultTotal = winsA + winsB || 0;
+    const goalsTotal = goalsA + goalsB || 0;
+    const pointsTotal = pointsA + pointsB || 0;
+
+    const winsAWidth = resultTotal ? Math.round((winsA / resultTotal) * 100) : 50;
+    const winsBWidth = resultTotal ? 100 - winsAWidth : 50;
+    const goalsAWidth = goalsTotal ? Math.round((goalsA / goalsTotal) * 100) : 50;
+    const goalsBWidth = goalsTotal ? 100 - goalsAWidth : 50;
+    const pointsAWidth = pointsTotal ? Math.round((pointsA / pointsTotal) * 100) : 50;
+    const pointsBWidth = pointsTotal ? 100 - pointsAWidth : 50;
+
+    againstHtml = `
+      <div class="info-card h2h-redesign-card">
+        <div class="info-title">Egymás ellen</div>
+
+        <div class="h2h-vs-header">
+          <div class="h2h-player-chip left">${escapeHtml(aName)}</div>
+          <div class="h2h-vs-center">
+            <div class="h2h-vs-mark">VS</div>
+            <div class="h2h-vs-sub">${h2h.matches} meccs</div>
+          </div>
+          <div class="h2h-player-chip right">${escapeHtml(bName)}</div>
+        </div>
+
+        <div class="h2h-result-line">
+          <div class="h2h-result-side left">
+            <strong>${winsA}</strong>
+            <span>${escapeHtml(aName)} győzelem</span>
+          </div>
+          <div class="h2h-result-draw">
+            <strong>${h2h.draws}</strong>
+            <span>döntetlen</span>
+          </div>
+          <div class="h2h-result-side right">
+            <strong>${winsB}</strong>
+            <span>${escapeHtml(bName)} győzelem</span>
+          </div>
+        </div>
+
+        <div class="h2h-compare-list">
+          <div class="h2h-compare-row">
+            <div class="h2h-compare-values">
+              <strong>${goalsA}</strong>
+              <span>Gólok</span>
+              <strong>${goalsB}</strong>
+            </div>
+            <div class="h2h-compare-bar">
+              <span class="left" style="width:${goalsAWidth}%"></span>
+              <span class="right" style="width:${goalsBWidth}%"></span>
+            </div>
+          </div>
+
+          <div class="h2h-compare-row">
+            <div class="h2h-compare-values">
+              <strong>${pointsA}</strong>
+              <span>Pontok</span>
+              <strong>${pointsB}</strong>
+            </div>
+            <div class="h2h-compare-bar points">
+              <span class="left" style="width:${pointsAWidth}%"></span>
+              <span class="right" style="width:${pointsBWidth}%"></span>
+            </div>
+          </div>
+
+          <div class="h2h-compare-row">
+            <div class="h2h-compare-values">
+              <strong>${winsA}</strong>
+              <span>Győzelmek</span>
+              <strong>${winsB}</strong>
+            </div>
+            <div class="h2h-compare-bar wins">
+              <span class="left" style="width:${winsAWidth}%"></span>
+              <span class="right" style="width:${winsBWidth}%"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  let togetherHtml = `
+    <div class="info-card h2h-redesign-card">
+      <div class="info-title">Egy csapatban</div>
+      <div class="info-main">${escapeHtml(aName)} + ${escapeHtml(bName)}</div>
+      <div class="info-sub">Még nem voltak egy csapatban.</div>
+    </div>
+  `;
+
+  if (pair) {
+    const commonTotal = pair.wins + pair.draws + pair.losses;
+    const winWidth = commonTotal ? Math.round((pair.wins / commonTotal) * 100) : 0;
+    const drawWidth = commonTotal ? Math.round((pair.draws / commonTotal) * 100) : 0;
+    const lossWidth = Math.max(0, 100 - winWidth - drawWidth);
+
+    togetherHtml = `
+      <div class="info-card h2h-redesign-card">
+        <div class="info-title">Egy csapatban</div>
+
+        <div class="h2h-teamup-top">
+          <div>
+            <div class="info-main">${escapeHtml(aName)} + ${escapeHtml(bName)}</div>
+            <div class="info-sub">${pair.matches} közös meccs</div>
+          </div>
+          <div class="h2h-teamup-badge">${average(pair.points, pair.matches)} pont / meccs</div>
+        </div>
+
+        <div class="h2h-teamup-record">
+          <div><strong>${pair.wins}</strong><span>Gy</span></div>
+          <div><strong>${pair.draws}</strong><span>D</span></div>
+          <div><strong>${pair.losses}</strong><span>V</span></div>
+        </div>
+
+        <div class="h2h-teamup-bar">
+          <span class="win" style="width:${winWidth}%"></span>
+          <span class="draw" style="width:${drawWidth}%"></span>
+          <span class="loss" style="width:${lossWidth}%"></span>
+        </div>
+
+        <div class="h2h-teamup-footer">
+          <div class="h2h-mini-stat">
+            <span>Lőtt / kapott gól</span>
+            <strong>${pair.goalsFor} / ${pair.goalsAgainst}</strong>
+          </div>
+          <div class="h2h-mini-stat">
+            <span>Gólkülönbség</span>
+            <strong>${pair.goalDiff >= 0 ? "+" : ""}${pair.goalDiff}</strong>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  headToHeadContent.innerHTML = `${againstHtml}${togetherHtml}`;
+}
+
+function renderAll(){
+  const bundle = buildBundle(currentScope);
+
+  modeBadge.textContent = getScopeLabel();
+  leaderboardBadge.textContent = getScopeLabel();
+  h2hBadge.textContent = getScopeLabel();
+  seasonText.textContent = currentScope === "current"
+    ? "Az aktuális idény adatai látszanak."
+    : "Az összes idény összevont adatai látszanak.";
+
+  renderPlayerSection(bundle);
+  renderPairLeaderboard(bundle);
+  renderIndividualLeaderboards(bundle);
+  renderHeadToHead(bundle);
+}
+
+async function loadData(){
+  const [{ data: seasonsData, error: seasonsError }, { data: playersData, error: playersError }, { data: matchesData, error: matchesError }, { data: matchPlayersData, error: mpError }] = await Promise.all([
+    supabaseClient.from("seasons").select("id,year,is_current").order("year", { ascending: false }),
+    supabaseClient.from("tabella").select("id,name").order("name", { ascending: true }),
+    supabaseClient.from("matches").select("id,season_id,round,black_score,white_score,created_at").order("created_at", { ascending: false }),
+    supabaseClient.from("match_players").select("match_id,player_id,team,tabella(name)")
+  ]);
+
+  if (seasonsError) console.error(seasonsError);
+  if (playersError) console.error(playersError);
+  if (matchesError) console.error(matchesError);
+  if (mpError) console.error(mpError);
+
+  seasons = seasonsData || [];
+  players = playersData || [];
+  matches = matchesData || [];
+  matchPlayers = matchPlayersData || [];
+  currentSeasonId = seasons.find(item => item.is_current)?.id || seasons[0]?.id || null;
+
+  playerSelect.innerHTML = `<option value="">Válassz egy játékost</option>` + players.map(player => `<option value="${player.id}">${escapeHtml(player.name)}</option>`).join("");
+  h2hPlayerA.innerHTML = `<option value="">Válassz játékost</option>` + players.map(player => `<option value="${player.id}">${escapeHtml(player.name)}</option>`).join("");
+  h2hPlayerB.innerHTML = `<option value="">Válassz játékost</option>` + players.map(player => `<option value="${player.id}">${escapeHtml(player.name)}</option>`).join("");
+
+  playerSelect.value = "";
+  h2hPlayerA.value = "";
+  h2hPlayerB.value = "";
+
+  renderAll();
+}
+
+playerSelect.addEventListener("change", renderAll);
+scopeSelect.addEventListener("change", () => {
+  currentScope = scopeSelect.value;
+  renderAll();
+});
+h2hPlayerA.addEventListener("change", renderAll);
+h2hPlayerB.addEventListener("change", renderAll);
+
+(async () => {
+  await loadData();
+})();
+</script>
+
+</body>
+</html>
