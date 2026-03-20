@@ -28,7 +28,7 @@
       <div class="header-right nav">
         <button class="menu-btn" id="menuBtn" type="button"
                 aria-expanded="false" aria-controls="mobileMenu">
-          Menü ☰
+          Menü
         </button>
 
         <nav class="nav-desktop" aria-label="Fő navigáció">
@@ -120,9 +120,7 @@
     document.addEventListener("click", closeMenu);
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
 
-    window.addEventListener("resize", () => {
-      if (window.innerWidth >= 641) closeMenu();
-    });
+    window.addEventListener("resize", closeMenu);
   })();
   </script>
 
