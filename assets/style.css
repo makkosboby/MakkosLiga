@@ -885,7 +885,9 @@ img, svg { max-width: 100%; height: auto; }
    ========================= */
 
 .menu-btn{
-  display:none; /* desktopon rejtve */
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
   color:#000;
   text-decoration:none;
   font-weight:900;
@@ -904,7 +906,7 @@ img, svg { max-width: 100%; height: auto; }
 }
 
 .nav-desktop{
-  display:flex;
+  display:none;
   align-items:center;
   gap:10px;
   flex-wrap:nowrap;
@@ -950,21 +952,8 @@ img, svg { max-width: 100%; height: auto; }
   position:relative;
 }
 
-/* MOBILON: a desktop nav eltűnik, a Menü gomb megjelenik */
-@media (max-width: 640px){
-  .menu-btn{ display:inline-flex; align-items:center; gap:8px; }
-  .nav-desktop{ display:none; }
-}
-
 /* Biztonsági: a [hidden] mindig legyen rejtve */
 [hidden] { display: none !important; }
-
-/* Desktopon a mobil dropdown sose jelenjen meg */
-@media (min-width: 641px){
-  .mobile-menu{ display:none !important; }
-  .menu-btn{ display:none !important; }
-  .nav-desktop{ display:flex !important; }
-}
 
 /* =========================
    PLAYER CARD – BACKGROUND IMAGE
@@ -2573,4 +2562,43 @@ img, svg { max-width: 100%; height: auto; }
   .pair-metric-box{
     flex:1 1 140px;
   }
+}
+
+
+/* =========================
+   HAMBURGER – DESKTOP INTERAKCIÓ
+   ========================= */
+@media (min-width: 768px){
+
+  .menu-btn{
+    font-size:16px;
+    gap:10px;
+    position:relative;
+    transition:border-color .15s ease, color .15s ease, background .15s ease;
+  }
+
+  .menu-btn::before{
+    content:"☰";
+    font-size:20px;
+    line-height:1;
+    display:inline-block;
+    transition: transform .25s ease;
+  }
+
+  .menu-btn:hover{
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(196,22,28,.08);
+  }
+
+  .menu-btn.open{
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(196,22,28,.12);
+  }
+
+.menu-btn[aria-expanded="true"]::before {
+  transform: rotate(90deg);
+}
+
 }
