@@ -3,30 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<!--   <link rel="icon" type="image/x-icon" href="favicon.ico"> -->
   <title>Makkos Liga</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="assets/style.css">
-  <!-- Favicon / App Icons -->
-<link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
-<link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
-<link rel="shortcut icon" href="assets/icons/favicon.ico">
 
-<link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
-
-<link rel="manifest" href="assets/icons/site.webmanifest">
-<meta name="theme-color" content="#c4161c">
-
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
+  <link rel="shortcut icon" href="assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="assets/icons/site.webmanifest">
+  <meta name="theme-color" content="#c4161c">
 </head>
 
 <body>
 
-  <!-- FEHÉR HEADER -->
   <header class="site-header">
     <div class="header-inner">
-
-      <!-- BAL: LOGÓ + KUPA -->
       <div class="header-left">
         <a href="index.html" class="header-logo-link" aria-label="Vissza a főoldalra">
           <img src="assets/logo4.png" alt="Makkos Liga logo" class="logo-main">
@@ -34,33 +27,27 @@
         <img src="assets/kupa.png" alt="Kupa" class="logo-cup">
       </div>
 
-      <!-- JOBB: NAV + ADMIN + MOBILE MENU -->
       <div class="header-right nav">
-
-        <!-- MOBIL: HAMBURGER -->
-        <button class="menu-btn" id="menuBtn" type="button"
-                aria-expanded="false" aria-controls="mobileMenu">
+        <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileMenu">
           Menü ☰
         </button>
 
-        <!-- DESKTOP: linkek -->
         <nav class="nav-desktop" aria-label="Fő navigáció">
           <a class="nav-link" href="index.html">Tabella</a>
-          <a class="nav-link" href="bajnokaink.html">Bajnokaink</a>
+          <a class="nav-link" href="statisztikak.html">Statisztikák</a>
 		  <a class="nav-link" href="forum.html">Fórum</a>
+          <a class="nav-link" href="bajnokaink.html">Bajnokaink</a>
           <a class="admin-link" href="admin.html">Admin</a>
         </nav>
 
-        <!-- MOBIL: lenyíló panel -->
         <div class="mobile-menu" id="mobileMenu" hidden>
           <a class="mobile-link" href="index.html">Tabella</a>
-          <a class="mobile-link" href="bajnokaink.html">Bajnokaink</a>
+          <a class="mobile-link" href="statisztikak.html">Statisztikák</a>
 		  <a class="mobile-link" href="forum.html">Fórum</a>
+          <a class="mobile-link" href="bajnokaink.html">Bajnokaink</a>
           <a class="mobile-link" href="admin.html">Admin</a>
         </div>
-
       </div>
-
     </div>
   </header>
 
@@ -68,8 +55,6 @@
 
   <div class="container">
     <div class="layout">
-
-      <!-- TABLA -->
       <div class="card">
         <div class="card-header tabella-header">
           <div class="card-title">Tabella</div>
@@ -85,8 +70,14 @@
               <tr>
                 <th>#</th>
                 <th style="text-align:left">Név</th>
-                <th>M</th><th>Gy</th><th>D</th><th>V</th>
-                <th>LG</th><th>KG</th><th>GK</th><th>P</th>
+                <th>M</th>
+                <th>Gy</th>
+                <th>D</th>
+                <th>V</th>
+                <th class="th-help" title="Lőtt gól">LG</th>
+                <th class="th-help" title="Kapott gól">KG</th>
+                <th class="th-help" title="Gólkülönbség">GK</th>
+                <th>P</th>
               </tr>
             </thead>
             <tbody id="tbody"></tbody>
@@ -94,31 +85,25 @@
         </div>
       </div>
 
-      <!-- RIGHT -->
       <div>
-
-        <!-- ÜZENŐFAL -->
         <div id="newsWall" class="news-wall"></div>
 
-        <!-- ✅ PLAYER CARD (csak ezt alakítottam át belül) -->
         <div class="card player-card-bg" id="playerCard" style="margin-top:14px;">
-          <div class="card-header">
+          <div class="card-header player-card-header">
             <div class="card-title">Játékos</div>
+            <div class="player-switch" aria-label="Játékoskártya nézetváltó">
+              <button id="playerStatsBtn" class="switch-btn active" type="button">Statisztika</button>
+              <button id="playerRelationsBtn" class="switch-btn" type="button">Kémia</button>
+            </div>
           </div>
 
           <div class="card-body">
-            <!-- választás előtt ez látszik -->
             <div id="playerHint" class="muted">Kattints egy névre a tabellában.</div>
-
-            <!-- ide rendereljük a játékos statot, animálva -->
             <div id="playerContent" class="player-content" aria-live="polite"></div>
           </div>
         </div>
 
-        <!-- MECCSEK -->
-		<div class="card matches-card" style="margin-top:14px;">
-        <div class="card" style="margin-top:14px;">
-		
+        <div class="card matches-card" style="margin-top:14px;">
           <div class="card-header">
             <div class="card-title">Eredmények</div>
             <span id="matchesMeta" class="pill">—</span>
@@ -131,19 +116,15 @@
             </div>
 
             <div id="matchesList" style="margin-top:10px;"></div>
-
           </div>
         </div>
-
       </div>
     </div>
   </div>
-</div>
-  <!-- FOOTER: TÜKRÖZVE -->
+
   <div class="footer-accent-bar"></div>
   <footer class="site-footer">
     <div class="footer-inner">
-
       <div class="footer-left">
         <div class="footer-title">Együttműködő partnereink:</div>
         <div class="footer-partners">
@@ -156,12 +137,10 @@
       <div class="footer-right">
         <img src="assets/jatekosok.png" alt="Játékosok" class="footer-players">
       </div>
-
     </div>
   </footer>
 
 <script>
-/* ===== MOBILE MENU (hamburger) ===== */
 (() => {
   const btn = document.getElementById("menuBtn");
   const menu = document.getElementById("mobileMenu");
@@ -171,6 +150,7 @@
     menu.hidden = true;
     btn.setAttribute("aria-expanded", "false");
   }
+
   function toggleMenu() {
     const willOpen = menu.hidden;
     menu.hidden = !willOpen;
@@ -184,11 +164,9 @@
 
   menu.querySelectorAll("a").forEach(a => a.addEventListener("click", closeMenu));
   document.addEventListener("click", closeMenu);
-
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeMenu();
   });
-
   window.addEventListener("resize", () => {
     if (window.innerWidth >= 641) closeMenu();
   });
@@ -196,17 +174,17 @@
 </script>
 
 <script>
-/* ==== SUPABASE CLIENT ==== */
 const supabaseUrl = "https://kqtzyhmksnjowielrwii.supabase.co";
 const supabaseKey = "sb_publishable_vgSmqItheOG3aeOdoNionA_rd-4MTL2";
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-/* ==== DOM ==== */
 const seasonSelect = document.getElementById("seasonSelect");
 const tbody = document.getElementById("tbody");
 const playerCard = document.getElementById("playerCard");
 const playerHint = document.getElementById("playerHint");
 const playerContent = document.getElementById("playerContent");
+const playerStatsBtn = document.getElementById("playerStatsBtn");
+const playerRelationsBtn = document.getElementById("playerRelationsBtn");
 
 const roundSelect = document.getElementById("roundSelect");
 const prevRoundBtn = document.getElementById("prevRoundBtn");
@@ -216,19 +194,26 @@ const matchesList = document.getElementById("matchesList");
 
 const newsWall = document.getElementById("newsWall");
 
-/* ==== STATE ==== */
 let seasons = [];
 let selectedSeasonId = null;
 let selectedSeasonYear = null;
-
 let selectedPlayerId = null;
+let playerCardView = "stats";
 
 let allSeasonMatches = [];
 let allSeasonMP = [];
 let availableRounds = [];
 let selectedRound = null;
 
-/* ==== REALTIME (debounced reload) ==== */
+let cachedAllMatches = [];
+let cachedAllMatchPlayers = [];
+let cachedAllPlayers = [];
+
+let statsBundleCache = new Map();
+let playerProfileCache = new Map();
+let playerFormCache = new Map();
+let cacheDataVersion = 0;
+
 let chSeasons = null;
 let chSeasonStats = null;
 let chMatches = null;
@@ -272,6 +257,7 @@ function startRealtime() {
       const prevSeasonId = selectedSeasonId;
 
       await loadSeasons();
+      await loadBaseStatsData();
       await loadTable();
       await loadMatches();
       if (selectedPlayerId) await loadPlayerCard(selectedPlayerId);
@@ -288,17 +274,20 @@ function startRealtime() {
       const sid = payload?.new?.season_id || payload?.old?.season_id;
       if (sid && sid === selectedSeasonId) {
         scheduleTable(() => loadTable(), 200);
-        if (selectedPlayerId) schedulePlayer(() => loadPlayerCard(selectedPlayerId), 350);
       }
     })
     .subscribe();
 
   chMatches = supabaseClient
     .channel("public:matches-live")
-    .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, (payload) => {
+    .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, async (payload) => {
       const sid = payload?.new?.season_id || payload?.old?.season_id;
       if (sid && sid === selectedSeasonId) {
-        scheduleMatches(() => loadMatches(), 250);
+        scheduleMatches(async () => {
+          await loadBaseStatsData();
+          await loadMatches();
+          if (selectedPlayerId) await loadPlayerCard(selectedPlayerId);
+        }, 250);
       }
     })
     .subscribe();
@@ -306,8 +295,14 @@ function startRealtime() {
   chMatchPlayers = supabaseClient
     .channel("public:match-players-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "match_players" }, () => {
-      scheduleMatches(() => loadMatches(), 300);
-      if (selectedPlayerId) schedulePlayer(() => loadPlayerCard(selectedPlayerId), 450);
+      scheduleMatches(async () => {
+        await loadBaseStatsData();
+        await loadMatches();
+      }, 300);
+
+      if (selectedPlayerId) {
+        schedulePlayer(() => loadPlayerCard(selectedPlayerId), 450);
+      }
     })
     .subscribe();
 
@@ -319,7 +314,6 @@ function startRealtime() {
     .subscribe();
 }
 
-/* ==== ÜZENŐFAL (PUBLIC) ==== */
 function escapeHtml(str){
   return String(str)
     .replaceAll("&","&amp;")
@@ -327,6 +321,367 @@ function escapeHtml(str){
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
+}
+
+function formatRecord(stat){
+  if (!stat) return "—";
+  return `${stat.wins} Gy / ${stat.draws} D / ${stat.losses} V`;
+}
+
+function percentage(numerator, denominator){
+  if (!denominator) return "0%";
+  return `${Math.round((numerator / denominator) * 100)}%`;
+}
+
+function average(total, matches){
+  if (!matches) return "0.00";
+  return (total / matches).toFixed(2);
+}
+
+function compareBestTeammate(a, b){
+  const aPpm = a.matches ? a.points / a.matches : -1;
+  const bPpm = b.matches ? b.points / b.matches : -1;
+  if (bPpm !== aPpm) return bPpm - aPpm;
+  const aGd = a.matches ? a.goalDiff / a.matches : -999;
+  const bGd = b.matches ? b.goalDiff / b.matches : -999;
+  if (bGd !== aGd) return bGd - aGd;
+  if (b.wins !== a.wins) return b.wins - a.wins;
+  return b.matches - a.matches;
+}
+
+function compareWorstOpponent(a, b){
+  const aPpm = a.matches ? a.points / a.matches : 999;
+  const bPpm = b.matches ? b.points / b.matches : 999;
+  if (aPpm !== bPpm) return aPpm - bPpm;
+  const aGd = a.matches ? a.goalDiff / a.matches : 999;
+  const bGd = b.matches ? b.goalDiff / b.matches : 999;
+  if (aGd !== bGd) return aGd - bGd;
+  if (b.losses !== a.losses) return b.losses - a.losses;
+  return b.matches - a.matches;
+}
+
+function createEmptyPlayerStats(player){
+  return {
+    playerId: player.id,
+    name: player.name,
+    matches: 0,
+    wins: 0,
+    draws: 0,
+    losses: 0,
+    goalsFor: 0,
+    goalsAgainst: 0,
+    goalDiff: 0,
+    points: 0,
+    blackCount: 0,
+    whiteCount: 0,
+    teammates: new Map(),
+    opponents: new Map()
+  };
+}
+
+function getResultFromTeam(team, blackScore, whiteScore){
+  if (blackScore === whiteScore) return "draw";
+  const isBlackWin = blackScore > whiteScore;
+  if ((team === "black" && isBlackWin) || (team === "white" && !isBlackWin)) {
+    return "win";
+  }
+  return "loss";
+}
+
+function addPairStat(targetMap, otherId, otherName, outcome, goalsFor, goalsAgainst){
+  if (!targetMap.has(otherId)) {
+    targetMap.set(otherId, {
+      playerId: otherId,
+      name: otherName,
+      matches: 0,
+      wins: 0,
+      draws: 0,
+      losses: 0,
+      goalsFor: 0,
+      goalsAgainst: 0,
+      goalDiff: 0,
+      points: 0
+    });
+  }
+
+  const item = targetMap.get(otherId);
+  item.matches += 1;
+  item.goalsFor += goalsFor;
+  item.goalsAgainst += goalsAgainst;
+  item.goalDiff = item.goalsFor - item.goalsAgainst;
+
+  if (outcome === "win") {
+    item.wins += 1;
+    item.points += 3;
+  } else if (outcome === "draw") {
+    item.draws += 1;
+    item.points += 1;
+  } else {
+    item.losses += 1;
+  }
+}
+
+
+function clearStatsCaches(){
+  statsBundleCache.clear();
+  playerProfileCache.clear();
+  playerFormCache.clear();
+  cacheDataVersion += 1;
+}
+
+function getBundleCacheKey(seasonId){
+  return seasonId == null ? "overall" : `season:${seasonId}`;
+}
+
+function getStatsBundleCached(seasonId = null){
+  const key = getBundleCacheKey(seasonId);
+  if (!statsBundleCache.has(key)) {
+    statsBundleCache.set(key, getFilteredStatsBundle(
+      cachedAllMatches,
+      cachedAllMatchPlayers,
+      cachedAllPlayers,
+      seasonId
+    ));
+  }
+  return statsBundleCache.get(key);
+}
+
+function getPlayerProfileCached(seasonId, playerId){
+  const bundleKey = getBundleCacheKey(seasonId);
+  const cacheKey = `${cacheDataVersion}|${bundleKey}|${playerId}`;
+  if (playerProfileCache.has(cacheKey)) {
+    return playerProfileCache.get(cacheKey);
+  }
+
+  const bundle = getStatsBundleCached(seasonId);
+  const stats = bundle.playerStatsMap.get(playerId) || null;
+  if (!stats) {
+    playerProfileCache.set(cacheKey, null);
+    return null;
+  }
+
+  const favoriteTeammate = [...stats.teammates.values()].sort(compareBestTeammate)[0] || null;
+  const toughestOpponent = [...stats.opponents.values()].sort(compareWorstOpponent)[0] || null;
+
+  const profile = { stats, favoriteTeammate, toughestOpponent };
+  playerProfileCache.set(cacheKey, profile);
+  return profile;
+}
+
+function getPlayerRecentFormCached(playerId){
+  const cacheKey = `${cacheDataVersion}|overall|${playerId}`;
+  if (playerFormCache.has(cacheKey)) {
+    return playerFormCache.get(cacheKey);
+  }
+
+  const overallBundle = getStatsBundleCached(null);
+  const matchById = new Map(overallBundle.matches.map(match => [match.id, match]));
+  const recentRows = overallBundle.matchPlayers
+    .filter(mp => mp.player_id === playerId)
+    .sort((a, b) => {
+      const matchA = matchById.get(a.match_id);
+      const matchB = matchById.get(b.match_id);
+      return new Date(matchB?.created_at || 0) - new Date(matchA?.created_at || 0);
+    })
+    .slice(0, 5);
+
+  const form = recentRows
+    .map(row => {
+      const match = matchById.get(row.match_id);
+      if (!match) return null;
+      const result = getResultFromTeam(row.team, match.black_score, match.white_score);
+      if (result === "draw") return { code: "D", cls: "draw", title: "Döntetlen" };
+      return result === "win"
+        ? { code: "W", cls: "win", title: "Győzelem" }
+        : { code: "L", cls: "loss", title: "Vereség" };
+    })
+    .filter(Boolean);
+
+  playerFormCache.set(cacheKey, form);
+  return form;
+}
+
+function getFilteredStatsBundle(matches, matchPlayers, players, seasonId = null){
+  const filteredMatches = seasonId
+    ? matches.filter(m => String(m.season_id) === String(seasonId))
+    : [...matches];
+
+  const matchIds = new Set(filteredMatches.map(m => m.id));
+  const filteredMP = matchPlayers.filter(mp => matchIds.has(mp.match_id));
+
+  const playerStatsMap = new Map();
+  players.forEach(player => {
+    playerStatsMap.set(player.id, createEmptyPlayerStats(player));
+  });
+
+  const playersById = new Map(players.map(p => [p.id, p]));
+  const matchPlayersByMatch = new Map();
+
+  filteredMP.forEach(mp => {
+    if (!matchPlayersByMatch.has(mp.match_id)) {
+      matchPlayersByMatch.set(mp.match_id, []);
+    }
+    matchPlayersByMatch.get(mp.match_id).push(mp);
+  });
+
+  const pairMap = new Map();
+  const h2hMap = new Map();
+
+  filteredMatches.forEach(match => {
+    const participants = matchPlayersByMatch.get(match.id) || [];
+    const blackPlayers = participants.filter(p => p.team === "black");
+    const whitePlayers = participants.filter(p => p.team === "white");
+
+    participants.forEach(mp => {
+      const stats = playerStatsMap.get(mp.player_id);
+      if (!stats) return;
+
+      const goalsFor = mp.team === "black" ? match.black_score : match.white_score;
+      const goalsAgainst = mp.team === "black" ? match.white_score : match.black_score;
+      const result = getResultFromTeam(mp.team, match.black_score, match.white_score);
+
+      stats.matches += 1;
+      stats.goalsFor += goalsFor;
+      stats.goalsAgainst += goalsAgainst;
+      stats.goalDiff = stats.goalsFor - stats.goalsAgainst;
+      if (mp.team === "black") stats.blackCount += 1;
+      if (mp.team === "white") stats.whiteCount += 1;
+
+      if (result === "win") {
+        stats.wins += 1;
+        stats.points += 3;
+      } else if (result === "draw") {
+        stats.draws += 1;
+        stats.points += 1;
+      } else {
+        stats.losses += 1;
+      }
+
+      const teammates = participants.filter(p => p.team === mp.team && p.player_id !== mp.player_id);
+      teammates.forEach(tp => {
+        const teammateName = tp.tabella?.name || playersById.get(tp.player_id)?.name || "Ismeretlen";
+        addPairStat(stats.teammates, tp.player_id, teammateName, result, goalsFor, goalsAgainst);
+
+        const ids = [mp.player_id, tp.player_id].sort();
+        const key = ids.join("|");
+        if (!pairMap.has(key)) {
+          pairMap.set(key, {
+            playerAId: ids[0],
+            playerBId: ids[1],
+            playerAName: playersById.get(ids[0])?.name || "—",
+            playerBName: playersById.get(ids[1])?.name || "—",
+            matches: 0,
+            wins: 0,
+            draws: 0,
+            losses: 0,
+            goalsFor: 0,
+            goalsAgainst: 0,
+            goalDiff: 0,
+            points: 0
+          });
+        }
+        const pair = pairMap.get(key);
+        if (mp.player_id === ids[0]) {
+          pair.matches += 0.5;
+          pair.goalsFor += goalsFor / 2;
+          pair.goalsAgainst += goalsAgainst / 2;
+          pair.goalDiff = pair.goalsFor - pair.goalsAgainst;
+          if (result === "win") {
+            pair.wins += 0.5;
+            pair.points += 1.5;
+          } else if (result === "draw") {
+            pair.draws += 0.5;
+            pair.points += 0.5;
+          } else {
+            pair.losses += 0.5;
+          }
+        }
+      });
+
+      const opponents = participants.filter(p => p.team !== mp.team);
+      opponents.forEach(op => {
+        const opponentName = op.tabella?.name || playersById.get(op.player_id)?.name || "Ismeretlen";
+        addPairStat(stats.opponents, op.player_id, opponentName, result, goalsFor, goalsAgainst);
+
+        const ids = [mp.player_id, op.player_id].sort();
+        const key = ids.join("|");
+        if (!h2hMap.has(key)) {
+          h2hMap.set(key, {
+            playerAId: ids[0],
+            playerBId: ids[1],
+            playerAName: playersById.get(ids[0])?.name || "—",
+            playerBName: playersById.get(ids[1])?.name || "—",
+            matches: 0,
+            draws: 0,
+            playerAWins: 0,
+            playerBWins: 0,
+            playerAGoalsFor: 0,
+            playerBGoalsFor: 0,
+            playerAPoints: 0,
+            playerBPoints: 0
+          });
+        }
+        const item = h2hMap.get(key);
+        const isA = mp.player_id === ids[0];
+        if (isA) {
+          item.matches += 1;
+          item.playerAGoalsFor += goalsFor;
+          item.playerBGoalsFor += goalsAgainst;
+          if (result === "win") {
+            item.playerAWins += 1;
+            item.playerAPoints += 3;
+          } else if (result === "draw") {
+            item.draws += 1;
+            item.playerAPoints += 1;
+            item.playerBPoints += 1;
+          } else {
+            item.playerBWins += 1;
+            item.playerBPoints += 3;
+          }
+        }
+      });
+    });
+  });
+
+  const cleanedPairList = [...pairMap.values()].map(pair => ({
+    ...pair,
+    matches: Math.round(pair.matches),
+    wins: Math.round(pair.wins),
+    draws: Math.round(pair.draws),
+    losses: Math.round(pair.losses),
+    goalsFor: Math.round(pair.goalsFor),
+    goalsAgainst: Math.round(pair.goalsAgainst),
+    goalDiff: Math.round(pair.goalDiff),
+    points: Math.round(pair.points)
+  }));
+
+  const playerStatsList = [...playerStatsMap.values()];
+
+  return {
+    matches: filteredMatches,
+    matchPlayers: filteredMP,
+    playerStatsMap,
+    playerStatsList,
+    pairList: cleanedPairList,
+    h2hMap
+  };
+}
+
+async function loadBaseStatsData() {
+  const [{ data: players, error: playersErr }, { data: matches, error: matchesErr }, { data: matchPlayers, error: mpErr }] = await Promise.all([
+    supabaseClient.from("tabella").select("id,name").order("name", { ascending: true }),
+    supabaseClient.from("matches").select("id,season_id,round,black_score,white_score,created_at").order("created_at", { ascending: false }),
+    supabaseClient.from("match_players").select("match_id,player_id,team,tabella(name)")
+  ]);
+
+  if (playersErr) console.error(playersErr);
+  if (matchesErr) console.error(matchesErr);
+  if (mpErr) console.error(mpErr);
+
+  cachedAllPlayers = players || [];
+  cachedAllMatches = matches || [];
+  cachedAllMatchPlayers = matchPlayers || [];
+  clearStatsCaches();
 }
 
 async function loadAnnouncementPublic(){
@@ -351,43 +706,41 @@ async function loadAnnouncementPublic(){
     return;
   }
 
-  const dt = new Date(row.updated_at || row.created_at);
-  const when = dt.toLocaleString("hu-HU");
-
   newsWall.innerHTML = `
-	<div class="news-title">
-		<img class="news-icon" src="assets/info.png" alt="Info">
-		<span class="news-meta">${new Date(row.updated_at).toLocaleString("hu-HU")}</span>
-	</div>
-
+    <div class="news-title">
+      <img class="news-icon" src="assets/info.png" alt="Info">
+      <span class="news-meta">${new Date(row.updated_at || row.created_at).toLocaleString("hu-HU")}</span>
+    </div>
     <div class="news-body">${escapeHtml(row.body)}</div>
   `;
 }
 
-/* ==== LOADERS ==== */
 async function loadSeasons() {
   const { data, error } = await supabaseClient
     .from("seasons")
     .select("id,year,is_current")
     .order("year", { ascending: false });
 
-  if (error) { console.error(error); return; }
+  if (error) {
+    console.error(error);
+    return;
+  }
 
   seasons = data || [];
   seasonSelect.innerHTML = "";
 
   seasons.forEach(s => {
-    const o = document.createElement("option");
-    o.value = s.id;
-    o.textContent = s.year + (s.is_current ? " (aktuális)" : "");
-    seasonSelect.appendChild(o);
+    const option = document.createElement("option");
+    option.value = s.id;
+    option.textContent = s.year + (s.is_current ? " (aktuális)" : "");
+    seasonSelect.appendChild(option);
   });
 
-  const cur = seasons.find(s => s.is_current) || seasons[0];
-  if (cur) {
-    selectedSeasonId = cur.id;
-    selectedSeasonYear = cur.year;
-    seasonSelect.value = cur.id;
+  const current = seasons.find(s => s.is_current) || seasons[0];
+  if (current) {
+    selectedSeasonId = current.id;
+    selectedSeasonYear = current.year;
+    seasonSelect.value = current.id;
   }
 }
 
@@ -402,27 +755,30 @@ async function loadTable() {
     .order("goals_for", { ascending: false })
     .order("goals_against", { ascending: true });
 
-  if (error) { console.error(error); return; }
+  if (error) {
+    console.error(error);
+    return;
+  }
 
   tbody.innerHTML = "";
 
-  (data || []).forEach((r, i) => {
-    const name = r.tabella?.name ?? "";
+  (data || []).forEach((row, index) => {
     const tr = document.createElement("tr");
+    const name = row.tabella?.name ?? "";
 
     tr.innerHTML = `
-      <td data-label="">${i + 1}</td>
+      <td data-label="">${index + 1}</td>
       <td class="name" data-label="Név">
-        <button class="link" data-id="${r.player_id}">${name}</button>
+        <button class="link" data-id="${row.player_id}">${escapeHtml(name)}</button>
       </td>
-      <td data-label="M">${r.matches}</td>
-      <td data-label="Gy">${r.wins}</td>
-      <td data-label="D">${r.draws}</td>
-      <td data-label="V">${r.losses}</td>
-      <td data-label="LG">${r.goals_for}</td>
-      <td data-label="KG">${r.goals_against}</td>
-      <td data-label="GK">${r.goal_diff}</td>
-      <td data-label="P"><b>${r.points}</b></td>
+      <td data-label="M">${row.matches}</td>
+      <td data-label="Gy">${row.wins}</td>
+      <td data-label="D">${row.draws}</td>
+      <td data-label="V">${row.losses}</td>
+      <td data-label="LG">${row.goals_for}</td>
+      <td data-label="KG">${row.goals_against}</td>
+      <td data-label="GK">${row.goal_diff}</td>
+      <td data-label="P"><b>${row.points}</b></td>
     `;
 
     tr.classList.add("updated");
@@ -431,14 +787,12 @@ async function loadTable() {
     tbody.appendChild(tr);
   });
 
-  tbody.querySelectorAll("button.link").forEach(b => {
-    b.onclick = () => loadPlayerCard(b.dataset.id);
+  tbody.querySelectorAll("button.link").forEach(button => {
+    button.onclick = () => loadPlayerCard(button.dataset.id);
   });
 }
 
-/* ✅ PLAYER CARD ANIM: elsőre lenyílás, utána fade csere (nem csuk!) */
 function setPlayerContentHeight() {
-  // max-height animációhoz mindig állítsuk scrollHeight-re
   playerContent.style.maxHeight = playerContent.scrollHeight + "px";
 }
 
@@ -448,102 +802,71 @@ function openPlayerCardIfNeeded() {
   }
 }
 
+function updatePlayerSwitchUi(){
+  playerStatsBtn?.classList.toggle("active", playerCardView === "stats");
+  playerRelationsBtn?.classList.toggle("active", playerCardView === "relations");
+}
+
+function setPlayerCardView(view){
+  playerCardView = view;
+  updatePlayerSwitchUi();
+  if (selectedPlayerId) {
+    loadPlayerCard(selectedPlayerId);
+  }
+}
+
+
 async function loadPlayerCard(playerId) {
   selectedPlayerId = playerId;
-
   const firstOpen = !playerCard.classList.contains("is-open");
 
-  // hint: csak addig látszik, amíg nincs választás
   if (playerHint) playerHint.style.display = "none";
-
-  // nyitás (első választásnál is azonnal, betöltés közben)
   openPlayerCardIfNeeded();
 
-  // váltásnál fade-out (de NEM csukunk)
   if (!firstOpen) {
     playerContent.classList.add("is-fading");
   }
 
-  // töltés szöveg
   playerContent.innerHTML = `<div class="muted">Betöltés…</div>`;
   requestAnimationFrame(() => setPlayerContentHeight());
 
-  const { data: stats, error: statsErr } = await supabaseClient
-    .from("player_overall_stats")
-    .select(`
-      player_id,
-      name,
-      matches_total,
-      black_count,
-      white_count,
-      goals_for_total,
-      goals_against_total,
-      wins_total,
-      draws_total,
-      losses_total
-    `)
-    .eq("player_id", playerId)
-    .single();
+  const overallProfile = getPlayerProfileCached(null, playerId);
+  const seasonProfile = getPlayerProfileCached(selectedSeasonId, playerId);
 
-  if (statsErr) {
-    console.error(statsErr);
-    playerContent.innerHTML = `<div class="error">❌ ${statsErr.message}</div>`;
+  if (!overallProfile?.stats) {
+    playerContent.innerHTML = `<div class="muted">Nincs elérhető adat erről a játékosról.</div>`;
     requestAnimationFrame(() => setPlayerContentHeight());
     playerContent.classList.remove("is-fading");
     return;
   }
 
-  const { data: lastRows, error: formErr } = await supabaseClient
-    .from("match_players")
-    .select(`
-      team,
-      matches ( black_score, white_score, created_at )
-    `)
-    .eq("player_id", playerId)
-    .order("created_at", { foreignTable: "matches", ascending: false })
-    .limit(5);
-
-  if (formErr) console.error(formErr);
-
-  const form = (lastRows || [])
-    .filter(r => r.matches)
-    .map(r => {
-      const b = r.matches.black_score;
-      const w = r.matches.white_score;
-
-      if (b === w) return { code: "D", cls: "draw", title: "Döntetlen" };
-
-      const isWin =
-        (r.team === "black" && b > w) ||
-        (r.team === "white" && w > b);
-
-      return isWin
-        ? { code: "W", cls: "win", title: "Győzelem" }
-        : { code: "L", cls: "loss", title: "Vereség" };
-    });
+  const { stats } = overallProfile;
+  const form = getPlayerRecentFormCached(playerId);
 
   const formHtml = form.length
-    ? `<div class="form">${form.map(x => `<span class="form-badge ${x.cls}" title="${x.title}">${x.code}</span>`).join("")}</div>`
+    ? `<div class="form">${form.map(item => `<span class="form-badge ${item.cls}" title="${item.title}">${item.code}</span>`).join("")}</div>`
     : `<div class="form-empty">Még nincs elég meccs a formához.</div>`;
 
-  // új tartalom
-  playerContent.innerHTML = `
+  const seasonTeammate = seasonProfile?.favoriteTeammate;
+  const seasonOpponent = seasonProfile?.toughestOpponent;
+  const overallTeammate = overallProfile.favoriteTeammate;
+  const overallOpponent = overallProfile.toughestOpponent;
+
+  const statsViewHtml = `
     <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;">
-      <div style="font-size:16px; font-weight:800; letter-spacing:.2px;">${stats.name}</div>
-      <div class="pill">minden szezon</div>
+      <div style="font-size:16px; font-weight:800; letter-spacing:.2px;">${escapeHtml(stats.name)}</div>
+      <div class="pill">összesített statisztika</div>
     </div>
 
     <div class="kv">
-      <div>Meccsek</div><div><b>${stats.matches_total}</b></div>
-      <div>⚫ Fekete</div><div><b>${stats.black_count}</b></div>
-      <div>⚪ Fehér</div><div><b>${stats.white_count}</b></div>
-
-      <div>Lőtt gól</div><div><b>${stats.goals_for_total}</b></div>
-      <div>Kapott gól</div><div><b>${stats.goals_against_total}</b></div>
-
-      <div>Győzelem</div><div><b>${stats.wins_total}</b></div>
-      <div>Döntetlen</div><div><b>${stats.draws_total}</b></div>
-      <div>Vereség</div><div><b>${stats.losses_total}</b></div>
+      <div>Meccsek</div><div><b>${stats.matches}</b></div>
+      <div>⚫ Fekete</div><div><b>${stats.blackCount}</b></div>
+      <div>⚪ Fehér</div><div><b>${stats.whiteCount}</b></div>
+      <div>Lőtt gól</div><div><b>${stats.goalsFor}</b></div>
+      <div>Kapott gól</div><div><b>${stats.goalsAgainst}</b></div>
+      <div>Győzelem</div><div><b>${stats.wins}</b></div>
+      <div>Döntetlen</div><div><b>${stats.draws}</b></div>
+      <div>Vereség</div><div><b>${stats.losses}</b></div>
     </div>
 
     <div class="form-row">
@@ -555,7 +878,47 @@ async function loadPlayerCard(playerId) {
     </div>
   `;
 
-  // magasság újramérés + fade-in vissza
+  const relationsViewHtml = `
+    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+      <div style="font-size:16px; font-weight:800; letter-spacing:.2px;">${escapeHtml(stats.name)}</div>
+<!--       <div class="pill">csapattárs / ellenfél</div> -->
+    </div>
+
+    <div class="form-row relation-block first-relation-block">
+      <div class="form-title">
+        <b>Best Match</b>
+      </div>
+      <div class="kv">
+        <div>Örökmérleg</div>
+        <div><b>${overallTeammate ? escapeHtml(overallTeammate.name) : "—"}</b></div>
+        <div>Mérleg</div>
+        <div><b>${overallTeammate ? formatRecord(overallTeammate) : "—"}</b></div>
+        <div>Aktuális idény</div>
+        <div><b>${seasonTeammate ? escapeHtml(seasonTeammate.name) : "—"}</b></div>
+        <div>Mérleg</div>
+        <div><b>${seasonTeammate ? formatRecord(seasonTeammate) : "—"}</b></div>
+      </div>
+    </div>
+
+    <div class="form-row relation-block">
+      <div class="form-title">
+        <b>Mumus</b>
+      </div>
+      <div class="kv">
+        <div>Örökmérleg</div>
+        <div><b>${overallOpponent ? escapeHtml(overallOpponent.name) : "—"}</b></div>
+        <div>Mérleg</div>
+        <div><b>${overallOpponent ? formatRecord(overallOpponent) : "—"}</b></div>
+        <div>Aktuális idény</div>
+        <div><b>${seasonOpponent ? escapeHtml(seasonOpponent.name) : "—"}</b></div>
+        <div>Mérleg</div>
+        <div><b>${seasonOpponent ? formatRecord(seasonOpponent) : "—"}</b></div>
+      </div>
+    </div>
+  `;
+
+  playerContent.innerHTML = playerCardView === "relations" ? relationsViewHtml : statsViewHtml;
+
   requestAnimationFrame(() => {
     setPlayerContentHeight();
     playerContent.classList.remove("is-fading");
@@ -563,43 +926,51 @@ async function loadPlayerCard(playerId) {
 }
 
 async function loadMatches() {
-  const { data: matches, error: mErr } = await supabaseClient
+  const { data: matches, error: matchesError } = await supabaseClient
     .from("matches")
     .select("id,round,black_score,white_score,created_at")
     .eq("season_id", selectedSeasonId)
     .order("round", { ascending: false });
 
-  if (mErr) { console.error(mErr); return; }
+  if (matchesError) {
+    console.error(matchesError);
+    return;
+  }
 
   allSeasonMatches = matches || [];
   matchesMeta.textContent = allSeasonMatches.length + " összesen";
 
-  availableRounds = [...new Set(allSeasonMatches.map(m => m.round))].sort((a,b)=>b-a);
+  availableRounds = [...new Set(allSeasonMatches.map(match => match.round))].sort((a, b) => b - a);
   roundSelect.innerHTML = "";
 
-  availableRounds.forEach(r => {
-    const o = document.createElement("option");
-    o.value = String(r);
-    o.textContent = r + ". forduló";
-    roundSelect.appendChild(o);
+  availableRounds.forEach(round => {
+    const option = document.createElement("option");
+    option.value = String(round);
+    option.textContent = `${round}. forduló`;
+    roundSelect.appendChild(option);
   });
 
   selectedRound = availableRounds[0] ?? null;
-  if (selectedRound !== null) roundSelect.value = String(selectedRound);
+  if (selectedRound !== null) {
+    roundSelect.value = String(selectedRound);
+  }
 
-  const ids = allSeasonMatches.map(m => m.id);
+  const ids = allSeasonMatches.map(match => match.id);
 
   if (!ids.length) {
     matchesList.innerHTML = `<div class="muted">Ebben a szezonban még nincs meccs.</div>`;
     return;
   }
 
-  const { data: mp, error: mpErr } = await supabaseClient
+  const { data: mp, error: mpError } = await supabaseClient
     .from("match_players")
     .select("match_id,team,tabella(name)")
     .in("match_id", ids);
 
-  if (mpErr) { console.error(mpErr); return; }
+  if (mpError) {
+    console.error(mpError);
+    return;
+  }
 
   allSeasonMP = mp || [];
   renderRound();
@@ -609,18 +980,18 @@ function renderRound() {
   matchesList.innerHTML = "";
   if (selectedRound === null) return;
 
-  const ms = allSeasonMatches.filter(m => m.round == selectedRound);
+  const matches = allSeasonMatches.filter(match => match.round == selectedRound);
 
-  ms.forEach(m => {
-    const b = allSeasonMP
-      .filter(x => x.match_id == m.id && x.team == "black")
-      .map(x => x.tabella?.name)
+  matches.forEach(match => {
+    const blackNames = allSeasonMP
+      .filter(item => item.match_id == match.id && item.team == "black")
+      .map(item => item.tabella?.name)
       .filter(Boolean)
       .join(", ");
 
-    const w = allSeasonMP
-      .filter(x => x.match_id == m.id && x.team == "white")
-      .map(x => x.tabella?.name)
+    const whiteNames = allSeasonMP
+      .filter(item => item.match_id == match.id && item.team == "white")
+      .map(item => item.tabella?.name)
       .filter(Boolean)
       .join(", ");
 
@@ -628,47 +999,50 @@ function renderRound() {
     div.className = "match";
     div.innerHTML = `
       <div class="match-top">
-        <div class="score">⚫ ${m.black_score} – ${m.white_score} ⚪</div>
+        <div class="score">⚫ ${match.black_score} – ${match.white_score} ⚪</div>
       </div>
-      <div class="teams"><span>⚫</span> ${b || "—"}</div>
-      <div class="teams"><span>⚪</span> ${w || "—"}</div>
+      <div class="teams"><span>⚫</span> ${escapeHtml(blackNames || "—")}</div>
+      <div class="teams"><span>⚪</span> ${escapeHtml(whiteNames || "—")}</div>
     `;
     matchesList.appendChild(div);
   });
 
-  const idx = availableRounds.indexOf(Number(selectedRound));
-  prevRoundBtn.disabled = idx === availableRounds.length - 1;
-  nextRoundBtn.disabled = idx === 0;
+  const index = availableRounds.indexOf(Number(selectedRound));
+  prevRoundBtn.disabled = index === availableRounds.length - 1;
+  nextRoundBtn.disabled = index === 0;
 }
 
-/* ==== EVENTS ==== */
 roundSelect.onchange = () => {
   selectedRound = Number(roundSelect.value);
   renderRound();
 };
 
 prevRoundBtn.onclick = () => {
-  const idx = availableRounds.indexOf(Number(selectedRound));
-  if (idx < availableRounds.length - 1) {
-    selectedRound = availableRounds[idx + 1];
+  const index = availableRounds.indexOf(Number(selectedRound));
+  if (index < availableRounds.length - 1) {
+    selectedRound = availableRounds[index + 1];
     roundSelect.value = String(selectedRound);
     renderRound();
   }
 };
 
 nextRoundBtn.onclick = () => {
-  const idx = availableRounds.indexOf(Number(selectedRound));
-  if (idx > 0) {
-    selectedRound = availableRounds[idx - 1];
+  const index = availableRounds.indexOf(Number(selectedRound));
+  if (index > 0) {
+    selectedRound = availableRounds[index - 1];
     roundSelect.value = String(selectedRound);
     renderRound();
   }
 };
 
+playerStatsBtn?.addEventListener("click", () => setPlayerCardView("stats"));
+playerRelationsBtn?.addEventListener("click", () => setPlayerCardView("relations"));
+updatePlayerSwitchUi();
+
 seasonSelect.onchange = async () => {
   selectedSeasonId = seasonSelect.value;
-  const s = seasons.find(x => x.id === selectedSeasonId);
-  selectedSeasonYear = s ? s.year : null;
+  const selectedSeason = seasons.find(item => item.id === selectedSeasonId);
+  selectedSeasonYear = selectedSeason ? selectedSeason.year : null;
 
   await loadTable();
   await loadMatches();
@@ -677,9 +1051,9 @@ seasonSelect.onchange = async () => {
   startRealtime();
 };
 
-/* ==== INIT ==== */
 (async () => {
   await loadSeasons();
+  await loadBaseStatsData();
   await loadTable();
   await loadMatches();
   await loadAnnouncementPublic();
