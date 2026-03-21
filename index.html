@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/stats.css">
+  <link rel="stylesheet" href="assets/css/bajnokaink.css">
+  <title>Makkos Liga</title>
+
+
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
+  <link rel="shortcut icon" href="assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="assets/icons/site.webmanifest">
+  <meta name="theme-color" content="#c4161c">
+</head>
+
+<body data-page="index">
+  <div id="siteHeaderMount"></div>
+
+  <div class="container">
+    <div class="layout">
+      <div class="card">
+        <div class="card-header tabella-header">
+          <div class="card-title">Tabella</div>
+
+          <div class="tabella-header-right">
+            <select id="seasonSelect"></select>
+          </div>
+        </div>
+
+        <div class="card-body table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th style="text-align:left">Név</th>
+                <th>M</th>
+                <th>Gy</th>
+                <th>D</th>
+                <th>V</th>
+                <th class="th-help" title="Lőtt gól">LG</th>
+                <th class="th-help" title="Kapott gól">KG</th>
+                <th class="th-help" title="Gólkülönbség">GK</th>
+                <th>P</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <div id="newsWall" class="news-wall"></div>
+
+        <div class="card player-card-bg stack-gap-card" id="playerCard">
+          <div class="card-header player-card-header">
+            <div class="card-title">Játékos</div>
+            <div class="player-switch" aria-label="Játékoskártya nézetváltó">
+              <button id="playerStatsBtn" class="switch-btn active" type="button">Statisztika</button>
+              <button id="playerRelationsBtn" class="switch-btn" type="button">Kémia</button>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div id="playerHint" class="muted">Kattints egy névre a tabellában.</div>
+            <div id="playerContent" class="player-content" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <div class="card matches-card stack-gap-card">
+          <div class="card-header">
+            <div class="card-title">Eredmények</div>
+            <span id="matchesMeta" class="pill">—</span>
+          </div>
+          <div class="card-body">
+            <div class="roundbar">
+              <select id="roundSelect"></select>
+              <button class="btn" id="prevRoundBtn" type="button">◀</button>
+              <button class="btn" id="nextRoundBtn" type="button">▶</button>
+            </div>
+
+            <div id="matchesList" class="matches-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="siteFooterMount"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="assets/js/index.js" defer></script>
+
+  <script src="assets/js/site-header.js" defer></script>
+  <script src="assets/js/site-footer.js" defer></script>
+</body>
+</html>

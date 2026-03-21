@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/stats.css">
+  <link rel="stylesheet" href="assets/css/bajnokaink.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Makkos Liga – Fórum</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
+  <link rel="shortcut icon" href="assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="assets/icons/site.webmanifest">
+  <meta name="theme-color" content="#c4161c">
+</head>
+
+<body data-page="forum">
+  <div id="siteHeaderMount"></div>
+
+  <main class="container">
+    <div class="comment-wall-layout">
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Fórum</div>
+          <span class="pill" id="commentsCount">0 komment</span>
+        </div>
+
+        <div class="card-body">
+          <form id="commentForm" class="comment-form">
+            <div class="comment-form-grid">
+              <div class="field">
+                <label for="nameInput">Név</label>
+                <input id="nameInput" type="text" maxlength="30" placeholder="Írd be a neved" required>
+              </div>
+
+              <div class="field field-message">
+                <label for="messageInput">Üzenet</label>
+                <textarea id="messageInput" maxlength="250" rows="5" placeholder="Írj egy kommentet..." required></textarea>
+              </div>
+            </div>
+
+            <div class="comment-form-bottom">
+              <div class="comment-meta">
+                <span id="charCount">0 / 250</span>
+                <span id="cooldownText" class="muted"></span>
+              </div>
+              <button id="sendBtn" class="btn" type="submit">Küldés</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:14px;">
+        <div class="card-header">
+          <div class="card-title">Üzenetek</div>
+        </div>
+        <div class="card-body">
+          <div id="commentsList" class="comments-list">
+            <div class="muted">Betöltés…</div>
+          </div>
+
+          <div class="comment-pagination" id="commentPagination" hidden>
+            <button id="prevPageBtn" class="page-btn" type="button" aria-label="Előző oldal">
+              <span class="page-btn-icon" aria-hidden="true">←</span>
+              <span>Előző</span>
+            </button>
+
+            <div id="pageIndicator" class="page-indicator">1 / 1</div>
+
+            <button id="nextPageBtn" class="page-btn" type="button" aria-label="Következő oldal">
+              <span>Következő</span>
+              <span class="page-btn-icon" aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="siteFooterMount"></div>
+
+<script>
+const supabaseUrl = "https://kqtzyhmksnjowielrwii.supabase.co";
+const supabaseKey = "sb_publishable_vgSmqItheOG3aeOdoNionA_rd-4MTL2";
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+const commentForm = document.getElementById("commentForm");
+const nameInput = document.getElementById("nameInput");
+const messageInput = document.getElementById("messageInput");
+const sendBtn = document.getElementById("sendBtn");
+const commentsList = document.getElementById("commentsList");
+const commentsCount = document.getElementById("commentsCount");
+const charCount = document.getElementById("charCount");
+const cooldownText = document.getElementById("cooldownText");
+const commentPagination = document.getElementById("commentPagination");
+const prevPageBtn = document.getElementById("prevPageBtn");
+const nextPageBtn = document.getElementById("nextPageBtn");
+const pageIndicator = document.getElementById("pageIndicator");
+
+const NAME_KEY = "makkos_comment_name";
+const COOLDOWN_KEY = "makkos_comment_last_send";
+const COOLDOWN_SECONDS = 10;
+const COMMENTS_PER_PAGE = 15;
+
+let commentsChannel = null;
+let cooldownTimer = null;
+let currentPage = 1;
+let totalComments = 0;
+let totalPages = 1;
+let currentComments = [];
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function formatDate(iso){
+  return new Date(iso).toLocaleString("hu-HU");
+}
+
+function updateCharCount(){
+  const len = messageInput.value.length;
+  charCount.textContent = `${len} / 250`;
+}
+
+function getCooldownRemaining(){
+  const last = Number(localStorage.getItem(COOLDOWN_KEY) || "0");
+  if (!last) return 0;
+  const diff = Math.floor((Date.now() - last) / 1000);
+  return Math.max(0, COOLDOWN_SECONDS - diff);
+}
+
+function updateCooldownUi(){
+  const remaining = getCooldownRemaining();
+
+  if (remaining > 0) {
+    sendBtn.disabled = true;
+    cooldownText.textContent = `Új komment küldhető: ${remaining} mp`;
+  } else {
+    sendBtn.disabled = false;
+    cooldownText.textContent = "";
+  }
+}
+
+function startCooldownTicker(){
+  if (cooldownTimer) clearInterval(cooldownTimer);
+  cooldownTimer = setInterval(updateCooldownUi, 500);
+}
+
+function updateTotals(count){
+  totalComments = count || 0;
+  totalPages = Math.max(1, Math.ceil(totalComments / COMMENTS_PER_PAGE));
+  commentsCount.textContent = `${totalComments} komment`;
+}
+
+function renderPagination(){
+  if (!totalComments) {
+    commentPagination.hidden = true;
+    return;
+  }
+
+  commentPagination.hidden = false;
+  pageIndicator.textContent = `${currentPage} / ${totalPages}`;
+  prevPageBtn.disabled = currentPage === 1;
+  nextPageBtn.disabled = currentPage === totalPages;
+}
+
+function renderComments(){
+  if (!currentComments.length) {
+    commentsList.innerHTML = `<div class="muted">Még nincs komment.</div>`;
+    renderPagination();
+    return;
+  }
+
+  commentsList.innerHTML = currentComments.map(row => `
+    <article class="comment-item">
+      <div class="comment-top">
+        <div class="comment-name">${escapeHtml(row.name)}</div>
+        <div class="comment-date">${formatDate(row.created_at)}</div>
+      </div>
+      <div class="comment-message">${escapeHtml(row.message)}</div>
+    </article>
+  `).join("");
+
+  renderPagination();
+}
+
+async function loadComments(options = {}){
+  const keepPage = options.keepPage === true;
+
+  if (!keepPage) {
+    currentPage = 1;
+  }
+
+  const from = (currentPage - 1) * COMMENTS_PER_PAGE;
+  const to = from + COMMENTS_PER_PAGE - 1;
+
+  const { data, count, error } = await supabaseClient
+    .from("comments_wall")
+    .select("id,name,message,created_at", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error(error);
+    commentsList.innerHTML = `<div class="muted">❌ Nem sikerült betölteni a kommenteket.</div>`;
+    commentPagination.hidden = true;
+    return;
+  }
+
+  updateTotals(count);
+
+  if (keepPage && currentPage > totalPages) {
+    currentPage = totalPages;
+    return loadComments({ keepPage: true });
+  }
+
+  currentComments = data || [];
+  renderComments();
+}
+
+async function sendComment(e){
+  e.preventDefault();
+
+  const name = nameInput.value.trim();
+  const message = messageInput.value.trim();
+
+  if (!name || !message) return;
+
+  if (name.length > 30) {
+    alert("A név legfeljebb 30 karakter lehet.");
+    return;
+  }
+
+  if (message.length > 250) {
+    alert("Az üzenet legfeljebb 250 karakter lehet.");
+    return;
+  }
+
+  const remaining = getCooldownRemaining();
+  if (remaining > 0) {
+    alert(`Kérlek várj még ${remaining} másodpercet.`);
+    return;
+  }
+
+  sendBtn.disabled = true;
+
+  const { error } = await supabaseClient
+    .from("comments_wall")
+    .insert([{ name, message }]);
+
+  if (error) {
+    console.error(error);
+    alert("Nem sikerült elküldeni a kommentet.");
+    updateCooldownUi();
+    return;
+  }
+
+  localStorage.setItem(NAME_KEY, name);
+  localStorage.setItem(COOLDOWN_KEY, String(Date.now()));
+
+  messageInput.value = "";
+  updateCharCount();
+  currentPage = 1;
+  updateCooldownUi();
+  await loadComments();
+}
+
+function startRealtime(){
+  if (commentsChannel) {
+    supabaseClient.removeChannel(commentsChannel);
+  }
+
+  commentsChannel = supabaseClient
+    .channel("public:comments-wall-live")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "comments_wall" },
+      () => loadComments({ keepPage: true })
+    )
+    .subscribe();
+}
+
+prevPageBtn.addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage -= 1;
+    loadComments({ keepPage: true });
+  }
+});
+
+nextPageBtn.addEventListener("click", () => {
+  if (currentPage < totalPages) {
+    currentPage += 1;
+    loadComments({ keepPage: true });
+  }
+});
+
+nameInput.value = localStorage.getItem(NAME_KEY) || "";
+messageInput.addEventListener("input", updateCharCount);
+commentForm.addEventListener("submit", sendComment);
+
+(async () => {
+  updateCharCount();
+  updateCooldownUi();
+  startCooldownTicker();
+  await loadComments();
+  startRealtime();
+})();
+</script>
+
+  <script src="assets/js/site-header.js" defer></script>
+  <script src="assets/js/site-footer.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/stats.css">
+  <link rel="stylesheet" href="assets/css/bajnokaink.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Makkos Liga – Bajnokaink</title>
+
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
+  <link rel="shortcut icon" href="assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="assets/icons/site.webmanifest">
+  <meta name="theme-color" content="#c4161c">
+</head>
+
+<body data-page="champions">
+  <div id="siteHeaderMount"></div>
+
+  <main class="container">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Dicsőségfal</div>
+        <span class="pill">Galéria</span>
+      </div>
+
+      <div class="card-body">
+        <div class="champ-grid">
+          <article class="champ-card">
+            <img class="champ-img" src="assets/img/2025bajnok.png" alt="2025 bajnoka">
+            <div class="champ-info">
+              <div class="champ-year">2025</div>
+              <div class="champ-title">Bajnok</div>
+              <div class="champ-sub muted">Szatmári Norbert #36</div>
+            </div>
+          </article>
+
+          <!-- ide jönnek majd a következő évek -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="siteFooterMount"></div>
+
+  <style>
+    .champ-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:14px;
+    }
+    .champ-card{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      overflow:hidden;
+      background: #000;
+      box-shadow: var(--shadow);
+      transition: transform .15s ease, border-color .15s ease;
+    }
+    .champ-card:hover{
+      transform: translateY(-2px);
+      border-color: rgba(196,22,28,.55);
+    }
+    .champ-img{
+      width:100%;
+      display:block;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+    }
+    .champ-info{
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .champ-year{
+      font-weight: 900;
+      letter-spacing: .5px;
+      font-size: 14px;
+      color:#fff;
+    }
+    .champ-title{
+      font-weight: 900;
+      color: rgba(255,255,255,.92);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing:.35px;
+    }
+    .champ-sub{ font-size: 12px; }
+
+    @media (max-width: 980px){
+      .champ-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px){
+      .champ-grid{ grid-template-columns: 1fr; }
+      .champ-info{ padding:10px; }
+    }
+  </style>
+
+  <script src="assets/js/site-header.js" defer></script>
+  <script src="assets/js/site-footer.js" defer></script>
+</body>
+</html>

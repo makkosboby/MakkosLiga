@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Makkos Liga – Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+
+  <!-- Favicon / App Icons -->
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
+  <link rel="shortcut icon" href="assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="assets/icons/site.webmanifest">
+  <meta name="theme-color" content="#c4161c">
+</head>
+
+<body class="admin-page">
+
+  <div class="admin-topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="assets/img/logo4.png" alt="Makkos Liga">
+        <div class="brand-title">Liga Admin</div>
+      </div>
+
+      <div class="top-actions">
+        <a class="top-link" href="index.html">Tabella</a>
+        <button class="top-link danger-link" onclick="logout()" type="button">Kijelentkezés</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="status-row">
+      <div id="status" class="pill">Ellenőrzés…</div>
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Meccs rögzítése</div>
+          <span class="pill">⚫ Fekete vs ⚪ Fehér</span>
+        </div>
+
+        <div class="card-body">
+
+          <div class="muted admin-note">Válaszd ki, ki melyik csapatban játszott.</div>
+
+          <div class="selector" id="teamSelector"></div>
+
+          <div class="sep"></div>
+
+          <div class="row score-row">
+            <div>
+              <label>⚫ Fekete gól</label>
+              <input type="number" id="blackScore" min="0" value="0">
+            </div>
+            <div>
+              <label>⚪ Fehér gól</label>
+              <input type="number" id="whiteScore" min="0" value="0">
+            </div>
+          </div>
+
+          <div class="btns top-space-md">
+            <button class="btn btn-primary" onclick="saveMatch()" type="button">💾 Meccs mentése</button>
+            <button class="btn btn-ghost" onclick="clearTeamSelection()" type="button">🧹 Kijelölések törlése</button>
+            <button class="btn btn-ghost" onclick="clearTeam('black')" type="button">⚫ Fekete ürít</button>
+            <button class="btn btn-ghost" onclick="clearTeam('white')" type="button">⚪ Fehér ürít</button>
+          </div>
+
+          <div id="matchMsg" class="muted top-space-sm"></div>
+
+          <div class="sep"></div>
+
+          <div class="section-head-inline">
+            <div class="card-title card-title-normal">Utolsó meccsek</div>
+            <button class="btn btn-ghost" onclick="loadMatches()" type="button">↻ Frissítés</button>
+          </div>
+
+          <div id="matchesList"></div>
+
+        </div>
+      </div>
+
+      <div> 
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Játékos hozzáadása</div>
+            <span class="pill">Tabella</span>
+          </div>
+          <div class="card-body">
+            <label>Játékos neve</label>
+            <input type="text" id="playerName" placeholder="Pl.: Kovács Dani">
+            <div class="btns top-space-md">
+              <button class="btn btn-primary" onclick="addPlayer()" type="button">➕ Hozzáadás</button>
+            </div>
+            <div id="addMsg" class="muted top-space-sm"></div>
+          </div>
+        </div>	  
+
+        <div class="card top-space-lg">
+          <div class="card-header">
+            <div class="card-title">Üzenőfal</div>
+            <span class="pill">Index oldalon látszik</span>
+          </div>
+          <div class="card-body">
+            <label>Üzenet / hír</label>
+            <textarea id="newsText" rows="5" placeholder="Írj ide hírt..."></textarea>
+
+            <div class="btns top-space-md">
+              <button class="btn btn-primary" onclick="saveAnnouncement()" type="button">💾 Mentés</button>
+              <button class="btn btn-ghost" onclick="loadAnnouncement()" type="button">↻ Betöltés</button>
+            </div>
+
+            <div class="row top-space-sm">
+              <label class="checkbox-label">
+                <input type="checkbox" id="newsPinned" class="checkbox-inline">
+                Kiemelt (felül marad)
+              </label>
+            </div>
+
+            <div id="newsMsg" class="muted top-space-sm"></div>
+          </div>
+        </div>
+
+        <div class="card top-space-lg">
+          <div class="card-header">
+            <div class="card-title">Szezon kezelése</div>
+            <span class="pill">Veszélyzóna</span>
+          </div>
+          <div class="card-body">
+            <div class="danger-zone">
+              <div class="muted top-space-xs">
+                A “Szezon vége” új évet indít és az aktuális szezon statjait nullázza (a nevek maradnak).
+              </div>
+              <button class="btn btn-danger top-space-md" onclick="endSeason()" type="button">🏁 Szezon vége</button>
+              <div id="seasonMsg" class="muted top-space-sm"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card top-space-lg">
+          <div class="card-header">
+            <div class="card-title">Gyors tippek</div>
+            <span class="pill">UX</span>
+          </div>
+          <div class="card-body">
+            <div class="muted">
+              • Ha sok játékos van: görgess a listában, a kiválasztások megmaradnak.<br>
+              • Mentés után a meccsek listája automatikusan frissül.<br>
+              • Törlés visszagörgeti a statokat (rollback).
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  const supabaseUrl = "https://kqtzyhmksnjowielrwii.supabase.co";
+  const supabaseKey = "sb_publishable_vgSmqItheOG3aeOdoNionA_rd-4MTL2";
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  async function checkLogin() {
+    const { data } = await supabaseClient.auth.getSession();
+    if (!data.session) window.location.href = "login.html";
+    document.getElementById("status").innerText = "✅ Bejelentkezve (admin)";
+  }
+
+  async function logout() {
+    await supabaseClient.auth.signOut();
+    window.location.href = "login.html";
+  }
+
+  async function addPlayer() {
+    const name = document.getElementById("playerName").value.trim();
+    if (!name) return;
+
+    const { error } = await supabaseClient.from("tabella").insert([{ name }]);
+    if (error) {
+      document.getElementById("addMsg").innerText = "❌ " + error.message;
+      return;
+    }
+
+    document.getElementById("addMsg").innerText = "✅ Játékos hozzáadva";
+    document.getElementById("playerName").value = "";
+    loadPlayersForMatch();
+  }
+
+  async function loadPlayersForMatch() {
+    const { data, error } = await supabaseClient
+      .from("tabella")
+      .select("id, name")
+      .order("name");
+
+    if (error) { console.error(error); return; }
+
+    const container = document.getElementById("teamSelector");
+    container.innerHTML = "";
+
+    (data || []).forEach(p => {
+      const row = document.createElement("div");
+      row.className = "player-row";
+
+      const nameDiv = document.createElement("div");
+      nameDiv.className = "player-name";
+      nameDiv.textContent = p.name || "—";
+
+      const select = document.createElement("select");
+      select.dataset.playerId = p.id;
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "–";
+
+      const blackOption = document.createElement("option");
+      blackOption.value = "black";
+      blackOption.textContent = "⚫ Fekete";
+
+      const whiteOption = document.createElement("option");
+      whiteOption.value = "white";
+      whiteOption.textContent = "⚪ Fehér";
+
+      select.append(defaultOption, blackOption, whiteOption);
+      row.append(nameDiv, select);
+      container.appendChild(row);
+    });
+  }
+
+  function clearTeamSelection(){
+    document.querySelectorAll("#teamSelector select").forEach(sel => sel.value = "");
+    document.getElementById("matchMsg").innerText = "Kijelölések törölve.";
+  }
+
+  function clearTeam(team){
+    document.querySelectorAll("#teamSelector select").forEach(sel => {
+      if (sel.value === team) sel.value = "";
+    });
+    document.getElementById("matchMsg").innerText = team === "black" ? "⚫ Fekete csapat ürítve." : "⚪ Fehér csapat ürítve.";
+  }
+
+  async function saveMatch() {
+    const blackScore = Number(document.getElementById("blackScore").value);
+    const whiteScore = Number(document.getElementById("whiteScore").value);
+
+    const blackPlayers = [];
+    const whitePlayers = [];
+
+    document.querySelectorAll("#teamSelector select").forEach(sel => {
+      if (sel.value === "black") blackPlayers.push(sel.dataset.playerId);
+      if (sel.value === "white") whitePlayers.push(sel.dataset.playerId);
+    });
+
+    if (!blackPlayers.length || !whitePlayers.length) {
+      document.getElementById("matchMsg").innerText = "❌ Mindkét csapat kötelező";
+      return;
+    }
+
+    const { error } = await supabaseClient.rpc("apply_match_result", {
+      black_players: blackPlayers,
+      white_players: whitePlayers,
+      black_goals: blackScore,
+      white_goals: whiteScore
+    });
+
+    if (error) {
+      console.error(error);
+      document.getElementById("matchMsg").innerText = "❌ Hiba mentéskor";
+      return;
+    }
+
+    document.getElementById("matchMsg").innerText = "✅ Meccs mentve";
+    loadMatches();
+  }
+
+  async function deleteMatch(matchId) {
+    if (!confirm("Biztos törlöd ezt a meccset? (stat rollback)")) return;
+
+    const { error } = await supabaseClient.rpc(
+      "delete_match_and_rollback",
+      { match_to_delete: matchId }
+    );
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    const card = document.querySelector(`.match-card[data-match-id="${matchId}"]`);
+    if (card) card.remove();
+  }
+
+  async function loadMatches() {
+    const { data: matches, error: mErr } = await supabaseClient
+      .from("matches")
+      .select("id, round, black_score, white_score, created_at")
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (mErr) { console.error(mErr); return; }
+
+    const { data: mp, error: mpErr } = await supabaseClient
+      .from("match_players")
+      .select("match_id, team, tabella(name)");
+
+    if (mpErr) { console.error(mpErr); return; }
+
+    const list = document.getElementById("matchesList");
+    list.innerHTML = "";
+
+    (matches || []).forEach(m => {
+      const black = (mp || []).filter(x => x.match_id === m.id && x.team === "black").map(x => x.tabella?.name).filter(Boolean);
+      const white = (mp || []).filter(x => x.match_id === m.id && x.team === "white").map(x => x.tabella?.name).filter(Boolean);
+
+      const card = document.createElement("div");
+      card.className = "match-card";
+      card.dataset.matchId = m.id;
+
+      const matchTop = document.createElement("div");
+      matchTop.className = "match-top";
+
+      const roundWrap = document.createElement("div");
+      const roundStrong = document.createElement("b");
+      roundStrong.textContent = `${m.round}. forduló`;
+      const timeSpan = document.createElement("span");
+      timeSpan.className = "small";
+      timeSpan.textContent = ` – ${new Date(m.created_at).toLocaleString("hu-HU")}`;
+      roundWrap.append(roundStrong, timeSpan);
+
+      const scoreDiv = document.createElement("div");
+      scoreDiv.className = "score";
+      scoreDiv.textContent = `⚫ ${m.black_score} – ${m.white_score} ⚪`;
+
+      matchTop.append(roundWrap, scoreDiv);
+
+      const blackDiv = document.createElement("div");
+      blackDiv.className = "teams";
+      const blackIcon = document.createElement("span");
+      blackIcon.textContent = "⚫";
+      blackDiv.append(blackIcon, document.createTextNode(` ${black.join(", ") || "—"}`));
+
+      const whiteDiv = document.createElement("div");
+      whiteDiv.className = "teams";
+      const whiteIcon = document.createElement("span");
+      whiteIcon.textContent = "⚪";
+      whiteDiv.append(whiteIcon, document.createTextNode(` ${white.join(", ") || "—"}`));
+
+      const buttonWrap = document.createElement("div");
+      buttonWrap.className = "top-space-sm";
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "btn btn-danger";
+      deleteBtn.type = "button";
+      deleteBtn.textContent = "🗑️ Meccs törlése";
+      deleteBtn.addEventListener("click", () => deleteMatch(m.id));
+      buttonWrap.appendChild(deleteBtn);
+
+      card.append(matchTop, blackDiv, whiteDiv, buttonWrap);
+      list.appendChild(card);
+    });
+  }
+
+  async function endSeason() {
+    if (!confirm("Biztos lezárod a szezont és új évet indítasz?")) return;
+
+    const { data, error } = await supabaseClient.rpc("end_season");
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    document.getElementById("seasonMsg").innerText =
+      `✅ Új szezon elindítva: ${data}`;
+  }
+
+  let currentAnnouncementId = null;
+
+  async function loadAnnouncement() {
+    const msg = document.getElementById("newsMsg");
+    msg.textContent = "Betöltés…";
+
+    const { data, error } = await supabaseClient
+      .from("announcements")
+      .select("id, body, is_pinned, updated_at")
+      .order("is_pinned", { ascending: false })
+      .order("updated_at", { ascending: false })
+      .limit(1);
+
+    if (error) {
+      console.error(error);
+      msg.textContent = "❌ " + error.message;
+      return;
+    }
+
+    const row = (data || [])[0];
+    if (!row) {
+      currentAnnouncementId = null;
+      document.getElementById("newsText").value = "";
+      document.getElementById("newsPinned").checked = false;
+      msg.textContent = "Nincs még üzenet. Írj egyet és mentsd el!";
+      return;
+    }
+
+    currentAnnouncementId = row.id;
+    document.getElementById("newsText").value = row.body;
+    document.getElementById("newsPinned").checked = !!row.is_pinned;
+    msg.textContent = "✅ Betöltve";
+  }
+
+  async function saveAnnouncement() {
+    const msg = document.getElementById("newsMsg");
+    const body = document.getElementById("newsText").value.trim();
+    const isPinned = document.getElementById("newsPinned").checked;
+
+    if (!body) {
+      msg.textContent = "❌ Üres üzenetet nem lehet menteni.";
+      return;
+    }
+
+    msg.textContent = "Mentés…";
+
+    if (currentAnnouncementId) {
+      const { error } = await supabaseClient
+        .from("announcements")
+        .update({ body, is_pinned: isPinned })
+        .eq("id", currentAnnouncementId);
+
+      if (error) {
+        console.error(error);
+        msg.textContent = "❌ " + error.message;
+        return;
+      }
+
+      msg.textContent = "✅ Mentve (frissítve)";
+    } else {
+      const { data, error } = await supabaseClient
+        .from("announcements")
+        .insert([{ body, is_pinned: isPinned }])
+        .select("id")
+        .single();
+
+      if (error) {
+        console.error(error);
+        msg.textContent = "❌ " + error.message;
+        return;
+      }
+
+      currentAnnouncementId = data.id;
+      msg.textContent = "✅ Mentve (új)";
+    }
+  }
+
+  checkLogin();
+  loadPlayersForMatch();
+  loadMatches();
+  loadAnnouncement();
+</script>
+
+</body>
+</html>
