@@ -1327,4 +1327,8 @@
   }
 }
 
+/* Hide Pont/meccs scorebug on stats page */
+.stats-page .scorebug {
+  display: none !important;
+}
 
