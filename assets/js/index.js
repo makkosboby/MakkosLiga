@@ -608,7 +608,7 @@ async function loadAnnouncementPublic() {
     return;
   }
 
-  const row = (data || [])[0];
+  const rows = (data || []).filter(r => r.matches > 0);
   if (!row) {
     newsWall.innerHTML = '<div class="news-empty">Nincs friss hír.</div>';
     return;
