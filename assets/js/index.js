@@ -608,7 +608,7 @@ async function loadAnnouncementPublic() {
     return;
   }
 
-  const rows = (data || []).filter(r => r.matches > 0);
+  const row = (data || [])[0];
   if (!row) {
     newsWall.innerHTML = '<div class="news-empty">Nincs friss hír.</div>';
     return;
@@ -703,7 +703,7 @@ async function loadTable(forceRefresh = false) {
     return [];
   }
 
-  const rows = data || [];
+  const rows = (data || []).filter(r => r.matches > 0);
   state.cachedSeasonStatsBySeasonId.set(seasonKey, rows);
   renderTableRows(rows);
   return rows;
