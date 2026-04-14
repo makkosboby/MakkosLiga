@@ -78,5 +78,16 @@
   }
 </script>
 
+
+<script>
+document.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    if (typeof login === "function") {
+      login();
+    }
+  }
+});
+</script>
+
 </body>
 </html>
