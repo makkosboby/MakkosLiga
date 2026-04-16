@@ -609,7 +609,7 @@ function renderPlayerSection(bundle){
 
 function renderPairLeaderboard(bundle){
   const rankedPairs = [...bundle.pairList]
-    .filter(pair => pair.matches > 0)
+    .filter(pair => pair.matches > 3)
     .sort((a, b) => {
       const aPpm = a.matches ? a.points / a.matches : -1;
       const bPpm = b.matches ? b.points / b.matches : -1;
@@ -663,7 +663,7 @@ function renderPairLeaderboard(bundle){
 }
 
 function renderIndividualLeaderboards(bundle){
-  const minMatches = 1;
+  const minMatches = 5;
   const players = bundle.playerStatsList.filter(item => item.matches >= minMatches);
 
   const categories = [
