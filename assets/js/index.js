@@ -270,11 +270,11 @@ function getPlayerProfileCached(seasonId, playerId) {
   }
 
   const favoriteTeammate = [...stats.teammates.values()]
-    .filter(t => t.matches >= 5)
+    .filter(t => t.matches >= 3)
     .sort(compareBestTeammate)[0] || null;
 
   const toughestOpponent = [...stats.opponents.values()]
-    .filter(o => o.matches >= 5)
+    .filter(o => o.matches >= 3)
     .sort(compareWorstOpponent)[0] || null;
   const profile = { stats, favoriteTeammate, toughestOpponent };
   state.playerProfileCache.set(cacheKey, profile);
